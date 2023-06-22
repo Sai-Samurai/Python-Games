@@ -4,6 +4,7 @@ import pygame, sys
 pygame.init()
 clock = pygame.time.Clock()
 
+YELLOW = (255, 255, 0) #horrific yellow for debugging rectangles
 playerX, playerY = (241, 445)
 block_size = 50
 block_size2 = 50
@@ -44,8 +45,8 @@ class Player(pygame.sprite.Sprite):
 		self.rect = pygame.Rect(x, y, length, height)
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, (255, 255, 0), (self.x, self.y, self.length, self.height))
-		# screen.blit(screen, self.image, (self.x, self.y))
+		pygame.draw.rect(screen, YELLOW, player_rect)
+		screen.blit(player_image, player_rect)
 
 	def move_right(self):
 		self.x += speed_x
@@ -69,9 +70,59 @@ class Player(pygame.sprite.Sprite):
 			if self.y_velocity <- jump_height:
 				self.stop_jumping()
 
+		player_rect.x = self.x
+		player_rect.y = self.y
+
 	def updateplayer(x, y):
 		player.x
 		player.y
+
+	def handle_collision(self, block):
+		if self.rect.bottom > block.rect.top and self.rect.top < block.rect.top:
+			self.rect.bottom = block.rect.top
+			self.y = max(self.y, min_y)
+			self.y = self.rect.y
+			self.stop_jumping()
+			y_velocity = 0
+			on_ground = True
+			print('bottom')
+
+		elif self.rect.top < block.rect.bottom and self.rect.bottom > block.rect.bottom:
+			self.rect.top = block.rect.bottom
+			self.y = self.rect.y
+			y_velocity = 0
+			self.y += y_gravity
+			print('top')
+
+		if self.rect.right > block.rect.left and self.rect.left < block.rect.left:
+			self.rect.right = block.rect.left
+			self.x = self.rect.x
+			if self.rect.bottom > block.rect.top and self.rect.top < block.rect.bottom:
+				self.rect.bottom = block.rect.top
+				self.y = self.rect.y
+				self.stop_jumping()
+				y_velocity = 0
+			elif self.rect.top < block.rect.bottom and self.rect.bottom > block.rect.bottom:
+				self.rect.top = block.rect.bottom
+				self.y = self.rect.y
+				y_velocity = 0
+			print('right')
+
+		elif self.rect.left < block.rect.right and self.rect.right > block.rect.right:
+			self.rect.left = block.rect.right
+			self.x = self.rect.x
+			if self.rect.bottom > block.rect.top and self.rect.top < block.rect.bottom:
+				self.rect.bottom = block.rect.top
+				self.y = self.rect.y
+				self.stop_jumping()
+				y_velocity = 0
+			elif self.rect.top < block.rect.bottom and self.rect.bottom > block.rect.bottom:
+				self.rect.top = block.rect.bottom
+				self.y = self.rect.y
+				y_velocity = 0
+			print('left')
+
+
 
 
 
@@ -87,7 +138,8 @@ class Blocks(pygame.sprite.Sprite):
 		blocks_sprite.add(self)
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, (0, 0, 0), (self.x2, self.y2, self.block_size, self.block_size2))
+		pygame.draw.rect(screen, YELLOW, self.rect)
+		# pygame.draw.rect(screen, (0, 0, 0), (self.x2, self.y2, self.block_size, self.block_size2))
 
 	def updateblocks(x2, y2):
 		block1.x2
@@ -191,55 +243,14 @@ while True:
 
 
 	collisions = pygame.sprite.spritecollide(player, blocks_sprite, False)
+	print(collisions)
 	if collisions:
-
 		for block in collisions:
-
-			if player.rect.colliderect(block.rect):
-
-				if player.rect.bottom > block.rect.top and player.rect.top < block.rect.top:
-					player.rect.bottom = block.rect.top
-					player.y = max(player.y, min_y)
-					player.y = player.rect.y
-					player.stop_jumping()
-					y_velocity = 0
-					on_ground = True
-					print('bottom')
-
-				elif player.rect.top < block.rect.bottom and player.rect.bottom > block.rect.bottom:
-					player.rect.top = block.rect.bottom
-					player.y = player.rect.y
-					y_velocity = 0
-					player.y += y_gravity
-					print('top')
-
-				if player.rect.right > block.rect.left and player.rect.left < block.rect.left:
-					player.rect.right = block.rect.left
-					player.x = player.rect.x
-					if player.rect.bottom > block.rect.top and player.rect.top < block.rect.bottom:
-						player.rect.bottom = block.rect.top
-						player.y = player.rect.y
-						player.stop_jumping()
-						y_velocity = 0
-					elif player.rect.top < block.rect.bottom and player.rect.bottom > block.rect.bottom:
-						player.rect.top = block.rect.bottom
-						player.y = player.rect.y
-						y_velocity = 0
-					print('right')
-
-				elif player.rect.left < block.rect.right and player.rect.right > block.rect.right:
-					player.rect.left = block.rect.right
-					player.x = player.rect.x
-					if player.rect.bottom > block.rect.top and player.rect.top < block.rect.bottom:
-						player.rect.bottom = block.rect.top
-						player.y = player.rect.y
-						player.stop_jumping()
-						y_velocity = 0
-					elif player.rect.top < block.rect.bottom and player.rect.bottom > block.rect.bottom:
-						player.rect.top = block.rect.bottom
-						player.y = player.rect.y
-						y_velocity = 0
-					print('left')
+			print(block)
+			if player.rect.colliderect(block.rect): #isn't this always true?!
+				player.handle_collision(block)
+			else:
+				raise Exception("weird!!!")
 
 	if not collisions:
 		on_ground = True
@@ -258,7 +269,7 @@ while True:
 				#	player.stop_jumping()
 				#	print('left')
 
-	print(player.x, player.y)
+	# print(player.x, player.y)
 
 
 
@@ -266,7 +277,7 @@ while True:
 
 	#Visuals
 	screen.blit(background, (0, 50))
-	screen.blit(player_image, player_rect)
+	#screen.blit(player_image, player_rect)
 
 	for sprite in player_sprite:
 		sprite.appear(screen)
