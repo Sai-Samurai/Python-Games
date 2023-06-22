@@ -21,8 +21,8 @@ bg_color = pygame.Color('light grey')
 
 #Player image
 p_image = pygame.image.load("player.png").convert_alpha()
-pl_image = pygame.transform.smoothscale(p_image, (p_image.get_width() / 3.5, p_image.get_height() / 3.5))
-player_image = pl_image.get_rect()
+player_image = pygame.transform.smoothscale(p_image, (p_image.get_width() / 3.5, p_image.get_height() / 3.5))
+player_rect = player_image.get_rect()
 
 
 
@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite):
 
 	def appear(self, screen):
 		pygame.draw.rect(screen, (255, 255, 0), (self.x, self.y, self.length, self.height))
-		# screen.blit(self.image, (self.x, self.y))
+		# screen.blit(screen, self.image, (self.x, self.y))
 
 	def move_right(self):
 		self.x += speed_x
@@ -122,7 +122,7 @@ move_up= False
 speed_x = 7.5
 
 #Player
-player = Player(playerX, playerY, 10, 80, player_image)
+player = Player(playerX, playerY, 10, 80, player_rect)
 
 #sprites = [player]
 player_sprite = pygame.sprite.Group(player)
@@ -142,6 +142,11 @@ block6 = Blocks(460, 475, block_size, block_size2)
 
 #block_sprites = [block1, block2, block3, block4]
 blocks_sprite.add(block1, block2, block3, block4, block5)
+
+
+for block in blocks_sprite:
+	block.rect.x = block.x2
+	block.rect.y = block.y2
 
 '''
 collisions = pygame.sprite.groupcollide(player_sprite, blocks_sprite, False, False)
@@ -184,9 +189,6 @@ while True:
 	player.rect.x = player.x
 	player.rect.y = player.y
 
-	for block in blocks_sprite:
-		block.rect.x = block.x2
-		block.rect.y = block.y2
 
 	collisions = pygame.sprite.spritecollide(player, blocks_sprite, False)
 	if collisions:
@@ -264,7 +266,7 @@ while True:
 
 	#Visuals
 	screen.blit(background, (0, 50))
-	screen.blit(pl_image, player_image)
+	screen.blit(player_image, player_rect)
 
 	for sprite in player_sprite:
 		sprite.appear(screen)
