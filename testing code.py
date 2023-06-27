@@ -25,6 +25,10 @@ p_image = pygame.image.load("player.png").convert_alpha()
 player_image = pygame.transform.smoothscale(p_image, (p_image.get_width() / 3.5, p_image.get_height() / 3.5))
 player_rect = player_image.get_rect()
 
+#Block image
+b_image = pygame.image.load("Brick_texture.png").convert_alpha()
+block_image = pygame.transform.smoothscale(b_image, (b_image.get_width(), b_image.get_height()))
+block_rect = block_image.get_rect()
 
 
 
@@ -128,7 +132,7 @@ class Player(pygame.sprite.Sprite):
 
 #Blocks
 class Blocks(pygame.sprite.Sprite):
-	def __init__(self, x2, y2, block_size, block_size2):
+	def __init__(self, x2, y2, block_size, block_size2, texture):
 		super().__init__()
 		self.x2 = x2
 		self.y2 = y2
@@ -136,14 +140,16 @@ class Blocks(pygame.sprite.Sprite):
 		self.block_size2 = block_size2
 		self.rect = pygame.Rect(x2, y2, block_size, block_size2)
 		blocks_sprite.add(self)
+		self.texture = texture
 
 	def appear(self, screen):
 		pygame.draw.rect(screen, YELLOW, self.rect)
+		screen.blit(block_image, self.rect)
 		# pygame.draw.rect(screen, (0, 0, 0), (self.x2, self.y2, self.block_size, self.block_size2))
 
-	def updateblocks(x2, y2):
-		block1.x2
-		block1.y2
+	def updateblocks(self, x2, y2):
+		self.x2
+		self.y2
 
 
 
@@ -165,7 +171,6 @@ jump_height= 20
 y_velocity = jump_height 
 on_ground = True
 
-
 #Moving
 move_right= False
 move_left= False
@@ -180,17 +185,21 @@ player = Player(playerX, playerY, 10, 80, player_rect)
 player_sprite = pygame.sprite.Group(player)
 
 
+
+
+
+
 #BLOCK'S ATTRIBUTES VALUES
 
 #Blocks
 blocks_sprite = pygame.sprite.Group()
 
-block1 = Blocks(400, 350, block_size, block_size2)
-block2 = Blocks(550, 350, block_size, block_size2)
-block3 = Blocks(250, 350, block_size, block_size2)
-block4 = Blocks(10, 350, block_size, block_size2)
-block5 = Blocks(340, 310, block_size, block_size2)
-block6 = Blocks(460, 475, block_size, block_size2)
+block1 = Blocks(400, 350, block_size, block_size2, block_rect)
+block2 = Blocks(550, 350, block_size, block_size2, block_rect)
+block3 = Blocks(250, 350, block_size, block_size2, block_rect)
+block4 = Blocks(10, 350, block_size, block_size2, block_rect)
+block5 = Blocks(340, 310, block_size, block_size2, block_rect)
+block6 = Blocks(460, 475, block_size, block_size2, block_rect)
 
 #block_sprites = [block1, block2, block3, block4]
 blocks_sprite.add(block1, block2, block3, block4, block5)
