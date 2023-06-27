@@ -27,7 +27,7 @@ player_rect = player_image.get_rect()
 
 #Block image
 b_image = pygame.image.load("Brick_texture.png").convert_alpha()
-block_image = pygame.transform.smoothscale(b_image, (b_image.get_width(), b_image.get_height()))
+block_image = pygame.transform.smoothscale(b_image, (b_image.get_width() / 3.3, b_image.get_height() / 3.3))
 block_rect = block_image.get_rect()
 
 
