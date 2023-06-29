@@ -5,10 +5,10 @@ pygame.init()
 clock = pygame.time.Clock()
 
 YELLOW = (255, 255, 0) #horrific yellow for debugging rectangles
-playerX, playerY = (241, 445)
+playerX, playerY = (241, 420)
 block_size = 50
 block_size2 = 50
-min_y = 525  # Adjust the value according to your game's ground level
+min_y = 420  # Adjust the value according to your game's ground level
 
 #Background image
 background= pygame.image.load("Bkgrnd_game1.jpg")
@@ -152,12 +152,38 @@ class Blocks(pygame.sprite.Sprite):
 		self.y2
 
 
-
 #Enemies
 class Enemy():
 	def __init__(self):
 		pass
 
+
+#Exit
+
+#Exit door
+
+#exit_sprite = pygame.sprite.Group()
+#door = pygame.Rect(x3, y3, 50, 100)
+	#exit_sprite.add(door)
+
+
+#x3, y3 = 500, 250
+color = (100, 150, 200)
+exitlength = 50
+exitheight = 100
+class Exit(pygame.sprite.Sprite):
+	def __init__(self, x3, y3, exitlength, exitheight, color):
+		super().__init__()
+		self.x3 = x3
+		self.y3 = y3
+		self.exitlength = exitlength
+		self.exitheight = exitheight
+		self.color = color
+		self.rect = pygame.Rect(x3, y3, exitlength, exitheight)
+		#exit_sprite.add(self)
+
+	def appear(self, screen):
+		pygame.draw.rect(screen, color, self.rect)
 
 
 
@@ -183,7 +209,6 @@ player = Player(playerX, playerY, 10, 80, player_rect)
 
 #sprites = [player]
 player_sprite = pygame.sprite.Group(player)
-
 
 
 
@@ -215,6 +240,14 @@ if collisions:
 	print("We've got a collision!!")
 '''
 
+
+#Levels
+level = 0 
+
+#Exit Method
+
+door = Exit(500, 250, exitlength, exitheight, color)
+exit_sprite = pygame.sprite.Group(door)
 
 #Game loop
 while True:
@@ -280,7 +313,12 @@ while True:
 
 	# print(player.x, player.y)
 
-
+	#Exit collisions
+	exit_collisions = pygame.sprite.spritecollide(player, exit_sprite, False)
+	print("exit")
+	if exit_collisions:
+		level += 1
+		print(level)
 
 	player.animate()
 
@@ -294,7 +332,8 @@ while True:
 	for sprite in blocks_sprite:
 		sprite.appear(screen)
 
-
+	for sprite in exit_sprite:
+		sprite.appear(screen)
 
     #Updating the window
 	pygame.display.flip()
