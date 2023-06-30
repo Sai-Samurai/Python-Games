@@ -4,11 +4,11 @@ import pygame, sys
 pygame.init()
 clock = pygame.time.Clock()
 
-YELLOW = (255, 255, 0) #horrific yellow for debugging rectangles
+YELLOW = (255, 255, 0) #Horrific yellow for debugging rectangles
 playerX, playerY = (241, 420)
 block_size = 50
 block_size2 = 50
-min_y = 420  # Adjust the value according to your game's ground level
+min_y = 420  #Value according the game's ground level
 
 #Background image
 background= pygame.image.load("Bkgrnd_game1.jpg")
@@ -48,9 +48,15 @@ class Player(pygame.sprite.Sprite):
 		self.image = image
 		self.rect = pygame.Rect(x, y, length, height)
 
+	def hitbox(self, new_length, new_height):
+		self.length = new_length
+		self.height = new_height
+		self.rect.width = new_length
+		self.rect.height = new_height
+
 	def appear(self, screen):
-		pygame.draw.rect(screen, YELLOW, player_rect)
 		screen.blit(player_image, player_rect)
+		pygame.draw.rect(screen, YELLOW, self.rect)
 
 	def move_right(self):
 		self.x += speed_x
@@ -159,15 +165,6 @@ class Enemy():
 
 
 #Exit
-
-#Exit door
-
-#exit_sprite = pygame.sprite.Group()
-#door = pygame.Rect(x3, y3, 50, 100)
-	#exit_sprite.add(door)
-
-
-#x3, y3 = 500, 250
 color = (100, 150, 200)
 exitlength = 50
 exitheight = 100
@@ -201,16 +198,16 @@ on_ground = True
 move_right= False
 move_left= False
 move_up= False
-
 speed_x = 7.5
 
 #Player
 player = Player(playerX, playerY, 10, 80, player_rect)
-
-#sprites = [player]
 player_sprite = pygame.sprite.Group(player)
 
-
+#Hitbox
+new_length = 50
+new_height = 100
+player.hitbox(new_length, new_height)
 
 
 
@@ -315,16 +312,16 @@ while True:
 
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollide(player, exit_sprite, False)
-	print("exit")
+	
 	if exit_collisions:
+		print("exit")
 		level += 1
-		print(level)
+		print("Level ", level)
 
 	player.animate()
 
 	#Visuals
 	screen.blit(background, (0, 50))
-	#screen.blit(player_image, player_rect)
 
 	for sprite in player_sprite:
 		sprite.appear(screen)
