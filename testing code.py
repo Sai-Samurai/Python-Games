@@ -20,6 +20,9 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('TM Game')
 bg_color = pygame.Color('light grey')
 
+#Game Text Font
+game_font = pygame.font.Font("freesansbold.ttf", 32)
+
 #Player image
 p_image = pygame.image.load("player.png").convert_alpha()
 player_image = pygame.transform.smoothscale(p_image, (p_image.get_width() / 3.5, p_image.get_height() / 3.5))
@@ -238,6 +241,7 @@ if collisions:
 '''
 
 
+#EXIT ATTRIBUTES
 #Levels
 level = 0 
 
@@ -313,10 +317,23 @@ while True:
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollide(player, exit_sprite, False)
 	
+	'''
+	There seem to STILL be a problem with the player's hitbox, whether it is a 
+	collision with a block or a collision with the door. 
+	The issue is the following:
+	The collisions with the door seem to be off because the levels that getting 
+	printed only appear with the left of the player's hitbox, where it originally was
+	before having it moved.
+	The same is for the collisions with the blocks. The collisions with the blocks are
+	not complete, so it is hard to tell whether it actually is broken or not.
+	'''
+
 	if exit_collisions:
 		print("exit")
 		level += 1
 		print("Level ", level)
+
+	level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
 
 	player.animate()
 
@@ -331,6 +348,8 @@ while True:
 
 	for sprite in exit_sprite:
 		sprite.appear(screen)
+
+	screen.blit(level_text, ((screen_width * 9/10) - 100, screen_height - 500))
 
     #Updating the window
 	pygame.display.flip()
