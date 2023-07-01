@@ -55,8 +55,8 @@ class Player(pygame.sprite.Sprite):
 		self.rect.height = new_height
 
 	def appear(self, screen):
+		pygame.draw.rect(screen, YELLOW, (self.rect.x + 58, self.rect.y + 27, self.length, self.height))
 		screen.blit(player_image, player_rect)
-		pygame.draw.rect(screen, YELLOW, self.rect)
 
 	def move_right(self):
 		self.x += speed_x
@@ -205,8 +205,8 @@ player = Player(playerX, playerY, 10, 80, player_rect)
 player_sprite = pygame.sprite.Group(player)
 
 #Hitbox
-new_length = 50
-new_height = 100
+new_length = 80
+new_height = 93
 player.hitbox(new_length, new_height)
 
 
