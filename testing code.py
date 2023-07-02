@@ -58,7 +58,7 @@ class Player(pygame.sprite.Sprite):
 		self.rect.height = new_height
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, YELLOW, (self.rect.x + 58, self.rect.y + 27, self.length, self.height))
+		pygame.draw.rect(screen, YELLOW, self.rect)
 		screen.blit(player_image, player_rect)
 
 	def move_right(self):
@@ -91,6 +91,45 @@ class Player(pygame.sprite.Sprite):
 		player.y
 
 	def handle_collision(self, block):
+		if self.rect.colliderect(block.rect):
+			if self.rect.bottom > block.rect.top and self.rect.bottom <= block.rect.top:
+				self.rect.bottom = block.rect.top
+				self.y = max(self.y, min_y)
+				self.y = self.rect.y
+				self.stop_jumping()
+				y_velocity = 0
+				on_ground = True
+
+			elif self.rect.top < block.rect.bottom and self.rect.top >= block.rect.bottom:
+				self.rect.top = block.rect.bottom
+				self.y = self.rect.y
+				y_velocity = 0
+				on_ground = True
+
+			elif self.rect.right > block.rect.left and self.rect.right <= block.rect.left:
+				self.rect.right = block.rect.left
+				self.x = self.rect.x
+				if self.rect.bottom > block.rect.top and self.rect.top < block.rect.bottom:
+					self.rect.bottom = block.rect.top
+					self.y = self.rect.y
+					self.stop_jumping()
+					y_velocity = 0
+					on_ground = True
+
+			elif self.rect.left < block.rect.right and self.rect.left >= block.rect.right:
+				self.rect.left = block.rect.right
+				self.x = self.rect.x
+				if self.rect.bottom > block.rect.top and self.rect.top < block.rect.bottom:
+					self.rect.bottom = block.rect.top
+					self.y = self.rect.y
+					self.stop_jumping()
+					y_velocity = 0
+					on_ground = True
+
+			self.y_velocity += y_gravity
+			self.rect.y += self.y_velocity
+
+	'''
 		if self.rect.bottom > block.rect.top and self.rect.top < block.rect.top:
 			self.rect.bottom = block.rect.top
 			self.y = max(self.y, min_y)
@@ -100,12 +139,12 @@ class Player(pygame.sprite.Sprite):
 			on_ground = True
 			print('bottom')
 
-		elif self.rect.top < block.rect.bottom and self.rect.bottom > block.rect.bottom:
+		elif self.rect.top < block.rect.bottom and self.rect.y > block.rect.y:
 			self.rect.top = block.rect.bottom
+			self.rect.bottom = min(self.y, min_y)
 			self.y = self.rect.y
-			y_velocity = 0
-			self.y += y_gravity
-			print('top')
+			self.y_velocity = 0
+			print("top")
 
 		if self.rect.right > block.rect.left and self.rect.left < block.rect.left:
 			self.rect.right = block.rect.left
@@ -134,7 +173,7 @@ class Player(pygame.sprite.Sprite):
 				self.y = self.rect.y
 				y_velocity = 0
 			print('left')
-
+		'''
 
 
 
@@ -219,15 +258,15 @@ player.hitbox(new_length, new_height)
 #Blocks
 blocks_sprite = pygame.sprite.Group()
 
-block1 = Blocks(400, 350, block_size, block_size2, block_rect)
-block2 = Blocks(550, 350, block_size, block_size2, block_rect)
-block3 = Blocks(250, 350, block_size, block_size2, block_rect)
-block4 = Blocks(10, 350, block_size, block_size2, block_rect)
-block5 = Blocks(340, 310, block_size, block_size2, block_rect)
+#block1 = Blocks(400, 350, block_size, block_size2, block_rect)
+#block2 = Blocks(550, 350, block_size, block_size2, block_rect)
+#block3 = Blocks(250, 350, block_size, block_size2, block_rect)
+#block4 = Blocks(10, 350, block_size, block_size2, block_rect)
+#block5 = Blocks(340, 310, block_size, block_size2, block_rect)
 block6 = Blocks(460, 475, block_size, block_size2, block_rect)
 
-#block_sprites = [block1, block2, block3, block4]
-blocks_sprite.add(block1, block2, block3, block4, block5)
+#missing block1
+blocks_sprite.add(block6)#, block2, block3, block4, block5)
 
 
 for block in blocks_sprite:
@@ -342,6 +381,8 @@ while True:
 
 	for sprite in player_sprite:
 		sprite.appear(screen)
+
+	print(player.x, player.y)
 
 	for sprite in blocks_sprite:
 		sprite.appear(screen)
