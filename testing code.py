@@ -92,19 +92,39 @@ class Player(pygame.sprite.Sprite):
 
 	def handle_collision(self, block):
 		if self.rect.colliderect(block.rect):
-			if self.rect.bottom > block.rect.top and self.rect.bottom <= block.rect.top:
-				self.rect.bottom = block.rect.top
-				self.y = max(self.y, min_y)
-				self.y = self.rect.y
-				self.stop_jumping()
-				y_velocity = 0
-				on_ground = True
 
-			elif self.rect.top < block.rect.bottom and self.rect.top >= block.rect.bottom:
+			
+			if self.rect.bottom > block.rect.top and self.rect.top <= block.rect.bottom:
+				self.rect.bottom = block.rect.top
+				#self.y = max(self.y, min_y)
+				#self.y = self.rect.y
+				#self.stop_jumping()
+				self.y_velocity += y_gravity
+				#on_ground = False
+				if self.rect.right == block.rect.left and self.rect.left <= block.rect.left:
+					self.y = self.rect.y
+					self.stop_jumping()
+				else:
+					self.y = self.rect.y
+					self.rect.y += self.y_velocity
+					self.y_velocity = y_gravity
+					self.y = max(self.y, min_y)
+					on_ground = True
+
+			elif self.rect.top < block.rect.bottom and self.rect.bottom >= block.rect.bottom:
 				self.rect.top = block.rect.bottom
 				self.y = self.rect.y
-				y_velocity = 0
+				self.y_velocity = 0
+				self.stop_jumping() == False
 				on_ground = True
+				if self.rect.right == block.rect.left and self.rect.left <= block.rect.left:
+					self.y = min(self.y, block.rect.bottom)
+					self.y_velocity = - y_gravity
+					jumping = False
+					self.y = self.rect.y
+				else:
+					self.stop_jumping()
+
 
 			elif self.rect.right > block.rect.left and self.rect.right <= block.rect.left:
 				self.rect.right = block.rect.left
@@ -128,8 +148,9 @@ class Player(pygame.sprite.Sprite):
 
 			self.y_velocity += y_gravity
 			self.rect.y += self.y_velocity
+			
 
-	'''
+		'''
 		if self.rect.bottom > block.rect.top and self.rect.top < block.rect.top:
 			self.rect.bottom = block.rect.top
 			self.y = max(self.y, min_y)
@@ -173,9 +194,7 @@ class Player(pygame.sprite.Sprite):
 				self.y = self.rect.y
 				y_velocity = 0
 			print('left')
-		'''
-
-
+			'''
 
 
 #Blocks
@@ -261,12 +280,12 @@ blocks_sprite = pygame.sprite.Group()
 #block1 = Blocks(400, 350, block_size, block_size2, block_rect)
 #block2 = Blocks(550, 350, block_size, block_size2, block_rect)
 #block3 = Blocks(250, 350, block_size, block_size2, block_rect)
-#block4 = Blocks(10, 350, block_size, block_size2, block_rect)
+block4 = Blocks(10, 350, block_size, block_size2, block_rect)
 #block5 = Blocks(340, 310, block_size, block_size2, block_rect)
 block6 = Blocks(460, 475, block_size, block_size2, block_rect)
 
-#missing block1
-blocks_sprite.add(block6)#, block2, block3, block4, block5)
+
+blocks_sprite.add(block4, block6)#, block2, block3, block1, block5)
 
 
 for block in blocks_sprite:
@@ -323,7 +342,8 @@ while True:
 	player.rect.x = player.x
 	player.rect.y = player.y
 
-
+#Commenting these collisions in order to fix it in the Player class
+'''
 	collisions = pygame.sprite.spritecollide(player, blocks_sprite, False)
 	print(collisions)
 	if collisions:
@@ -340,7 +360,7 @@ while True:
 	if not on_ground:
 		player.rect.y -= y_gravity
 		y_velocity -= y_gravity
-                    
+'''
 
 				#if player.rect.right >= block.rect.left:
 				#	player.rect.right = block.rect.left
@@ -351,11 +371,9 @@ while True:
 				#	player.stop_jumping()
 				#	print('left')
 
-	# print(player.x, player.y)
-
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollide(player, exit_sprite, False)
-	
+
 	'''
 	There seem to STILL be a problem with the player's hitbox, whether it is a 
 	collision with a block or a collision with the door. 
@@ -379,10 +397,22 @@ while True:
 	#Visuals
 	screen.blit(background, (0, 50))
 
+
+	#Debugging the player's y coordinate
+	'''
+	The player only realizes that he is under the ground (y level above 420)
+	only after 20 pixels before coming back to the ground.
+	'''
+	print(player.x, player.y)
+	if player.y >= 420:
+		player.y = 420
+	else:
+		print("Player going down!!!")
+
+
 	for sprite in player_sprite:
 		sprite.appear(screen)
 
-	print(player.x, player.y)
 
 	for sprite in blocks_sprite:
 		sprite.appear(screen)
@@ -392,6 +422,6 @@ while True:
 
 	screen.blit(level_text, ((screen_width * 9/10) - 100, screen_height - 500))
 
-    #Updating the window
+	#Updating the window
 	pygame.display.flip()
 	clock.tick(60)
