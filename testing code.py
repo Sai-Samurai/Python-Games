@@ -94,57 +94,49 @@ class Player(pygame.sprite.Sprite):
 		if self.rect.colliderect(block.rect):
 
 			
-			if self.rect.bottom > block.rect.top and self.rect.top <= block.rect.bottom:
-				self.rect.bottom = block.rect.top
-				#self.y = max(self.y, min_y)
-				#self.y = self.rect.y
-				#self.stop_jumping()
-				self.y_velocity += y_gravity
-				#on_ground = False
-				if self.rect.right == block.rect.left and self.rect.left <= block.rect.left:
-					self.y = self.rect.y
-					self.stop_jumping()
-				else:
-					self.y = self.rect.y
-					self.rect.y += self.y_velocity
-					self.y_velocity = y_gravity
-					self.y = max(self.y, min_y)
-					on_ground = True
+			'''if self.rect.bottom > block.rect.top and self.rect.top <= block.rect.top:
+													self.rect.bottom = block.rect.top
+													#self.y = max(self.y, min_y)
+													#self.y = self.rect.y
+													#self.stop_jumping()
+													self.y_velocity += y_gravity
+													#on_ground = False
+													if self.rect.right >= block.rect.left and self.rect.left <= block.rect.left:
+														self.y = self.rect.y
+														self.stop_jumping()
+													else:
+														self.y = self.rect.y
+														self.rect.y += self.y_velocity
+														self.y_velocity = y_gravity
+														self.y = max(self.y, min_y)
+														on_ground = True
+									
+												elif self.rect.top < block.rect.bottom and self.rect.bottom >= block.rect.bottom:
+													self.rect.top = block.rect.bottom
+													self.y = self.rect.y
+													self.y_velocity = 0
+													self.stop_jumping() == False
+													on_ground = True
+													if self.rect.right == block.rect.left and self.rect.left <= block.rect.left:
+														self.y = min(self.y, block.rect.bottom)
+														self.y_velocity = - y_gravity
+														jumping = False
+														self.y = self.rect.y
+													else:
+														self.stop_jumping()'''
 
-			elif self.rect.top < block.rect.bottom and self.rect.bottom >= block.rect.bottom:
-				self.rect.top = block.rect.bottom
-				self.y = self.rect.y
-				self.y_velocity = 0
-				self.stop_jumping() == False
-				on_ground = True
-				if self.rect.right == block.rect.left and self.rect.left <= block.rect.left:
-					self.y = min(self.y, block.rect.bottom)
-					self.y_velocity = - y_gravity
-					jumping = False
-					self.y = self.rect.y
-				else:
-					self.stop_jumping()
 
-
-			elif self.rect.right > block.rect.left and self.rect.right <= block.rect.left:
+			if self.rect.right > block.rect.left and self.rect.left < block.rect.left:
 				self.rect.right = block.rect.left
 				self.x = self.rect.x
-				if self.rect.bottom > block.rect.top and self.rect.top < block.rect.bottom:
-					self.rect.bottom = block.rect.top
-					self.y = self.rect.y
-					self.stop_jumping()
-					y_velocity = 0
-					on_ground = True
+				self.y_velocity = min(self.y_velocity, 0)
 
-			elif self.rect.left < block.rect.right and self.rect.left >= block.rect.right:
+
+			elif self.rect.left < block.rect.right and self.rect.right > block.rect.right:
 				self.rect.left = block.rect.right
 				self.x = self.rect.x
-				if self.rect.bottom > block.rect.top and self.rect.top < block.rect.bottom:
-					self.rect.bottom = block.rect.top
-					self.y = self.rect.y
-					self.stop_jumping()
-					y_velocity = 0
-					on_ground = True
+				self.y_velocity = min(self.y_velocity, 0)
+
 
 			self.y_velocity += y_gravity
 			self.rect.y += self.y_velocity
@@ -342,8 +334,11 @@ while True:
 	player.rect.x = player.x
 	player.rect.y = player.y
 
-#Commenting these collisions in order to fix it in the Player class
-'''
+	#Commenting these collisions in order to fix it in the Player class
+	
+	player.handle_collision(block)
+
+	'''
 	collisions = pygame.sprite.spritecollide(player, blocks_sprite, False)
 	print(collisions)
 	if collisions:
@@ -360,16 +355,16 @@ while True:
 	if not on_ground:
 		player.rect.y -= y_gravity
 		y_velocity -= y_gravity
-'''
+	'''
 
-				#if player.rect.right >= block.rect.left:
-				#	player.rect.right = block.rect.left
-				#	player.stop_jumping()
-				#	print('right')
-				#elif player.rect.left <= block.rect.right:
-				#	player.rect.left = block.rect.right
-				#	player.stop_jumping()
-				#	print('left')
+	#if player.rect.right >= block.rect.left:
+	#	player.rect.right = block.rect.left
+	#	player.stop_jumping()
+	#	print('right')
+	#elif player.rect.left <= block.rect.right:
+	#	player.rect.left = block.rect.right
+	#	player.stop_jumping()
+	#	print('left')
 
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollide(player, exit_sprite, False)
