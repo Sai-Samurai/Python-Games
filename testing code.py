@@ -57,6 +57,17 @@ class Player(pygame.sprite.Sprite):
 		self.rect.width = new_length
 		self.rect.height = new_height
 
+		'''
+		There seem to STILL be a problem with the player's hitbox, whether it is a 
+		collision with a block or a collision with the door. 
+		The issue is the following:
+		The collisions with the door seem to be off because the levels that getting 
+		printed only appear with the left of the player's hitbox, where it originally was
+		before having it moved.
+		The same is for the collisions with the blocks. The collisions with the blocks are
+		not complete, so it is hard to tell whether it actually is broken or not.
+		'''
+
 	def appear(self, screen):
 		pygame.draw.rect(screen, YELLOW, self.rect)
 		screen.blit(player_image, player_rect)
@@ -91,53 +102,23 @@ class Player(pygame.sprite.Sprite):
 		player.y
 
 	def handle_collision(self, block):
-		if self.rect.colliderect(block.rect):
-
-			
-			'''if self.rect.bottom > block.rect.top and self.rect.top <= block.rect.top:
-													self.rect.bottom = block.rect.top
-													#self.y = max(self.y, min_y)
-													#self.y = self.rect.y
-													#self.stop_jumping()
-													self.y_velocity += y_gravity
-													#on_ground = False
-													if self.rect.right >= block.rect.left and self.rect.left <= block.rect.left:
-														self.y = self.rect.y
-														self.stop_jumping()
-													else:
-														self.y = self.rect.y
-														self.rect.y += self.y_velocity
-														self.y_velocity = y_gravity
-														self.y = max(self.y, min_y)
-														on_ground = True
-									
-												elif self.rect.top < block.rect.bottom and self.rect.bottom >= block.rect.bottom:
-													self.rect.top = block.rect.bottom
-													self.y = self.rect.y
-													self.y_velocity = 0
-													self.stop_jumping() == False
-													on_ground = True
-													if self.rect.right == block.rect.left and self.rect.left <= block.rect.left:
-														self.y = min(self.y, block.rect.bottom)
-														self.y_velocity = - y_gravity
-														jumping = False
-														self.y = self.rect.y
-													else:
-														self.stop_jumping()'''
-
-
-			if self.rect.right > block.rect.left and self.rect.left < block.rect.left:
+		collide_tolerence = 10
+		if pygame.sprite.spritecollide(self, blocks_sprite, False):
+			if abs(self.rect.right - block.rect.left) < collide_tolerence:
 				self.rect.right = block.rect.left
-				self.x = self.rect.x
 				self.y_velocity = min(self.y_velocity, 0)
-
-
-			elif self.rect.left < block.rect.right and self.rect.right > block.rect.right:
+				#y_velocity += y_gravity
+			elif abs(self.rect.left - block.rect.right) < collide_tolerence:
 				self.rect.left = block.rect.right
-				self.x = self.rect.x
 				self.y_velocity = min(self.y_velocity, 0)
-
-
+				#y_velocity += y_gravity
+			elif abs(block.rect.bottom - self.rect.top) < collide_tolerence:
+				self.rect.top = block.rect.bottom
+				self.y_velocity = -y_gravity
+				jumping = False
+			elif abs(block.rect.top - self.rect.bottom) < collide_tolerence:  
+				if self.y_velocity < 0:
+					self.y_velocity = 0  # Reset y_velocity to prevent continuous jumping
 			self.y_velocity += y_gravity
 			self.rect.y += self.y_velocity
 			
@@ -300,16 +281,21 @@ level = 0
 door = Exit(500, 250, exitlength, exitheight, color)
 exit_sprite = pygame.sprite.Group(door)
 
+
+game_running = True
 #Game loop
-while True:
+while game_running:
 
 	pygame.display.flip()
 
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
-			pygame.quit()
-			sys.exit()
+			game_running = False
+		elif event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				game_running = False
+
 
 		if event.type == pygame.KEYDOWN:
 
@@ -357,28 +343,9 @@ while True:
 		y_velocity -= y_gravity
 	'''
 
-	#if player.rect.right >= block.rect.left:
-	#	player.rect.right = block.rect.left
-	#	player.stop_jumping()
-	#	print('right')
-	#elif player.rect.left <= block.rect.right:
-	#	player.rect.left = block.rect.right
-	#	player.stop_jumping()
-	#	print('left')
 
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollide(player, exit_sprite, False)
-
-	'''
-	There seem to STILL be a problem with the player's hitbox, whether it is a 
-	collision with a block or a collision with the door. 
-	The issue is the following:
-	The collisions with the door seem to be off because the levels that getting 
-	printed only appear with the left of the player's hitbox, where it originally was
-	before having it moved.
-	The same is for the collisions with the blocks. The collisions with the blocks are
-	not complete, so it is hard to tell whether it actually is broken or not.
-	'''
 
 	if exit_collisions:
 		print("exit")
