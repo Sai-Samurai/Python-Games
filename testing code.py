@@ -338,6 +338,7 @@ while game_running:
 
 
 
+
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollide(player, exit_sprite, False)
 
