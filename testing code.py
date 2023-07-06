@@ -5,10 +5,10 @@ pygame.init()
 clock = pygame.time.Clock()
 
 YELLOW = (255, 255, 0) #Horrific yellow for debugging rectangles
-playerX, playerY = (241, 420)
+playerX, playerY = (241, 430)
 block_size = 50
 block_size2 = 50
-min_y = 420  #Value according the game's ground level
+min_y = 430  #Value according the game's ground level
 
 #Background image
 background= pygame.image.load("Bkgrnd_game1.jpg")
@@ -51,6 +51,7 @@ class Player(pygame.sprite.Sprite):
 		self.image = image
 		self.rect = pygame.Rect(x, y, length, height)
 
+
 	def hitbox(self, new_length, new_height):
 		self.length = new_length
 		self.height = new_height
@@ -69,7 +70,7 @@ class Player(pygame.sprite.Sprite):
 		'''
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, YELLOW, self.rect)
+		pygame.draw.rect(screen, YELLOW, self)
 		screen.blit(player_image, player_rect)
 
 	def move_right(self):
@@ -101,27 +102,7 @@ class Player(pygame.sprite.Sprite):
 		player.x
 		player.y
 
-	def handle_collision(self, block):
-		collide_tolerence = 10
-		if pygame.sprite.spritecollide(self, blocks_sprite, False):
-			if abs(self.rect.right - block.rect.left) < collide_tolerence:
-				self.rect.right = block.rect.left
-				self.y_velocity = min(self.y_velocity, 0)
-				#y_velocity += y_gravity
-			elif abs(self.rect.left - block.rect.right) < collide_tolerence:
-				self.rect.left = block.rect.right
-				self.y_velocity = min(self.y_velocity, 0)
-				#y_velocity += y_gravity
-			elif abs(block.rect.bottom - self.rect.top) < collide_tolerence:
-				self.rect.top = block.rect.bottom
-				self.y_velocity = -y_gravity
-				jumping = False
-			elif abs(block.rect.top - self.rect.bottom) < collide_tolerence:  
-				if self.y_velocity < 0:
-					self.y_velocity = 0  # Reset y_velocity to prevent continuous jumping
-			self.y_velocity += y_gravity
-			self.rect.y += self.y_velocity
-			
+	#def handle_collision(self, block):
 
 		'''
 		if self.rect.bottom > block.rect.top and self.rect.top < block.rect.top:
@@ -167,7 +148,7 @@ class Player(pygame.sprite.Sprite):
 				self.y = self.rect.y
 				y_velocity = 0
 			print('left')
-			'''
+		'''
 
 
 #Blocks
@@ -241,7 +222,7 @@ player_sprite = pygame.sprite.Group(player)
 #Hitbox
 new_length = 80
 new_height = 93
-player.hitbox(new_length, new_height)
+#player.hitbox(new_length, new_height)
 
 
 
@@ -257,7 +238,6 @@ block4 = Blocks(10, 350, block_size, block_size2, block_rect)
 #block5 = Blocks(340, 310, block_size, block_size2, block_rect)
 block6 = Blocks(460, 475, block_size, block_size2, block_rect)
 
-
 blocks_sprite.add(block4, block6)#, block2, block3, block1, block5)
 
 
@@ -265,11 +245,6 @@ for block in blocks_sprite:
 	block.rect.x = block.x2
 	block.rect.y = block.y2
 
-'''
-collisions = pygame.sprite.groupcollide(player_sprite, blocks_sprite, False, False)
-if collisions:
-	print("We've got a collision!!")
-'''
 
 
 #EXIT ATTRIBUTES
@@ -322,7 +297,7 @@ while game_running:
 
 	#Commenting these collisions in order to fix it in the Player class
 	
-	player.handle_collision(block)
+	#player.handle_collision(block)
 
 	'''
 	collisions = pygame.sprite.spritecollide(player, blocks_sprite, False)
@@ -342,6 +317,17 @@ while game_running:
 		player.rect.y -= y_gravity
 		y_velocity -= y_gravity
 	'''
+	if pygame.sprite.spritecollideany(player, blocks_sprite) is not (None):
+		if pygame.sprite.spritecollide(player, blocks_sprite, False):			
+			if player.rect.right > block.rect.left and player.rect.left < block.rect.left:
+				player.rect.right = block.rect.left
+				print("right")
+			if player.rect.left < block.rect.right and player.rect.right > block.rect.right:
+				player.rect.left = block.rect.right
+				print("left")
+
+
+
 
 
 	#Exit collisions
@@ -366,15 +352,15 @@ while game_running:
 	only after 20 pixels before coming back to the ground.
 	'''
 	print(player.x, player.y)
-	if player.y >= 420:
-		player.y = 420
+
+	if player.y >= 430:
+		player.y = 430
 	else:
 		print("Player going down!!!")
 
 
 	for sprite in player_sprite:
 		sprite.appear(screen)
-
 
 	for sprite in blocks_sprite:
 		sprite.appear(screen)
