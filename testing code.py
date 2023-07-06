@@ -51,13 +51,6 @@ class Player(pygame.sprite.Sprite):
 		self.image = image
 		self.rect = pygame.Rect(x, y, length, height)
 
-
-	def hitbox(self, new_length, new_height):
-		self.length = new_length
-		self.height = new_height
-		self.rect.width = new_length
-		self.rect.height = new_height
-
 		'''
 		There seem to STILL be a problem with the player's hitbox, whether it is a 
 		collision with a block or a collision with the door. 
@@ -216,13 +209,9 @@ move_up= False
 speed_x = 7.5
 
 #Player
-player = Player(playerX, playerY, 10, 80, player_rect)
+player = Player(playerX, playerY, 80, 93, player_rect)
 player_sprite = pygame.sprite.Group(player)
 
-#Hitbox
-new_length = 80
-new_height = 93
-#player.hitbox(new_length, new_height)
 
 
 
@@ -319,12 +308,31 @@ while game_running:
 	'''
 	if pygame.sprite.spritecollideany(player, blocks_sprite) is not (None):
 		if pygame.sprite.spritecollide(player, blocks_sprite, False):			
-			if player.rect.right > block.rect.left and player.rect.left < block.rect.left:
+			if player.rect.bottom > block.rect.top :
+				player.rect.bottom = block.rect.top
+				player.y = player.rect.y
+				player.y_velocity = 0
+				player.y = min(player.y, 430)
+				print("bottom")
+			elif player.rect.top < block.rect.bottom :
+				player.rect.top = block.rect.bottom
+				player.y = player.rect.y
+				y_velocity = - y_gravity
+				jumping = False
+				print("top")
+			elif player.rect.right > block.rect.left and player.rect.left < block.rect.left:
 				player.rect.right = block.rect.left
+				player.x = player.rect.x
 				print("right")
-			if player.rect.left < block.rect.right and player.rect.right > block.rect.right:
+			elif player.rect.left < block.rect.right and player.rect.right > block.rect.right:
 				player.rect.left = block.rect.right
+				player.x = player.rect.x
 				print("left")
+
+
+
+
+
 
 
 
