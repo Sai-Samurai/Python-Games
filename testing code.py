@@ -5,20 +5,33 @@ pygame.init()
 clock = pygame.time.Clock()
 
 YELLOW = (255, 255, 0) #Horrific yellow for debugging rectangles
-playerX, playerY = (241, 430)
+playerX, playerY = (241, 425)
 block_size = 50
 block_size2 = 50
-min_y = 430  #Value according the game's ground level
+min_y = 425  #Value according the game's ground level
+
+#Making anything dissapear
+transapency = (0, 0, 0, 0)
 
 #Background image
 background= pygame.image.load("Bkgrnd_game1.jpg")
-backgroung_width, background_height = background.get_size()
+bg= background.get_rect()
+background_width, background_height = background.get_size()
+
+#Dungeon image
+dungeon= pygame.image.load("bg2.png")
+dungeon_width, dungeon_height = dungeon.get_size()
+
 #Screen appearance
 screen_width = backgroung_width
 screen_height = background_height
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('TM Game')
 bg_color = pygame.Color('light grey')
+
+#New screen appearance
+dngn_screen_width = dungeon_width * 2 - 55
+dngn_screen_height = dungeon_height * 3 - 75
 
 #Game Text Font
 game_font = pygame.font.Font("freesansbold.ttf", 32)
@@ -193,7 +206,6 @@ class Exit(pygame.sprite.Sprite):
 
 
 
-
 #PLAYER'S ATTRIBUTES VALUES
 
 #Jumping
@@ -242,8 +254,11 @@ level = 0
 
 #Exit Method
 
-door = Exit(500, 250, exitlength, exitheight, color)
-exit_sprite = pygame.sprite.Group(door)
+door0 = Exit(500, 250, exitlength, exitheight, color)
+door1 = Exit(650, 400, exitlength, exitheight, color)
+door2 = Exit(100, 400, exitlength, exitheight, color)
+
+exit_sprite = pygame.sprite.Group(door0)
 
 
 game_running = True
@@ -312,7 +327,7 @@ while game_running:
 				player.rect.bottom = block.rect.top
 				player.y = player.rect.y
 				player.y_velocity = 0
-				player.y = min(player.y, 430)
+				player.y = min(player.y, 425)
 				print("bottom")
 			elif player.rect.top < block.rect.bottom :
 				player.rect.top = block.rect.bottom
@@ -330,43 +345,89 @@ while game_running:
 				print("left")
 
 
-
-
-
-
-
-
-
-
-
-	#Exit collisions
-	exit_collisions = pygame.sprite.spritecollide(player, exit_sprite, False)
-
-	if exit_collisions:
-		print("exit")
-		level += 1
-		print("Level ", level)
-
-	level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
-
 	player.animate()
 
 	#Visuals
-	screen.blit(background, (0, 50))
+	screen.blit(background, (0, 0))
+
+	#Exit collisions
+	exit_collisions = pygame.sprite.spritecollideany(player, exit_sprite) is not (None)
+
+	if exit_collisions:
+		dngn_screen = pygame.display.set_mode((dngn_screen_width, dngn_screen_height))
+		bg.background.fill(transapency)
+		if pygame.sprite.spritecollide(player, exit_sprite, True):
+			screen.blit(dungeon, (0, 0))
+			level = level +1
+
+			if level == 1:
+				player.x, player.y = 241, 425
+				pygame.sprite.Sprite.add(door1, exit_sprite)
+				level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
+
+				for sprite in player_sprite:
+					sprite.appear(dngn_screen)
+				for sprite in blocks_sprite:
+					sprite.appear(dngn_screen)
+				for sprite in exit_sprite:
+					sprite.appear(dngn_screen)
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	'''if exit_collisions:
+						screen.blit(dungeon, (0, 0))
+						level = level +1
+						player.x, player.y = 241, 430
+						level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
+						
+						for sprite in player_sprite:
+							sprite.appear(screen)
+			
+						for sprite in blocks_sprite:
+							sprite.appear(screen)
+			
+			
+						if level == 1:
+							screen.blit(level_text, ((screen_width * 9/10) - 100, screen_height - 500))
+			
+			
+							for sprite in exit_sprite:
+								sprite.appear(screen)
+			
+						if level == 2:
+							screen.blit(level_text, ((screen_width * 9/10) - 100, screen_height - 500))
+			
+							for sprite in exit_sprite:
+								sprite.appear(screen)'''
 
 
 	#Debugging the player's y coordinate
 	'''
-	The player only realizes that he is under the ground (y level above 420)
+	The player only realizes that he is under the ground (y level above 425)
 	only after 20 pixels before coming back to the ground.
 	'''
 	print(player.x, player.y)
 
-	if player.y >= 430:
-		player.y = 430
+	if player.y >= 425:
+		player.y = 425
 	else:
 		print("Player going down!!!")
-
+		print(screen_width, screen_height)
+	
 
 	for sprite in player_sprite:
 		sprite.appear(screen)
@@ -377,7 +438,6 @@ while game_running:
 	for sprite in exit_sprite:
 		sprite.appear(screen)
 
-	screen.blit(level_text, ((screen_width * 9/10) - 100, screen_height - 500))
 
 	#Updating the window
 	pygame.display.flip()
