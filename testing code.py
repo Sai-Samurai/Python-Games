@@ -15,7 +15,6 @@ transapency = (0, 0, 0, 0)
 
 #Background image
 background= pygame.image.load("Bkgrnd_game1.jpg")
-bg= background.get_rect()
 background_width, background_height = background.get_size()
 
 #Dungeon image
@@ -23,15 +22,15 @@ dungeon= pygame.image.load("bg2.png")
 dungeon_width, dungeon_height = dungeon.get_size()
 
 #Screen appearance
-screen_width = backgroung_width
+screen_width = background_width
 screen_height = background_height
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('TM Game')
 bg_color = pygame.Color('light grey')
 
 #New screen appearance
-dngn_screen_width = dungeon_width * 2 - 55
-dngn_screen_height = dungeon_height * 3 - 75
+dngn_screen_width = dungeon_width - 535
+dngn_screen_height = dungeon_height
 
 #Game Text Font
 game_font = pygame.font.Font("freesansbold.ttf", 32)
@@ -348,14 +347,24 @@ while game_running:
 	player.animate()
 
 	#Visuals
-	screen.blit(background, (0, 0))
+	#screen.blit(background, (0, 0))
 
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollideany(player, exit_sprite) is not (None)
 
+	if level == 0:
+		screen.blit(background, (0, 0))
+		for sprite in player_sprite:
+			sprite.appear(screen)
+		for sprite in blocks_sprite:
+			sprite.appear(screen)
+		for sprite in exit_sprite:
+			sprite.appear(screen)
+
 	if exit_collisions:
+		screen.blit(background, (- 80000, 0))
 		dngn_screen = pygame.display.set_mode((dngn_screen_width, dngn_screen_height))
-		bg.background.fill(transapency)
+
 		if pygame.sprite.spritecollide(player, exit_sprite, True):
 			screen.blit(dungeon, (0, 0))
 			level = level +1
@@ -372,8 +381,6 @@ while game_running:
 				for sprite in exit_sprite:
 					sprite.appear(dngn_screen)
 
-	
-	
 
 
 
@@ -428,7 +435,7 @@ while game_running:
 		print("Player going down!!!")
 		print(screen_width, screen_height)
 	
-
+	'''
 	for sprite in player_sprite:
 		sprite.appear(screen)
 
@@ -437,8 +444,7 @@ while game_running:
 
 	for sprite in exit_sprite:
 		sprite.appear(screen)
-
-
+	'''
 	#Updating the window
 	pygame.display.flip()
 	clock.tick(60)
