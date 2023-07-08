@@ -26,7 +26,7 @@ screen_width = background_width
 screen_height = background_height
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('TM Game')
-bg_color = pygame.Color('light grey')
+bg_color = pygame.Color('black')
 
 #New screen appearance
 dngn_screen_width = dungeon_width - 535
@@ -380,10 +380,10 @@ while game_running:
 
 
 
-	if level == 1:
-		pygame.display.flip()
+	elif level == 1:
+		screen.fill(bg_color)
 		pygame.sprite.Sprite.add(door1, exit_sprite)
-		#screen.blit(dngn_screen, (0, 0))
+		screen.blit(dungeon, (0, 0))
 		for sprite in player_sprite:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
@@ -391,7 +391,9 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 
-	if level > 1: 						#Or we can manually say: if level != 0 and level != 1
+	elif level > 1: 												#Or we can manually say: if level != 0 and level != 1
+		screen.fill(bg_color)
+		screen.blit(dngn_screen, (0, 0))						
 		player.x, player.y = 500, 200
 		for sprite in player_sprite:
 			sprite.appear(screen)
