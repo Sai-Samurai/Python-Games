@@ -103,9 +103,9 @@ class Player(pygame.sprite.Sprite):
 		player_rect.x = self.x
 		player_rect.y = self.y
 
-	def updateplayer(x, y):
-		player.x
-		player.y
+	def updateplayer(self, x, y):
+		self.x
+		self.y
 
 	#def handle_collision(self, block):
 
@@ -352,6 +352,22 @@ while game_running:
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollideany(player, exit_sprite) is not (None)
 
+	
+	if exit_collisions:
+		screen.blit(background, (- 80000, 0))
+		dngn_screen = pygame.display.set_mode((dngn_screen_width, dngn_screen_height))
+
+		if pygame.sprite.spritecollide(player, exit_sprite, True):
+			screen.blit(dungeon, (0, 0))
+			level = level +1
+			#player.animate()
+			#player.updateplayer()
+
+
+
+
+
+
 	if level == 0:
 		screen.blit(background, (0, 0))
 		for sprite in player_sprite:
@@ -361,27 +377,32 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 
-	if exit_collisions:
-		screen.blit(background, (- 80000, 0))
-		dngn_screen = pygame.display.set_mode((dngn_screen_width, dngn_screen_height))
-
-		if pygame.sprite.spritecollide(player, exit_sprite, True):
-			screen.blit(dungeon, (0, 0))
-			level = level +1
-
-			if level == 1:
-				player.x, player.y = 241, 425
-				pygame.sprite.Sprite.add(door1, exit_sprite)
-				level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
-
-				for sprite in player_sprite:
-					sprite.appear(dngn_screen)
-				for sprite in blocks_sprite:
-					sprite.appear(dngn_screen)
-				for sprite in exit_sprite:
-					sprite.appear(dngn_screen)
 
 
+
+	if level == 1:
+		pygame.display.flip()
+		pygame.sprite.Sprite.add(door1, exit_sprite)
+		#screen.blit(dngn_screen, (0, 0))
+		for sprite in player_sprite:
+			sprite.appear(screen)
+		for sprite in blocks_sprite:
+			sprite.appear(screen)
+		for sprite in exit_sprite:
+			sprite.appear(screen)
+
+	if level > 1: 						#Or we can manually say: if level != 0 and level != 1
+		player.x, player.y = 500, 200
+		for sprite in player_sprite:
+			sprite.appear(screen)
+
+
+
+				
+
+	#Text not displaying
+	level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
+	print(level)
 
 
 
@@ -445,6 +466,8 @@ while game_running:
 	for sprite in exit_sprite:
 		sprite.appear(screen)
 	'''
+
+
 	#Updating the window
 	pygame.display.flip()
 	clock.tick(60)
