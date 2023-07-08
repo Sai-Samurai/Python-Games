@@ -14,11 +14,11 @@ min_y = 425  #Value according the game's ground level
 transapency = (0, 0, 0, 0)
 
 #Background image
-background= pygame.image.load("Bkgrnd_game1.jpg")
+background = pygame.image.load("Bkgrnd_game1.jpg")
 background_width, background_height = background.get_size()
 
 #Dungeon image
-dungeon= pygame.image.load("bg2.png")
+dungeon = pygame.image.load("bg2.png")
 dungeon_width, dungeon_height = dungeon.get_size()
 
 #Screen appearance
@@ -31,6 +31,8 @@ bg_color = pygame.Color('black')
 #New screen appearance
 dngn_screen_width = dungeon_width - 535
 dngn_screen_height = dungeon_height
+dungeon_screen = pygame.Surface((dngn_screen_width, dngn_screen_height))
+dungeon_screen.blit(dungeon, (0, 0))
 
 #Game Text Font
 game_font = pygame.font.Font("freesansbold.ttf", 32)
@@ -355,7 +357,7 @@ while game_running:
 	
 	if exit_collisions:
 		screen.blit(background, (- 80000, 0))
-		dngn_screen = pygame.display.set_mode((dngn_screen_width, dngn_screen_height))
+		
 
 		if pygame.sprite.spritecollide(player, exit_sprite, True):
 			screen.blit(dungeon, (0, 0))
@@ -383,7 +385,7 @@ while game_running:
 	elif level == 1:
 		screen.fill(bg_color)
 		pygame.sprite.Sprite.add(door1, exit_sprite)
-		screen.blit(dungeon, (0, 0))
+		screen.blit(dungeon_screen, (0, 0))
 		for sprite in player_sprite:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
@@ -393,7 +395,7 @@ while game_running:
 
 	elif level > 1: 												#Or we can manually say: if level != 0 and level != 1
 		screen.fill(bg_color)
-		screen.blit(dngn_screen, (0, 0))						
+		screen.blit(dungeon_screen, (0, 0))						
 		player.x, player.y = 500, 200
 		for sprite in player_sprite:
 			sprite.appear(screen)
