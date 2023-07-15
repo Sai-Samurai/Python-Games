@@ -34,8 +34,8 @@ dngn_screen_height = dungeon_height
 dungeon_screen = pygame.Surface((dngn_screen_width, dngn_screen_height))
 dungeon_screen.blit(dungeon, (0, 0))
 
-#Game Text Font
-game_font = pygame.font.Font("freesansbold.ttf", 32)
+#Game Text Font For Narrator
+game_font = pygame.font.Font("freesansbold.ttf", 15)
 
 #Player image
 p_image = pygame.image.load("player.png").convert_alpha()
@@ -46,6 +46,52 @@ player_rect = player_image.get_rect()
 b_image = pygame.image.load("Brick_texture.png").convert_alpha()
 block_image = pygame.transform.smoothscale(b_image, (b_image.get_width() / 3.3, b_image.get_height() / 3.3))
 block_rect = block_image.get_rect()
+
+'''
+# draw some text into an area of a surface
+# automatically wraps words
+# returns any text that didn't get blitted
+def drawText(surface, text, color, rect, font, aa=False, bkg=None):
+    rect = Rect(rect)
+    y = rect.top
+    lineSpacing = -2
+
+    # get the height of the font
+    fontHeight = font.size("Tg")[1]
+
+    while text:
+        i = 1
+
+        # determine if the row of text will be outside our area
+        if y + fontHeight > rect.bottom:
+            break
+
+        # determine maximum width of line
+        while font.size(text[:i])[0] < rect.width and i < len(text):
+            i += 1
+
+        # if we've wrapped the text, then adjust the wrap to the last word      
+        if i < len(text): 
+            i = text.rfind(" ", 0, i) + 1
+
+        # render the line and blit it to the surface
+        if bkg:
+            image = font.render(text[:i], 1, color, bkg)
+            image.set_colorkey(bkg)
+        else:
+            image = font.render(text[:i], aa, color)
+
+        surface.blit(image, (rect.left, y))
+        y += fontHeight + lineSpacing
+
+        # remove the text we just blitted
+        text = text[i:]
+
+    return text
+
+'''
+
+
 
 
 
@@ -191,6 +237,8 @@ class Narrator():
 	def appear(self, screen):
 		pygame.draw.rect(screen, narcolor, self.rect)
 
+		
+
 
 #Exit
 color = (100, 150, 200)
@@ -255,7 +303,9 @@ for block in blocks_sprite:
 
 #NARRATOR ATTRIBUTES
 narcolor = ('purple')
-narrator = Narrator(600, 200, 100, 50)
+narrator = Narrator(300, 100, 100, 50)
+nar_text = pygame.Rect(390, 50, 450, 240)
+welcome_text = game_font.render("Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here...", True, 'darkblue')
 
 #EXIT ATTRIBUTES
 #Levels
@@ -355,6 +405,14 @@ while game_running:
 
 	player.animate()
 
+
+
+
+
+
+
+
+
 	#Visuals
 	#screen.blit(background, (0, 0))
 
@@ -373,8 +431,6 @@ while game_running:
 			level = level +1
 
 
-
-
 	if level == 0:
 		blocks_sprite = pygame.sprite.Group()
 		screen.blit(background, (0, 0))
@@ -385,6 +441,8 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 		narrator.appear(screen)
+
+		
 
 	elif level == 1:
 		#Setting the screen
