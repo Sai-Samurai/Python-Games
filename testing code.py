@@ -65,26 +65,17 @@ class Player(pygame.sprite.Sprite):
 		self.image = image
 		self.rect = pygame.Rect(x, y, length, height)
 
-		'''
-		There seem to STILL be a problem with the player's hitbox, whether it is a 
-		collision with a block or a collision with the door. 
-		The issue is the following:
-		The collisions with the door seem to be off because the levels that getting 
-		printed only appear with the left of the player's hitbox, where it originally was
-		before having it moved.
-		The same is for the collisions with the blocks. The collisions with the blocks are
-		not complete, so it is hard to tell whether it actually is broken or not.
-		'''
-
 	def appear(self, screen):
 		pygame.draw.rect(screen, YELLOW, self)
 		screen.blit(player_image, player_rect)
 
 	def move_right(self):
 		self.x += speed_x
+		self.rect.x = self.x
 
 	def move_left(self):
 		self.x -= speed_x
+		self.rect.x = self.x
 
 	def stop_jumping(self):
 		self.jumping = False
@@ -186,6 +177,21 @@ class Enemy():
 		pass
 
 
+#Narrator / Main evil villain
+class Narrator():
+	def __init__(self, narX, narY, narlength, narheight):
+		super().__init__()
+		self.narX = narX
+		self.narY = narY
+		self.narlength = narlength
+		self.narheight = narheight
+		self.narcolor = narcolor
+		self.rect = pygame.Rect(narX, narY, narlength, narheight)
+
+	def appear(self, screen):
+		pygame.draw.rect(screen, narcolor, self.rect)
+
+
 #Exit
 color = (100, 150, 200)
 exitlength = 50
@@ -233,30 +239,31 @@ player_sprite = pygame.sprite.Group(player)
 #Blocks
 blocks_sprite = pygame.sprite.Group()
 
-#block1 = Blocks(400, 350, block_size, block_size2, block_rect)
-#block2 = Blocks(550, 350, block_size, block_size2, block_rect)
-#block3 = Blocks(250, 350, block_size, block_size2, block_rect)
+block1 = Blocks(400, 350, block_size, block_size2, block_rect)
+block2 = Blocks(550, 350, block_size, block_size2, block_rect)
+block3 = Blocks(250, 350, block_size, block_size2, block_rect)
 block4 = Blocks(10, 350, block_size, block_size2, block_rect)
-#block5 = Blocks(340, 310, block_size, block_size2, block_rect)
+block5 = Blocks(340, 310, block_size, block_size2, block_rect)
 block6 = Blocks(460, 475, block_size, block_size2, block_rect)
 
-blocks_sprite.add(block4, block6)#, block2, block3, block1, block5)
+#blocks_sprite.add(block4, block6)#, block2, block3, block1, block5)
 
 
 for block in blocks_sprite:
 	block.rect.x = block.x2
 	block.rect.y = block.y2
 
-
+#NARRATOR ATTRIBUTES
+narcolor = ('purple')
+narrator = Narrator(600, 200, 100, 50)
 
 #EXIT ATTRIBUTES
 #Levels
 level = 0 
 
 #Exit Method
-
-door0 = Exit(500, 250, exitlength, exitheight, color)
-door1 = Exit(650, 400, exitlength, exitheight, color)
+door0 = Exit(800, 400, exitlength, exitheight, color)
+door1 = Exit(500, 250, exitlength, exitheight, color)
 door2 = Exit(100, 400, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group(door0)
@@ -358,19 +365,18 @@ while game_running:
 	if exit_collisions:
 		screen.blit(background, (- 80000, 0))
 		
-
 		if pygame.sprite.spritecollide(player, exit_sprite, True):
+			#Every door is specific to its level and in resulting, by turning the value to True, every element of
+			#the exit_sprite group is deleted from the group after every collision. By doing so,  we just need to
+			#add every diffeent door to every specific level using the method .add(). 
 			screen.blit(dungeon, (0, 0))
 			level = level +1
-			#player.animate()
-			#player.updateplayer()
-
-
 
 
 
 
 	if level == 0:
+		blocks_sprite = pygame.sprite.Group()
 		screen.blit(background, (0, 0))
 		for sprite in player_sprite:
 			sprite.appear(screen)
@@ -378,14 +384,24 @@ while game_running:
 			sprite.appear(screen)
 		for sprite in exit_sprite:
 			sprite.appear(screen)
-
-
-
+		narrator.appear(screen)
 
 	elif level == 1:
+		#Setting the screen
 		screen.fill(bg_color)
-		pygame.sprite.Sprite.add(door1, exit_sprite)
 		screen.blit(dungeon_screen, (0, 0))
+
+		#Updating manually the sprite groups
+		pygame.sprite.Sprite.add(door1, exit_sprite)
+		blocks_sprite.add(block4, block6)
+
+		#player.x = playerX #Reset the player's x value
+		#player.y = playerY #Reset the player's y value
+		#player.moving_right = False
+		#player.moving_left = False
+		#player.animate()
+		#player.update(player.x, player.y) #This does nothing
+		
 		for sprite in player_sprite:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
@@ -393,7 +409,29 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 
-	elif level > 1: 												#Or we can manually say: if level != 0 and level != 1
+	elif level == 2:
+		#Setting the screen
+		screen.fill(bg_color)
+		screen.blit(dungeon_screen, (0, 0))
+
+		#Updating manually the sprite groups
+			#Removing everything from the block group
+		blocks_sprite.remove(block4, block6)
+			#Adding the elements for this level
+		pygame.sprite.Sprite.add(door2, exit_sprite)
+		blocks_sprite.add(block1, block3)
+		
+		for sprite in player_sprite:
+			sprite.appear(screen)
+		for sprite in blocks_sprite:
+			sprite.appear(screen)
+		for sprite in exit_sprite:
+			sprite.appear(screen)
+
+
+
+
+	elif level > 2: 								#Or we can manually say: if level != 0 and level != 1 and level != 2
 		screen.fill(bg_color)
 		screen.blit(dungeon_screen, (0, 0))						
 		player.x, player.y = 500, 200
