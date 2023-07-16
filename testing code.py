@@ -35,8 +35,8 @@ dngn_screen_height = dungeon_height
 dungeon_screen = pygame.Surface((dngn_screen_width, dngn_screen_height))
 dungeon_screen.blit(dungeon, (0, 0))
 
-#Game Text Font For Narrator
-#game_font = pygame.font.Font("freesansbold.ttf", 15)
+#Game Text Font For Level
+game_font = pygame.font.Font("freesansbold.ttf", 25)
 
 #Player image
 p_image = pygame.image.load("player.png").convert_alpha()
@@ -322,20 +322,24 @@ for block in blocks_sprite:
 	block.rect.y = block.y2
 
 #NARRATOR ATTRIBUTES
+bubbleX, bubbleY = 360, 35
 narcolor = ('purple')
 narrator = Narrator(300, 100, 100, 50)
-box = pygame.Rect(450, 200, 450, 70)
-# \n to make a line break
-game_font = pygame.font.Font("freesansbold.ttf", 15)
-welcome_text = game_font.render(
-	"Welcome explorer from the wilderness... \n"
-	"I see you have stumbled into this world..."
-	"But rest assured, I am of no harm..."
-	"I am a friend to you, not a foe..."
-	"Let me help you and get you back to your world by getting you through this door I have here...", 
-	True, 
-	'darkblue',
-	None)
+box = pygame.Rect(bubbleX, bubbleY, 215, 80)
+text_font = pygame.font.Font("freesansbold.ttf", 10)
+
+#welcome_text
+def welcome_text():
+	pygame.draw.rect(screen, 'white', box)
+	screen.blit(text_font.render("Welcome explorer from the wilderness...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 5))
+	screen.blit(text_font.render("I see you have stumbled into this world...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 15))
+	screen.blit(text_font.render("But rest assured, I am of no harm...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 25))
+	screen.blit(text_font.render("I am a friend to you, not a foe...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 35))
+	screen.blit(text_font.render("Let me help you and get you back to your", True, 'darkblue', None), (bubbleX + 5, bubbleY + 45))
+	screen.blit(text_font.render("world by getting you through this door I", True, 'darkblue', None), (bubbleX + 5, bubbleY + 55))
+	screen.blit(text_font.render("have here...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 65))
+
+
 
 #EXIT ATTRIBUTES
 #Levels
@@ -471,8 +475,10 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 		narrator.appear(screen)
-		pygame.draw.rect(screen, 'white', box)
-		screen.blit(welcome_text, (410, 300))
+
+		welcome_text()
+
+		
 
 
 		#narrator.current_dialogue = "Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here..."
@@ -585,6 +591,7 @@ while game_running:
 	only after 20 pixels before coming back to the ground.
 	'''
 	print(player.x, player.y)
+	print(len("Welcome explorer from the wilderness..."))
 
 	if player.y >= 425:
 		player.y = 425
