@@ -321,24 +321,58 @@ for block in blocks_sprite:
 	block.rect.x = block.x2
 	block.rect.y = block.y2
 
+
+#Wrapping text
+#Function being able to seprate the text by counting number of words and length they have
+def wrap_text(text, font, max_width):
+    words = text.split()
+    wrapped_lines = []
+    current_line = ""
+
+    for word in words:
+        if font.size(current_line + word)[0] <= max_width:
+            current_line += word + " "
+        else:
+            wrapped_lines.append(current_line)
+            current_line = word + " "
+
+    if current_line:
+        wrapped_lines.append(current_line)
+
+    return wrapped_lines
+
+
 #NARRATOR ATTRIBUTES
-bubbleX, bubbleY = 360, 35
+
+#Attributes
 narcolor = ('purple')
-narrator = Narrator(300, 100, 100, 50)
-box = pygame.Rect(bubbleX, bubbleY, 215, 80)
+narrator = Narrator(300, 100, 170, 70)
+#bubble = pygame.Rect(bubbleX, bubbleY, 215, 80)
 text_font = pygame.font.Font("freesansbold.ttf", 10)
 
-#welcome_text
-def welcome_text():
-	pygame.draw.rect(screen, 'white', box)
-	screen.blit(text_font.render("Welcome explorer from the wilderness...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 5))
-	screen.blit(text_font.render("I see you have stumbled into this world...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 15))
-	screen.blit(text_font.render("But rest assured, I am of no harm...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 25))
-	screen.blit(text_font.render("I am a friend to you, not a foe...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 35))
-	screen.blit(text_font.render("Let me help you and get you back to your", True, 'darkblue', None), (bubbleX + 5, bubbleY + 45))
-	screen.blit(text_font.render("world by getting you through this door I", True, 'darkblue', None), (bubbleX + 5, bubbleY + 55))
-	screen.blit(text_font.render("have here...", True, 'darkblue', None), (bubbleX + 5, bubbleY + 65))
+#Speech and speech bubble
+def text0():
+	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 65
+	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 250, 80))
 
+	text = "Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here..."
+
+	wrapped_lines = wrap_text(text, text_font, 240)
+
+	for i, line in enumerate(wrapped_lines):
+		screen.blit(text_font.render(line, True, 'black', None), (bubbleX + 10, bubbleY + 10 + i * 10))
+
+
+def text1():
+	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 35
+	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 50))
+
+	text = "Hahahaha... You've been trapped!!! I'll let you die here unless you can escape my dungeon!!!"
+
+	wrapped_lines = wrap_text(text, text_font, 180)
+
+	for i, line in enumerate(wrapped_lines):
+		screen.blit(text_font.render(line, True, 'black', None), (bubbleX + 10, bubbleY + 10 + i * 10))
 
 
 #EXIT ATTRIBUTES
@@ -474,15 +508,9 @@ while game_running:
 			sprite.appear(screen)
 		for sprite in exit_sprite:
 			sprite.appear(screen)
-		narrator.appear(screen)
-
-		welcome_text()
-
 		
-
-
-		#narrator.current_dialogue = "Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here..."
-
+		narrator.appear(screen)
+		text0()
 		
 
 	elif level == 1:
@@ -507,6 +535,14 @@ while game_running:
 			sprite.appear(screen)
 		for sprite in exit_sprite:
 			sprite.appear(screen)
+
+		#Transitioning the narrator and its text
+		if narrator.rect.x < 600:
+			narrator.rect.x += 1.5
+		else:	
+			narrator.rect.x == 600
+		narrator.appear(screen)
+		text1()
 
 	elif level == 2:
 		#Setting the screen
@@ -544,7 +580,7 @@ while game_running:
 	#Text not displaying
 	level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
 	print(level)
-	screen.blit(level_text, (750, 50))
+	screen.blit(level_text, (750, 30))
 
 
 
@@ -591,7 +627,6 @@ while game_running:
 	only after 20 pixels before coming back to the ground.
 	'''
 	print(player.x, player.y)
-	print(len("Welcome explorer from the wilderness..."))
 
 	if player.y >= 425:
 		player.y = 425
