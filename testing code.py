@@ -1,4 +1,5 @@
 import pygame, sys
+from pygame import Rect
 
 #General setup
 pygame.init()
@@ -35,7 +36,7 @@ dungeon_screen = pygame.Surface((dngn_screen_width, dngn_screen_height))
 dungeon_screen.blit(dungeon, (0, 0))
 
 #Game Text Font For Narrator
-game_font = pygame.font.Font("freesansbold.ttf", 15)
+#game_font = pygame.font.Font("freesansbold.ttf", 15)
 
 #Player image
 p_image = pygame.image.load("player.png").convert_alpha()
@@ -48,16 +49,14 @@ block_image = pygame.transform.smoothscale(b_image, (b_image.get_width() / 3.3, 
 block_rect = block_image.get_rect()
 
 '''
-# draw some text into an area of a surface
-# automatically wraps words
-# returns any text that didn't get blitted
+#Wrapping text
 def drawText(surface, text, color, rect, font, aa=False, bkg=None):
     rect = Rect(rect)
     y = rect.top
-    lineSpacing = -2
+    lineSpacing = 10
 
     # get the height of the font
-    fontHeight = font.size("Tg")[1]
+    fontHeight = font.size("current_dialogue")[1]
 
     while text:
         i = 1
@@ -88,8 +87,8 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None):
         text = text[i:]
 
     return text
-
 '''
+
 
 
 
@@ -233,11 +232,32 @@ class Narrator():
 		self.narheight = narheight
 		self.narcolor = narcolor
 		self.rect = pygame.Rect(narX, narY, narlength, narheight)
+		self.game_font = pygame.font.Font("freesansbold.ttf", 15)
+		self.current_dialogue = ""
 
 	def appear(self, screen):
 		pygame.draw.rect(screen, narcolor, self.rect)
 
-		
+		'''
+		if self.current_dialogue:
+			#Dimenstions + position of speech bubble
+			speech_bubble_rect = pygame.Rect(self.narX + 50, self.narY - 40, 50, 280)
+			
+			#Show and wrap text in speech bubble
+			wrapped_text = drawText(screen, self.current_dialogue, 'black', speech_bubble_rect, self.game_font, aa = True, bkg = "green")
+			
+			#Surface for speech bubble background
+			speech_bubble_surface = pygame.Surface((speech_bubble_rect.width, speech_bubble_rect.height))
+			speech_bubble_surface.fill('white')
+			
+			#Speech bubble appear on screen
+			screen.blit(speech_bubble_surface, speech_bubble_rect.topleft)
+
+			#Text appear on speech bubble
+			wrapped_text_appear = self.game_font.render(wrapped_text, True, 'black')
+			screen.blit(wrapped_text_appear, (speech_bubble_rect.left +10, speech_bubble_rect.top +10))
+			'''
+
 
 
 #Exit
@@ -304,8 +324,18 @@ for block in blocks_sprite:
 #NARRATOR ATTRIBUTES
 narcolor = ('purple')
 narrator = Narrator(300, 100, 100, 50)
-nar_text = pygame.Rect(390, 50, 450, 240)
-welcome_text = game_font.render("Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here...", True, 'darkblue')
+box = pygame.Rect(450, 200, 450, 70)
+# \n to make a line break
+game_font = pygame.font.Font("freesansbold.ttf", 15)
+welcome_text = game_font.render(
+	"Welcome explorer from the wilderness... \n"
+	"I see you have stumbled into this world..."
+	"But rest assured, I am of no harm..."
+	"I am a friend to you, not a foe..."
+	"Let me help you and get you back to your world by getting you through this door I have here...", 
+	True, 
+	'darkblue',
+	None)
 
 #EXIT ATTRIBUTES
 #Levels
@@ -441,6 +471,11 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 		narrator.appear(screen)
+		pygame.draw.rect(screen, 'white', box)
+		screen.blit(welcome_text, (410, 300))
+
+
+		#narrator.current_dialogue = "Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here..."
 
 		
 
@@ -503,6 +538,7 @@ while game_running:
 	#Text not displaying
 	level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
 	print(level)
+	screen.blit(level_text, (750, 50))
 
 
 
