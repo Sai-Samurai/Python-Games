@@ -40,6 +40,7 @@ dungeon_screen.blit(dungeon, (0, 0))
 
 #Game Text Font For Level
 game_font = pygame.font.Font("freesansbold.ttf", 25)
+other_text = pygame.font.Font("Retro_Gaming.ttf", 35)
 
 #Player image
 p_image = pygame.image.load("player.png").convert_alpha()
@@ -363,7 +364,7 @@ start_outer = pygame.Rect(screen_width / 2 - 150, screen_height / 2  - 50, 300, 
 start_inner = pygame.Rect(screen_width / 2 - 75, screen_height / 2 - 25, 150, 50)
 
 #text
-#start_text = 
+start_text = other_text.render("START", False, (0, 0, 0))
 
 
 ###################################################################################################################################
@@ -482,8 +483,9 @@ while game_running:
 		screen.blit(blur_background, (0, 0))
 
 		#Start button
-		pygame.draw.rect(screen, 'white', start_outer, 2, 10)
-		pygame.draw.rect(screen, 'red', start_inner, 2, 10)
+		pygame.draw.rect(screen, (200, 150, 120), start_outer, border_radius = 10) #Can decide on color later
+		pygame.draw.rect(screen, 'red', start_inner, border_radius = 10) #Smae here for the color
+		screen.blit(start_text, (screen_width / 2 - 65, screen_height / 2 - 20))
 
 
 		#for event in pygame.event.get():
