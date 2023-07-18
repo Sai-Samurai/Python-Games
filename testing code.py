@@ -18,6 +18,9 @@ transapency = (0, 0, 0, 0)
 background = pygame.image.load("Bkgrnd_game1.jpg")
 background_width, background_height = background.get_size()
 
+#Blurred background image
+blur_background = pygame.image.load("blur_background.png")
+
 #Dungeon image
 dungeon = pygame.image.load("bg2.png")
 dungeon_width, dungeon_height = dungeon.get_size()
@@ -48,51 +51,7 @@ b_image = pygame.image.load("Brick_texture.png").convert_alpha()
 block_image = pygame.transform.smoothscale(b_image, (b_image.get_width() / 3.3, b_image.get_height() / 3.3))
 block_rect = block_image.get_rect()
 
-'''
-#Wrapping text
-def drawText(surface, text, color, rect, font, aa=False, bkg=None):
-    rect = Rect(rect)
-    y = rect.top
-    lineSpacing = 10
-
-    # get the height of the font
-    fontHeight = font.size("current_dialogue")[1]
-
-    while text:
-        i = 1
-
-        # determine if the row of text will be outside our area
-        if y + fontHeight > rect.bottom:
-            break
-
-        # determine maximum width of line
-        while font.size(text[:i])[0] < rect.width and i < len(text):
-            i += 1
-
-        # if we've wrapped the text, then adjust the wrap to the last word      
-        if i < len(text): 
-            i = text.rfind(" ", 0, i) + 1
-
-        # render the line and blit it to the surface
-        if bkg:
-            image = font.render(text[:i], 1, color, bkg)
-            image.set_colorkey(bkg)
-        else:
-            image = font.render(text[:i], aa, color)
-
-        surface.blit(image, (rect.left, y))
-        y += fontHeight + lineSpacing
-
-        # remove the text we just blitted
-        text = text[i:]
-
-    return text
-'''
-
-
-
-
-
+###################################################################################################################################
 
 #Player
 class Player(pygame.sprite.Sprite):
@@ -280,6 +239,7 @@ class Exit(pygame.sprite.Sprite):
 
 
 
+###################################################################################################################################
 
 #PLAYER'S ATTRIBUTES VALUES
 
@@ -342,11 +302,12 @@ def wrap_text(text, font, max_width):
     return wrapped_lines
 
 
+
 #NARRATOR ATTRIBUTES
 
 #Attributes
 narcolor = ('purple')
-narrator = Narrator(300, 100, 170, 70)
+narrator = Narrator(100, 100, 170, 70)
 #bubble = pygame.Rect(bubbleX, bubbleY, 215, 80)
 text_font = pygame.font.Font("freesansbold.ttf", 10)
 
@@ -375,9 +336,11 @@ def text1():
 		screen.blit(text_font.render(line, True, 'black', None), (bubbleX + 10, bubbleY + 10 + i * 10))
 
 
+
+
 #EXIT ATTRIBUTES
 #Levels
-level = 0 
+level = -1 
 
 #Exit Method
 door0 = Exit(800, 400, exitlength, exitheight, color)
@@ -386,6 +349,14 @@ door2 = Exit(100, 400, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group(door0)
 
+
+#Main screen (Introduction)
+#It will have: level = -1, blur background, play button (initialize with key pressing)
+# Optional: how to play button
+
+
+
+###################################################################################################################################
 
 game_running = True
 #Game loop
@@ -470,10 +441,7 @@ while game_running:
 				player.x = player.rect.x
 				print("left")
 
-
 	player.animate()
-
-
 
 
 
@@ -499,7 +467,12 @@ while game_running:
 			level = level +1
 
 
-	if level == 0:
+	#Main menu (Level -1)
+	if level == -1:
+		screen.blit(blur_background, (0, 0))
+
+	#Level 0
+	elif level == 0:
 		blocks_sprite = pygame.sprite.Group()
 		screen.blit(background, (0, 0))
 		for sprite in player_sprite:
@@ -511,8 +484,15 @@ while game_running:
 		
 		narrator.appear(screen)
 		text0()
+
+		level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
+		print(level)
+		screen.blit(level_text, (750, 30))
+
 		
 
+
+	#Level 1
 	elif level == 1:
 		#Setting the screen
 		screen.fill(bg_color)
@@ -522,13 +502,6 @@ while game_running:
 		pygame.sprite.Sprite.add(door1, exit_sprite)
 		blocks_sprite.add(block4, block6)
 
-		#player.x = playerX #Reset the player's x value
-		#player.y = playerY #Reset the player's y value
-		#player.moving_right = False
-		#player.moving_left = False
-		#player.animate()
-		#player.update(player.x, player.y) #This does nothing
-		
 		for sprite in player_sprite:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
@@ -538,12 +511,19 @@ while game_running:
 
 		#Transitioning the narrator and its text
 		if narrator.rect.x < 600:
-			narrator.rect.x += 1.5
+			narrator.rect.x += 5
 		else:	
 			narrator.rect.x == 600
 		narrator.appear(screen)
 		text1()
 
+		level_text = game_font.render( "Level "f"{level}", True, (250, 250, 250))
+		print(level)
+		screen.blit(level_text, (750, 30))
+
+
+
+	#Level 2
 	elif level == 2:
 		#Setting the screen
 		screen.fill(bg_color)
@@ -577,10 +557,6 @@ while game_running:
 
 				
 
-	#Text not displaying
-	level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
-	print(level)
-	screen.blit(level_text, (750, 30))
 
 
 
@@ -633,17 +609,6 @@ while game_running:
 	else:
 		print("Player going down!!!")
 		print(screen_width, screen_height)
-	
-	'''
-	for sprite in player_sprite:
-		sprite.appear(screen)
-
-	for sprite in blocks_sprite:
-		sprite.appear(screen)
-
-	for sprite in exit_sprite:
-		sprite.appear(screen)
-	'''
 
 
 	#Updating the window
