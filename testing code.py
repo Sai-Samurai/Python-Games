@@ -350,10 +350,20 @@ door2 = Exit(100, 400, exitlength, exitheight, color)
 exit_sprite = pygame.sprite.Group(door0)
 
 
-#Main screen (Introduction)
+#MAIN SCREEN (Introduction)
+
 #It will have: level = -1, blur background, play button (initialize with key pressing)
 # Optional: how to play button
 
+#Start button
+#outer rectangle
+start_outer = pygame.Rect(screen_width / 2 - 150, screen_height / 2  - 50, 300, 100)
+
+#inner rectangle
+start_inner = pygame.Rect(screen_width / 2 - 75, screen_height / 2 - 25, 150, 50)
+
+#text
+#start_text = 
 
 
 ###################################################################################################################################
@@ -471,6 +481,21 @@ while game_running:
 	if level == -1:
 		screen.blit(blur_background, (0, 0))
 
+		#Start button
+		pygame.draw.rect(screen, 'white', start_outer, 2, 10)
+		pygame.draw.rect(screen, 'red', start_inner, 2, 10)
+
+
+		#for event in pygame.event.get():
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_RETURN:
+				level = level + 1
+
+		player.x, player.y = 241, 425
+		print(level)
+
+
+
 	#Level 0
 	elif level == 0:
 		blocks_sprite = pygame.sprite.Group()
@@ -488,6 +513,7 @@ while game_running:
 		level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
 		print(level)
 		screen.blit(level_text, (750, 30))
+
 
 		
 
@@ -523,6 +549,8 @@ while game_running:
 
 
 
+
+
 	#Level 2
 	elif level == 2:
 		#Setting the screen
@@ -543,6 +571,11 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 
+		level_text = game_font.render( "Level "f"{level}", True, (250, 250, 250))
+		print(level)
+		screen.blit(level_text, (750, 30))
+
+
 
 
 
@@ -552,6 +585,12 @@ while game_running:
 		player.x, player.y = 500, 200
 		for sprite in player_sprite:
 			sprite.appear(screen)
+
+		level_text = game_font.render( "Level "f"{level}", True, (250, 250, 250))
+		print(level)
+		screen.blit(level_text, (750, 30))
+
+
 
 
 
