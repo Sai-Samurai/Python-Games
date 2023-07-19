@@ -6,20 +6,20 @@ pygame.init()
 clock = pygame.time.Clock()
 
 YELLOW = (255, 255, 0) #Horrific yellow for debugging rectangles
-playerX, playerY = (241, 425)
+playerX, playerY = (241, 400)
 block_size = 50
 block_size2 = 50
-min_y = 425  #Value according the game's ground level
+min_y = 400  #Value according the game's ground level
 
 #Making anything dissapear
 transapency = (0, 0, 0, 0)
 
 #Background image
-background = pygame.image.load("Bkgrnd_game1.jpg")
+background = pygame.image.load("Final_background.png")
 background_width, background_height = background.get_size()
 
 #Blurred background image
-blur_background = pygame.image.load("blur_background.png")
+blur_background = pygame.image.load("Blur_final_background.png")
 
 #Dungeon image
 dungeon = pygame.image.load("bg2.png")
@@ -43,8 +43,8 @@ game_font = pygame.font.Font("freesansbold.ttf", 25)
 other_text = pygame.font.Font("Retro_Gaming.ttf", 35)
 
 #Player image
-p_image = pygame.image.load("player.png").convert_alpha()
-player_image = pygame.transform.smoothscale(p_image, (p_image.get_width() / 3.5, p_image.get_height() / 3.5))
+p_image = pygame.image.load("Final_player.png").convert_alpha()
+player_image = pygame.transform.scale(p_image, (p_image.get_width() / 5, p_image.get_height() / 5))
 player_rect = player_image.get_rect()
 
 #Block image
@@ -192,7 +192,7 @@ class Narrator():
 		self.narheight = narheight
 		self.narcolor = narcolor
 		self.rect = pygame.Rect(narX, narY, narlength, narheight)
-		self.game_font = pygame.font.Font("freesansbold.ttf", 15)
+		self.other_text = pygame.font.Font("Retro_Gaming.ttf", 15)
 		self.current_dialogue = ""
 
 	def appear(self, screen):
@@ -257,7 +257,7 @@ move_up= False
 speed_x = 7.5
 
 #Player
-player = Player(playerX, playerY, 80, 93, player_rect)
+player = Player(playerX, playerY, 60, 125, player_rect)
 player_sprite = pygame.sprite.Group(player)
 
 
@@ -310,12 +310,12 @@ def wrap_text(text, font, max_width):
 narcolor = ('purple')
 narrator = Narrator(100, 100, 170, 70)
 #bubble = pygame.Rect(bubbleX, bubbleY, 215, 80)
-text_font = pygame.font.Font("freesansbold.ttf", 10)
+text_font = pygame.font.Font("Retro_Gaming.ttf", 10)
 
 #Speech and speech bubble
 def text0():
 	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 65
-	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 250, 80))
+	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 250, 100))
 
 	text = "Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here..."
 
@@ -327,7 +327,7 @@ def text0():
 
 def text1():
 	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 35
-	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 50))
+	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 60))
 
 	text = "Hahahaha... You've been trapped!!! I'll let you die here unless you can escape my dungeon!!!"
 
@@ -358,13 +358,14 @@ exit_sprite = pygame.sprite.Group(door0)
 
 #Start button
 #outer rectangle
-start_outer = pygame.Rect(screen_width / 2 - 150, screen_height / 2  - 50, 300, 100)
+start_outer = pygame.Rect(screen_width / 2 - 125, screen_height / 2  - 50, 250, 100)
 
 #inner rectangle
 start_inner = pygame.Rect(screen_width / 2 - 75, screen_height / 2 - 25, 150, 50)
 
 #text
 start_text = other_text.render("START", False, (0, 0, 0))
+start_text2 = pygame.font.Font("Retro_Gaming.ttf", 15).render("Press ENTER/RETURN to start the game", False, (0, 0, 0))
 
 
 ###################################################################################################################################
@@ -435,7 +436,7 @@ while game_running:
 				player.rect.bottom = block.rect.top
 				player.y = player.rect.y
 				player.y_velocity = 0
-				player.y = min(player.y, 425)
+				player.y = min(player.y, 400)
 				print("bottom")
 			elif player.rect.top < block.rect.bottom :
 				player.rect.top = block.rect.bottom
@@ -484,8 +485,9 @@ while game_running:
 
 		#Start button
 		pygame.draw.rect(screen, (200, 150, 120), start_outer, border_radius = 10) #Can decide on color later
-		pygame.draw.rect(screen, 'red', start_inner, border_radius = 10) #Smae here for the color
+		pygame.draw.rect(screen, 'red', start_inner, border_radius = 10) #Same here for the color
 		screen.blit(start_text, (screen_width / 2 - 65, screen_height / 2 - 20))
+		screen.blit(start_text2, (screen_width / 2 - 180, screen_height / 2 + 65))
 
 
 		#for event in pygame.event.get():
@@ -493,7 +495,7 @@ while game_running:
 			if event.key == pygame.K_RETURN:
 				level = level + 1
 
-		player.x, player.y = 241, 425
+		player.x, player.y = 241, 400
 		print(level)
 
 
@@ -512,9 +514,14 @@ while game_running:
 		narrator.appear(screen)
 		text0()
 
-		level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
+		level_text = other_text.render( "Level "f"{level}", True, (0, 0, 0))
 		print(level)
-		screen.blit(level_text, (750, 30))
+		screen.blit(level_text, (750, 20))
+
+		#Switch level back
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_TAB:
+				level = level - 1
 
 
 		
@@ -545,9 +552,9 @@ while game_running:
 		narrator.appear(screen)
 		text1()
 
-		level_text = game_font.render( "Level "f"{level}", True, (250, 250, 250))
+		level_text = other_text.render( "Level "f"{level}", True, (250, 250, 250))
 		print(level)
-		screen.blit(level_text, (750, 30))
+		screen.blit(level_text, (750, 20))
 
 
 
@@ -573,9 +580,9 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 
-		level_text = game_font.render( "Level "f"{level}", True, (250, 250, 250))
+		level_text = other_text.render( "Level "f"{level}", True, (250, 250, 250))
 		print(level)
-		screen.blit(level_text, (750, 30))
+		screen.blit(level_text, (750, 20))
 
 
 
@@ -588,9 +595,9 @@ while game_running:
 		for sprite in player_sprite:
 			sprite.appear(screen)
 
-		level_text = game_font.render( "Level "f"{level}", True, (250, 250, 250))
+		level_text = other_text.render( "Level "f"{level}", True, (250, 250, 250))
 		print(level)
-		screen.blit(level_text, (750, 30))
+		screen.blit(level_text, (750, 20))
 
 
 
@@ -640,13 +647,13 @@ while game_running:
 
 	#Debugging the player's y coordinate
 	'''
-	The player only realizes that he is under the ground (y level above 425)
+	The player only realizes that he is under the ground (y level above 400)
 	only after 20 pixels before coming back to the ground.
 	'''
 	print(player.x, player.y)
 
-	if player.y >= 425:
-		player.y = 425
+	if player.y >= 400:
+		player.y = 400
 	else:
 		print("Player going down!!!")
 		print(screen_width, screen_height)
