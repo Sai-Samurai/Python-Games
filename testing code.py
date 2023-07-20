@@ -70,18 +70,24 @@ class Player(pygame.sprite.Sprite):
 		self.y_velocity = jump_height
 		self.image = image
 		self.rect = pygame.Rect(x, y, length, height)
+		self.facing_right = True
 
 	def appear(self, screen):
 		pygame.draw.rect(screen, YELLOW, self)
-		screen.blit(player_image, player_rect)
+		if self.facing_right:
+			screen.blit(player_image, player_rect)
+		else:
+			screen.blit(pygame.transform.flip(player_image, True, False), player_rect) #Flpis the player horizontally when moving left
 
 	def move_right(self):
 		self.x += speed_x
 		self.rect.x = self.x
+		self.facing_right = True
 
 	def move_left(self):
 		self.x -= speed_x
 		self.rect.x = self.x
+		self.facing_right = False
 
 	def stop_jumping(self):
 		self.jumping = False
