@@ -22,7 +22,7 @@ background_width, background_height = background.get_size()
 blur_background = pygame.image.load("Blur_final_background.png")
 
 #Dungeon image
-dungeon = pygame.image.load("bg2.png")
+dungeon = pygame.image.load("Final_dungeon_background.png")
 dungeon_width, dungeon_height = dungeon.get_size()
 
 #Screen appearance
@@ -33,7 +33,8 @@ pygame.display.set_caption('TM Game')
 bg_color = pygame.Color('black')
 
 #New screen appearance
-dngn_screen_width = dungeon_width - 535
+#Note: Need some esthetic changes, looks... could be worse
+dngn_screen_width = dungeon_width
 dngn_screen_height = dungeon_height
 dungeon_screen = pygame.Surface((dngn_screen_width, dngn_screen_height))
 dungeon_screen.blit(dungeon, (0, 0))
@@ -365,10 +366,28 @@ start_inner = pygame.Rect(screen_width / 2 - 75, screen_height / 2 - 25, 150, 50
 
 #text
 start_text = other_text.render("START", False, (0, 0, 0))
+starting_text = start_text.get_rect(center = (screen_width / 2, screen_height / 2))
 start_text2 = pygame.font.Font("Retro_Gaming.ttf", 15).render("Press ENTER/RETURN to start the game", False, (0, 0, 0))
+starting_text2 = start_text2.get_rect(center = (screen_width / 2, screen_height / 2 + 65))
 
 
-###################################################################################################################################
+#LOADING SCREEN
+
+loading_screen_x, loading_screen_y = 0, 0
+loading_screen = pygame.Rect(loading_screen_x, loading_screen_y, screen_width, screen_height)
+loading_text = pygame.font.Font("Retro_Gaming.ttf", 45).render("Loading...", False, (255, 255, 255))
+
+def loading():
+	pygame.draw.rect(screen, (0, 0, 0), loading_screen)
+	loading_text_rect = loading_text.get_rect(center = (screen_width / 2, screen_height / 2))
+	screen.blit(loading_text, loading_text_rect)
+	pygame.display.flip() # We forcefully update the screen in order to display the loading screen
+	pygame.time.delay(3000) # 3000 represents 3000 miliseconds --> 3 seconds of displaying the loading screen
+
+
+
+
+########################################################## GAME LOOP ##################################################################
 
 game_running = True
 #Game loop
@@ -486,13 +505,14 @@ while game_running:
 		#Start button
 		pygame.draw.rect(screen, (200, 150, 120), start_outer, border_radius = 10) #Can decide on color later
 		pygame.draw.rect(screen, 'red', start_inner, border_radius = 10) #Same here for the color
-		screen.blit(start_text, (screen_width / 2 - 65, screen_height / 2 - 20))
-		screen.blit(start_text2, (screen_width / 2 - 180, screen_height / 2 + 65))
+		screen.blit(start_text, starting_text)
+		screen.blit(start_text2, starting_text2)
 
 
 		#for event in pygame.event.get():
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_RETURN:
+				loading()
 				level = level + 1
 
 		player.x, player.y = 241, 400
