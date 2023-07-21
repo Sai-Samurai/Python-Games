@@ -426,6 +426,7 @@ def loading():
 #Lava
 lava = Death_Items(600, 486, 350, 70)
 lava_group = pygame.sprite.Group()
+lava_contact = 0
 
 ########################################################## GAME LOOP ##################################################################
 
@@ -544,6 +545,12 @@ while game_running:
 	if lava_collision:
 		if pygame.sprite.spritecollide(player, lava_group, False):
 			player.jumping = True
+
+			#Increase lava_contact for every collision
+			lava_contact += 1
+
+			if lava_contact % 6 == 0:
+				lives -= 1
 
 
 
