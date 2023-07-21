@@ -428,6 +428,19 @@ lava = Death_Items(600, 486, 350, 70)
 lava_group = pygame.sprite.Group()
 lava_contact = 0
 
+#GAME OVER 
+over_game = pygame.Rect(0, 0, screen_width, screen_height)
+over_game_text = pygame.font.Font("Retro_Gaming.ttf", 45).render("GAME OVER", False, (255, 255, 255))
+over_game_text_rect = over_game_text.get_rect(center = (screen_width / 2, screen_height / 2))
+
+def game_over():
+	pygame.draw.rect(screen, (0, 0, 0), over_game)
+	screen.blit(over_game_text, over_game_text_rect)
+	pygame.diplay.flip()
+	pygame.time.delay(1000)
+	
+
+
 ########################################################## GAME LOOP ##################################################################
 
 game_running = True
@@ -548,7 +561,7 @@ while game_running:
 
 			#Increase lava_contact for every collision
 			lava_contact += 1
-
+			#For every 3 contacts, the remainder (%) of the division is == 0
 			if lava_contact % 6 == 0:
 				lives -= 1
 
