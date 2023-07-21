@@ -45,13 +45,18 @@ other_text = pygame.font.Font("Retro_Gaming.ttf", 35)
 
 #Player image
 p_image = pygame.image.load("Final_player.png").convert_alpha()
-player_image = pygame.transform.scale(p_image, (p_image.get_width() / 5, p_image.get_height() / 5))
+player_image = pygame.transform.scale(p_image, (p_image.get_width() / 5, p_image.get_height() / 6.5))
 player_rect = player_image.get_rect()
 
 #Block image
 b_image = pygame.image.load("Brick_texture.png").convert_alpha()
 block_image = pygame.transform.smoothscale(b_image, (b_image.get_width() / 3.3, b_image.get_height() / 3.3))
 block_rect = block_image.get_rect()
+
+#Door image
+d_image = pygame.image.load("door.png").convert_alpha()
+door_image = pygame.transform.scale(d_image, (d_image.get_width() / 1.5, d_image.get_height() / 1.5))
+door_rect = door_image.get_rect()
 
 ###################################################################################################################################
 
@@ -104,6 +109,10 @@ class Player(pygame.sprite.Sprite):
 			self.y_velocity -= y_gravity    
 			if self.y_velocity <- jump_height:
 				self.stop_jumping()
+
+
+
+
 
 		player_rect.x = self.x
 		player_rect.y = self.y
@@ -188,6 +197,22 @@ class Enemy():
 	def __init__(self):
 		pass
 
+#Death items, like lava, spikes, ...
+class Death_Items(pygame.sprite.Sprite):
+	def __init__(self, x, y, width, height):
+		super().__init__()
+		self.x = x
+		self.y = y
+		self.width = width
+		self.height = height
+		#self.d_item = d_item
+		self.rect = pygame.Rect(x, y, width, height)
+
+	def appear(self, screen):
+		pygame.draw.rect(screen, (255, 0, 0), self.rect)
+
+
+
 
 #Narrator / Main evil villain
 class Narrator():
@@ -229,21 +254,23 @@ class Narrator():
 
 #Exit
 color = (100, 150, 200)
-exitlength = 50
-exitheight = 100
+exitlength = 80
+exitheight = 113
 class Exit(pygame.sprite.Sprite):
-	def __init__(self, x3, y3, exitlength, exitheight, color):
+	def __init__(self, x3, y3, exitlength, exitheight, exit_image):
 		super().__init__()
 		self.x3 = x3
 		self.y3 = y3
 		self.exitlength = exitlength
 		self.exitheight = exitheight
-		self.color = color
+		#self.color = color
+		self.exit_image = exit_image
 		self.rect = pygame.Rect(x3, y3, exitlength, exitheight)
 		#exit_sprite.add(self)
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, color, self.rect)
+		pygame.draw.rect(screen, (135, 206, 235), self.rect)
+		screen.blit(door_image, self.rect)
 
 
 
@@ -264,8 +291,11 @@ move_up= False
 speed_x = 7.5
 
 #Player
-player = Player(playerX, playerY, 60, 125, player_rect)
+player = Player(playerX, playerY, 60, 95, player_rect)
 player_sprite = pygame.sprite.Group(player)
+
+#Lives
+lives = 3
 
 
 
@@ -348,11 +378,11 @@ def text1():
 
 #EXIT ATTRIBUTES
 #Levels
-level = -1 
+level = -1
 
 #Exit Method
-door0 = Exit(800, 400, exitlength, exitheight, color)
-door1 = Exit(500, 250, exitlength, exitheight, color)
+door0 = Exit(800, 380, exitlength, exitheight, color)
+door1 = Exit(400, 250, exitlength, exitheight, color)
 door2 = Exit(100, 400, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group(door0)
@@ -388,10 +418,14 @@ def loading():
 	loading_text_rect = loading_text.get_rect(center = (screen_width / 2, screen_height / 2))
 	screen.blit(loading_text, loading_text_rect)
 	pygame.display.flip() # We forcefully update the screen in order to display the loading screen
-	pygame.time.delay(3000) # 3000 represents 3000 miliseconds --> 3 seconds of displaying the loading screen
+	pygame.time.delay(2500) # 2500 represents 2500 miliseconds --> 2 seconds and a half of displaying the loading screen
 
 
+#DEATH ITEMS
 
+#Lava
+lava = Death_Items(600, 486, 350, 70)
+lava_group = pygame.sprite.Group()
 
 ########################################################## GAME LOOP ##################################################################
 
@@ -489,10 +523,11 @@ while game_running:
 	#Visuals
 	#screen.blit(background, (0, 0))
 
+	#COLLISIONS
+
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollideany(player, exit_sprite) is not (None)
 
-	
 	if exit_collisions:
 		screen.blit(background, (- 80000, 0))
 		
@@ -502,6 +537,14 @@ while game_running:
 			#add every diffeent door to every specific level using the method .add(). 
 			screen.blit(dungeon, (0, 0))
 			level = level +1
+
+	#Lava collision
+	lava_collision = pygame.sprite.spritecollideany(player, lava_group) is not (None)
+
+	if lava_collision:
+		if pygame.sprite.spritecollide(player, lava_group, False):
+			player.jumping = True
+
 
 
 	#Main menu (Level -1)
@@ -549,6 +592,7 @@ while game_running:
 			if event.key == pygame.K_TAB:
 				level = level - 1
 
+		print(lives)
 
 		
 
@@ -582,6 +626,8 @@ while game_running:
 		print(level)
 		screen.blit(level_text, (750, 20))
 
+		print(lives)
+
 
 
 
@@ -593,12 +639,18 @@ while game_running:
 		screen.blit(dungeon_screen, (0, 0))
 
 		#Updating manually the sprite groups
+
 			#Removing everything from the block group
 		blocks_sprite.remove(block4, block6)
+
 			#Adding the elements for this level
 		pygame.sprite.Sprite.add(door2, exit_sprite)
 		blocks_sprite.add(block1, block3)
+		lava_group.add(lava)
+
 		
+		lava.appear(screen)
+
 		for sprite in player_sprite:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
@@ -606,9 +658,13 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 
-		level_text = other_text.render( "Level "f"{level}", True, (250, 250, 250))
+		level_text = other_text.render( "Level "f"{level}", False, (255, 255, 255))
 		print(level)
 		screen.blit(level_text, (750, 20))
+
+		lives_text = other_text.render("Lives : "f"{lives}", False, (255, 255, 255))
+		print(lives)
+		screen.blit(lives_text, (200, 20))
 
 
 
