@@ -436,7 +436,7 @@ over_game_text_rect = over_game_text.get_rect(center = (screen_width / 2, screen
 def game_over():
 	pygame.draw.rect(screen, (0, 0, 0), over_game)
 	screen.blit(over_game_text, over_game_text_rect)
-	pygame.diplay.flip()
+	pygame.display.flip()
 	pygame.time.delay(1000)
 	
 
@@ -689,7 +689,6 @@ while game_running:
 
 
 
-
 	elif level > 2: 								#Or we can manually say: if level != 0 and level != 1 and level != 2
 		screen.fill(bg_color)
 		screen.blit(dungeon_screen, (0, 0))						
@@ -759,6 +758,16 @@ while game_running:
 	else:
 		print("Player going down!!!")
 		print(screen_width, screen_height)
+
+
+	#Game over screen displaying if the player lives count turn 0
+	if lives == 0:
+		game_over()
+		player.rect.x = 241
+		player.rect.y = 400
+		player.rect.x = player.x
+		player.rect.y = player.y
+
 
 
 	#Updating the window
