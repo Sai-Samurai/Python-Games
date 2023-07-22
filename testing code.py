@@ -58,6 +58,11 @@ d_image = pygame.image.load("door.png").convert_alpha()
 door_image = pygame.transform.scale(d_image, (d_image.get_width() / 1.5, d_image.get_height() / 1.5))
 door_rect = door_image.get_rect()
 
+#Coin image
+c_image = pygame.image.load("coin.png").convert_alpha()
+coin_image = pygame.transform.scale(c_image, (c_image.get_width(), c_image.get_height()))
+coin_rect = coin_image.get_rect()
+
 ###################################################################################################################################
 
 #Player
@@ -232,18 +237,20 @@ class Narrator():
 
 
 #Coins
-class Coins():
-	def __init__(self, x, y, length, height):
+class Coins(pygame.sprite.Sprite):
+	def __init__(self, x, y, length, height, image):
 		super().__init__()
 		self.x = x
 		self.y = y
 		self.length = length
 		self.height = height
 		self.rect = pygame.Rect(x, y, length, height)
+		self.image = image
+		coin_sprite.add(self)
 
 	def appear(self, screen):
-		pass
-
+		pygame.draw.rect(screen, YELLOW, self.rect)
+		screen.blit(coin_image, self.rect)
 
 
 
@@ -291,6 +298,9 @@ player_sprite = pygame.sprite.Group(player)
 
 #Lives
 lives = 3
+
+#Coin score
+coin_score = 0
 
 
 
@@ -383,7 +393,7 @@ door2 = Exit(100, 400, exitlength, exitheight, color)
 exit_sprite = pygame.sprite.Group(door0)
 
 
-#MAIN SCREEN (Introduction)
+#MAIN SCREEN ATTRIBUTES (Introduction)
 
 #It will have: level = -1, blur background, play button (initialize with key pressing)
 # Optional: how to play button
@@ -402,7 +412,7 @@ start_text2 = pygame.font.Font("Retro_Gaming.ttf", 15).render("Press ENTER/RETUR
 starting_text2 = start_text2.get_rect(center = (screen_width / 2, screen_height / 2 + 65))
 
 
-#LOADING SCREEN
+#LOADING SCREEN ATTRIBUTES
 
 loading_screen_x, loading_screen_y = 0, 0
 loading_screen = pygame.Rect(loading_screen_x, loading_screen_y, screen_width, screen_height)
@@ -416,7 +426,7 @@ def loading():
 	pygame.time.delay(2500) # 2500 represents 2500 miliseconds --> 2 seconds and a half of displaying the loading screen
 
 
-#DEATH ITEMS
+#DEATH ITEMS ATTRIBUTES
 
 #Lava
 lava = Death_Items(600, 486, 350, 70)
@@ -432,13 +442,21 @@ def game_over():
 	pygame.draw.rect(screen, (0, 0, 0), over_game)
 	screen.blit(over_game_text, over_game_text_rect)
 	pygame.display.flip()
-	pygame.time.delay(1000)
+	pygame.time.delay(3000)
 	
 
-#COINS
+#COINS ATTRIBUTES
 
-pass pass pass
+coin_sprite = pygame.sprite.Group()
+coin1 = Coins(300, 430, 19, 22, coin_image)
 
+#Multiply the number of coins and add in the group
+#for i in range(0, 8):
+#	coin_sprite.add(Coins(300 + i * 100, 430, 19, 22, coin_image))
+
+for coin in coin_sprite:
+	coin.rect.x = coin.x
+	coin.rect.y = coin.y
 
 
 ########################################################## GAME LOOP ##################################################################
@@ -539,6 +557,7 @@ while game_running:
 
 	#COLLISIONS
 
+
 	#Exit collisions
 	exit_collisions = pygame.sprite.spritecollideany(player, exit_sprite) is not (None)
 
@@ -552,6 +571,7 @@ while game_running:
 			screen.blit(dungeon, (0, 0))
 			level = level +1
 
+
 	#Lava collision
 	lava_collision = pygame.sprite.spritecollideany(player, lava_group) is not (None)
 
@@ -564,6 +584,14 @@ while game_running:
 			#For every 3 contacts, the remainder (%) of the division is == 0
 			if lava_contact % 6 == 0:
 				lives -= 1
+
+
+	#Coin collisions
+	coin_collision = pygame.sprite.spritecollideany(player, coin_sprite) is not (None)
+
+	if coin_collision:
+		if pygame.sprite.spritecollide(player, coin_sprite, True):
+			coin_score += 1
 
 
 
@@ -586,6 +614,7 @@ while game_running:
 
 		player.x, player.y = 241, 400
 		print(level)
+		print(coin_score)
 
 
 
@@ -613,6 +642,7 @@ while game_running:
 				level = level - 1
 
 		print(lives)
+		print(coin_score)
 
 		
 
@@ -626,12 +656,16 @@ while game_running:
 		#Updating manually the sprite groups
 		pygame.sprite.Sprite.add(door1, exit_sprite)
 		blocks_sprite.add(block4, block6)
+		coin_sprite.add(coin1)
+
 
 		for sprite in player_sprite:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
 			sprite.appear(screen)
 		for sprite in exit_sprite:
+			sprite.appear(screen)
+		for sprite in coin_sprite:
 			sprite.appear(screen)
 
 		#Transitioning the narrator and its text
@@ -642,9 +676,13 @@ while game_running:
 		narrator.appear(screen)
 		text1()
 
-		level_text = other_text.render( "Level "f"{level}", True, (250, 250, 250))
+		level_text = other_text.render( "Level "f"{level}", False, (255, 255, 255))
 		print(level)
 		screen.blit(level_text, (750, 20))
+
+		score_text = other_text.render("Score : "f"{coin_score}", False, (255, 255, 255))
+		print(coin_score)
+		screen.blit(score_text, (200, 20))
 
 		print(lives)
 
@@ -695,6 +733,8 @@ while game_running:
 			player.rect.y = player.y
 			lava_group.remove(lava)
 			player.stop_jumping()
+
+		print(coin_score)
 
 
 
