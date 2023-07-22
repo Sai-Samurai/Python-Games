@@ -246,11 +246,14 @@ class Coins(pygame.sprite.Sprite):
 		self.height = height
 		self.rect = pygame.Rect(x, y, length, height)
 		self.image = image
-		coin_sprite.add(self)
+		#coin_sprite.add(self)
 
 	def appear(self, screen):
 		pygame.draw.rect(screen, YELLOW, self.rect)
+		if self.rect.colliderect(player.rect):
+			coin_sprite.remove(self)
 		screen.blit(coin_image, self.rect)
+
 
 
 
@@ -447,16 +450,13 @@ def game_over():
 
 #COINS ATTRIBUTES
 
+coin1 = Coins(600, 430, 19, 22, coin_image)
 coin_sprite = pygame.sprite.Group()
-coin1 = Coins(300, 430, 19, 22, coin_image)
 
 #Multiply the number of coins and add in the group
 #for i in range(0, 8):
 #	coin_sprite.add(Coins(300 + i * 100, 430, 19, 22, coin_image))
 
-for coin in coin_sprite:
-	coin.rect.x = coin.x
-	coin.rect.y = coin.y
 
 
 ########################################################## GAME LOOP ##################################################################
@@ -656,7 +656,7 @@ while game_running:
 		#Updating manually the sprite groups
 		pygame.sprite.Sprite.add(door1, exit_sprite)
 		blocks_sprite.add(block4, block6)
-		coin_sprite.add(coin1)
+		pygame.sprite.Sprite.add(coin1, coin_sprite)
 
 
 		for sprite in player_sprite:
