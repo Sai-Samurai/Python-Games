@@ -230,25 +230,20 @@ class Narrator():
 	def appear(self, screen):
 		pygame.draw.rect(screen, narcolor, self.rect)
 
-		'''
-		if self.current_dialogue:
-			#Dimenstions + position of speech bubble
-			speech_bubble_rect = pygame.Rect(self.narX + 50, self.narY - 40, 50, 280)
-			
-			#Show and wrap text in speech bubble
-			wrapped_text = drawText(screen, self.current_dialogue, 'black', speech_bubble_rect, self.game_font, aa = True, bkg = "green")
-			
-			#Surface for speech bubble background
-			speech_bubble_surface = pygame.Surface((speech_bubble_rect.width, speech_bubble_rect.height))
-			speech_bubble_surface.fill('white')
-			
-			#Speech bubble appear on screen
-			screen.blit(speech_bubble_surface, speech_bubble_rect.topleft)
 
-			#Text appear on speech bubble
-			wrapped_text_appear = self.game_font.render(wrapped_text, True, 'black')
-			screen.blit(wrapped_text_appear, (speech_bubble_rect.left +10, speech_bubble_rect.top +10))
-			'''
+#Coins
+class Coins():
+	def __init__(self, x, y, length, height):
+		super().__init__()
+		self.x = x
+		self.y = y
+		self.length = length
+		self.height = height
+		self.rect = pygame.Rect(x, y, length, height)
+
+	def appear(self, screen):
+		pass
+
 
 
 
@@ -439,6 +434,11 @@ def game_over():
 	pygame.display.flip()
 	pygame.time.delay(1000)
 	
+
+#COINS
+
+pass pass pass
+
 
 
 ########################################################## GAME LOOP ##################################################################
@@ -686,6 +686,17 @@ while game_running:
 		print(lives)
 		screen.blit(lives_text, (200, 20))
 
+		#Game over screen displaying if the player lives count turn 0
+		if lives == 0:
+			game_over()
+			player.rect.x = 241
+			player.rect.y = 400
+			player.rect.x = player.x
+			player.rect.y = player.y
+			lava_group.remove(lava)
+			player.stop_jumping()
+
+
 
 
 
@@ -758,15 +769,6 @@ while game_running:
 	else:
 		print("Player going down!!!")
 		print(screen_width, screen_height)
-
-
-	#Game over screen displaying if the player lives count turn 0
-	if lives == 0:
-		game_over()
-		player.rect.x = 241
-		player.rect.y = 400
-		player.rect.x = player.x
-		player.rect.y = player.y
 
 
 
