@@ -119,7 +119,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-		player_rect.x = self.x
+		player_rect.x = self.x 
 		player_rect.y = self.y
 
 	def updateplayer(self, x, y):
@@ -282,6 +282,8 @@ class Exit(pygame.sprite.Sprite):
 ###################################################################################################################################
 
 #PLAYER'S ATTRIBUTES VALUES
+#Offset for collisions
+offset = 0.5
 
 #Jumping
 y_gravity = 1
@@ -316,9 +318,9 @@ blocks_sprite = pygame.sprite.Group()
 block1 = Blocks(400, 350, block_size, block_size2, block_rect)
 block2 = Blocks(550, 350, block_size, block_size2, block_rect)
 block3 = Blocks(250, 350, block_size, block_size2, block_rect)
-block4 = Blocks(10, 350, block_size, block_size2, block_rect)
 block5 = Blocks(340, 310, block_size, block_size2, block_rect)
-block6 = Blocks(460, 475, block_size, block_size2, block_rect)
+block6 = Blocks(460, 435, block_size, block_size2, block_rect)
+block4 = Blocks(10, 300, block_size, block_size2, block_rect)
 
 #blocks_sprite.add(block4, block6)#, block2, block3, block1, block5)
 
@@ -390,7 +392,7 @@ level = -1
 
 #Exit Method
 door0 = Exit(800, 380, exitlength, exitheight, color)
-door1 = Exit(400, 250, exitlength, exitheight, color)
+door1 = Exit(600, 0, exitlength, exitheight, color) #before: 400, 250
 door2 = Exit(100, 400, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group(door0)
@@ -459,6 +461,7 @@ coin_sprite = pygame.sprite.Group()
 
 
 
+
 ########################################################## GAME LOOP ##################################################################
 
 game_running = True
@@ -486,6 +489,7 @@ while game_running:
 
 			if event.key == pygame.K_SPACE:
 				player.jumping = True
+				print("SPACE")
 				
 		elif event.type == pygame.KEYUP:
 			if event.key == pygame.K_RIGHT:
@@ -493,7 +497,7 @@ while game_running:
 			if event.key == pygame.K_LEFT:
 				player.moving_left = False
 
-
+	
 
 
 	player.rect.x = player.x
@@ -521,28 +525,62 @@ while game_running:
 		player.rect.y -= y_gravity
 		y_velocity -= y_gravity
 	'''
+	player.x = player.rect.x
+	blocks_hit_list = pygame.sprite.spritecollide(player, blocks_sprite, False)
+	print("The return value is", pygame.sprite.spritecollide(player, blocks_sprite, False))
+	print(player, blocks_sprite)
+
+	print("The player is at ", player.x, player.y)
+	print("Player rectangle is at ", player.rect.x, player.rect.y)
+	print("Block is at ", block4.x2, block4.y2)
 	if pygame.sprite.spritecollideany(player, blocks_sprite) is not (None):
-		if pygame.sprite.spritecollide(player, blocks_sprite, False):			
-			if player.rect.bottom > block.rect.top :
-				player.rect.bottom = block.rect.top
-				player.y = player.rect.y
+		print(524)
+		if pygame.sprite.spritecollide(player, blocks_sprite, False):
+			print(525)
+			
+			for block in blocks_hit_list:
+				vlocks = block
+
+			if player.rect.right >= vlocks.rect.left and player.rect.left <= vlocks.rect.left:
+				player.rect.right = vlocks.rect.left - offset
+				player.x = player.rect.x
+				print("right")
+
+
+
+
+			#Working code tested with Janani
+			'''
+			if player.rect.bottom >= vlocks.rect.top and player.rect.top <= vlocks.rect.top:
+				player.rect.bottom = vlocks.rect.top + offset
 				player.y_velocity = 0
-				player.y = min(player.y, 400)
+				player.y = min(player.rect.y, 400)
 				print("bottom")
-			elif player.rect.top < block.rect.bottom :
-				player.rect.top = block.rect.bottom
+
+
+			elif player.rect.top <= vlocks.rect.bottom and player.rect.bottom >= vlocks.rect.bottom:
+				player.rect.top = vlocks.rect.bottom - offset
 				player.y = player.rect.y
 				y_velocity = - y_gravity
 				jumping = False
 				print("top")
-			elif player.rect.right > block.rect.left and player.rect.left < block.rect.left:
-				player.rect.right = block.rect.left
-				player.x = player.rect.x
-				print("right")
-			elif player.rect.left < block.rect.right and player.rect.right > block.rect.right:
+			'''		
+
+			
+			
+				
+			
+
+			
+			'''
+			if player.rect.left < block.rect.right and player.rect.right > block.rect.right:
 				player.rect.left = block.rect.right
 				player.x = player.rect.x
 				print("left")
+			'''
+
+		else:
+			print(530)
 
 	player.animate()
 
@@ -615,6 +653,7 @@ while game_running:
 		player.x, player.y = 241, 400
 		print(level)
 		print(coin_score)
+
 
 
 
@@ -802,7 +841,8 @@ while game_running:
 	The player only realizes that he is under the ground (y level above 400)
 	only after 20 pixels before coming back to the ground.
 	'''
-	print(player.x, player.y)
+	print(player.x , " = PLAYERS X", player.y, " = PLAYERS Y")
+	print(block.x2, " = BLOCKS X", block.y2, " = BLOCKS Y")
 
 	if player.y >= 400:
 		player.y = 400
