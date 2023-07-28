@@ -503,28 +503,7 @@ while game_running:
 	player.rect.x = player.x
 	player.rect.y = player.y
 
-	#Commenting these collisions in order to fix it in the Player class
-	
-	#player.handle_collision(block)
 
-	'''
-	collisions = pygame.sprite.spritecollide(player, blocks_sprite, False)
-	print(collisions)
-	if collisions:
-		for block in collisions:
-			print(block)
-			if player.rect.colliderect(block.rect): #isn't this always true?!
-				player.handle_collision(block)
-			else:
-				raise Exception("weird!!!")
-
-	if not collisions:
-		on_ground = True
-
-	if not on_ground:
-		player.rect.y -= y_gravity
-		y_velocity -= y_gravity
-	'''
 	player.x = player.rect.x
 	blocks_hit_list = pygame.sprite.spritecollide(player, blocks_sprite, False)
 	print("The return value is", pygame.sprite.spritecollide(player, blocks_sprite, False))
@@ -538,53 +517,52 @@ while game_running:
 		if pygame.sprite.spritecollide(player, blocks_sprite, False):
 			print(525)
 			
+			#Applies to all blocks
 			for block in blocks_hit_list:
 				vlocks = block
-
-			if player.rect.right >= vlocks.rect.left and player.rect.left <= vlocks.rect.left:
-				player.rect.right = vlocks.rect.left - offset
-				player.x = player.rect.x
-				print("right")
-
-
-
-
+			
 			#Working code tested with Janani
-			'''
 			if player.rect.bottom >= vlocks.rect.top and player.rect.top <= vlocks.rect.top:
-				player.rect.bottom = vlocks.rect.top + offset
-				player.y_velocity = 0
-				player.y = min(player.rect.y, 400)
-				print("bottom")
-
+				if player.rect.centerx > vlocks.rect.left and player.rect.centerx < vlocks.rect.right: #Makes sure that the player doesn't fade through the block in order to activate the bottom collision using the center of the player
+					player.rect.bottom = vlocks.rect.top + offset
+					player.y_velocity = 0
+					player.y = min(player.rect.y, 400)
+					print("bottom")
+					
 
 			elif player.rect.top <= vlocks.rect.bottom and player.rect.bottom >= vlocks.rect.bottom:
-				player.rect.top = vlocks.rect.bottom - offset
-				player.y = player.rect.y
-				y_velocity = - y_gravity
-				jumping = False
-				print("top")
-			'''		
-
-			
+				if player.rect.centerx > vlocks.rect.left and player.rect.centerx < vlocks.rect.right:
+					player.rect.top = vlocks.rect.bottom - offset
+					player.y = player.rect.y
+					y_velocity = - y_gravity
+					jumping = False
+					print("top")
 			
 				
-			
+			if player.rect.right >= vlocks.rect.left and player.rect.left <= vlocks.rect.left:
+				if player.rect.centerx < vlocks.rect.left:
+					player.rect.right = vlocks.rect.left
+					player.x = player.rect.x
+					if player.rect.y != min_y:
+						y_velocity = - y_gravity
+						jumping = False
+					print("right")
 
-			
-			'''
-			if player.rect.left < block.rect.right and player.rect.right > block.rect.right:
-				player.rect.left = block.rect.right
-				player.x = player.rect.x
-				print("left")
-			'''
+
+			if player.rect.left <= vlocks.rect.right and player.rect.right >= vlocks.rect.right:
+				if player.rect.centerx > vlocks.rect.right:
+					player.rect.left = vlocks.rect.right
+					player.x = player.rect.x
+					if player.rect.y != min_y:
+						y_velocity = - y_gravity
+						jumping = False
+					print("left")
+
 
 		else:
 			print(530)
 
 	player.animate()
-
-
 
 
 
@@ -794,46 +772,7 @@ while game_running:
 
 
 
-				
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-	'''if exit_collisions:
-						screen.blit(dungeon, (0, 0))
-						level = level +1
-						player.x, player.y = 241, 430
-						level_text = game_font.render( "Level "f"{level}", True, (0, 0, 0))
-						
-						for sprite in player_sprite:
-							sprite.appear(screen)
-			
-						for sprite in blocks_sprite:
-							sprite.appear(screen)
-			
-			
-						if level == 1:
-							screen.blit(level_text, ((screen_width * 9/10) - 100, screen_height - 500))
-			
-			
-							for sprite in exit_sprite:
-								sprite.appear(screen)
-			
-						if level == 2:
-							screen.blit(level_text, ((screen_width * 9/10) - 100, screen_height - 500))
-			
-							for sprite in exit_sprite:
-								sprite.appear(screen)'''
 
 
 	#Debugging the player's y coordinate
