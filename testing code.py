@@ -115,10 +115,6 @@ class Player(pygame.sprite.Sprite):
 			if self.y_velocity <- jump_height:
 				self.stop_jumping()
 
-
-
-
-
 		player_rect.x = self.x 
 		player_rect.y = self.y
 
