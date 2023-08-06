@@ -122,54 +122,6 @@ class Player(pygame.sprite.Sprite):
 		self.x
 		self.y
 
-	#def handle_collision(self, block):
-
-		'''
-		if self.rect.bottom > block.rect.top and self.rect.top < block.rect.top:
-			self.rect.bottom = block.rect.top
-			self.y = max(self.y, min_y)
-			self.y = self.rect.y
-			self.stop_jumping()
-			y_velocity = 0
-			on_ground = True
-			print('bottom')
-
-		elif self.rect.top < block.rect.bottom and self.rect.y > block.rect.y:
-			self.rect.top = block.rect.bottom
-			self.rect.bottom = min(self.y, min_y)
-			self.y = self.rect.y
-			self.y_velocity = 0
-			print("top")
-
-		if self.rect.right > block.rect.left and self.rect.left < block.rect.left:
-			self.rect.right = block.rect.left
-			self.x = self.rect.x
-			if self.rect.bottom > block.rect.top and self.rect.top < block.rect.bottom:
-				self.rect.bottom = block.rect.top
-				self.y = self.rect.y
-				self.stop_jumping()
-				y_velocity = 0
-			elif self.rect.top < block.rect.bottom and self.rect.bottom > block.rect.bottom:
-				self.rect.top = block.rect.bottom
-				self.y = self.rect.y
-				y_velocity = 0
-			print('right')
-
-		elif self.rect.left < block.rect.right and self.rect.right > block.rect.right:
-			self.rect.left = block.rect.right
-			self.x = self.rect.x
-			if self.rect.bottom > block.rect.top and self.rect.top < block.rect.bottom:
-				self.rect.bottom = block.rect.top
-				self.y = self.rect.y
-				self.stop_jumping()
-				y_velocity = 0
-			elif self.rect.top < block.rect.bottom and self.rect.bottom > block.rect.bottom:
-				self.rect.top = block.rect.bottom
-				self.y = self.rect.y
-				y_velocity = 0
-			print('left')
-		'''
-
 
 #Blocks
 class Blocks(pygame.sprite.Sprite):
@@ -234,22 +186,19 @@ class Narrator():
 
 #Coins
 class Coins(pygame.sprite.Sprite):
-	def __init__(self, x, y, length, height, image):
+	def __init__(self, x, y, length, height):
 		super().__init__()
 		self.x = x
 		self.y = y
 		self.length = length
 		self.height = height
 		self.rect = pygame.Rect(x, y, length, height)
-		self.image = image
-		#coin_sprite.add(self)
+		self.collected = False
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, YELLOW, self.rect)
-		if self.rect.colliderect(player.rect):
-			coin_sprite.remove(self)
-		screen.blit(coin_image, self.rect)
-
+		if not self.collected:
+			pygame.draw.rect(screen, YELLOW, self.rect)
+			screen.blit(coin_image, self.rect)
 
 
 
@@ -278,6 +227,7 @@ class Exit(pygame.sprite.Sprite):
 ###################################################################################################################################
 
 #PLAYER'S ATTRIBUTES VALUES
+
 #Offset for collisions
 offset = 0.5
 
@@ -304,8 +254,6 @@ lives = 3
 coin_score = 0
 
 
-
-
 #BLOCK'S ATTRIBUTES VALUES
 
 #Blocks
@@ -320,11 +268,9 @@ block4 = Blocks(10, 300, block_size, block_size2, block_rect)
 
 #blocks_sprite.add(block4, block6)#, block2, block3, block1, block5)
 
-
 for block in blocks_sprite:
 	block.rect.x = block.x2
 	block.rect.y = block.y2
-
 
 #Wrapping text
 #Function being able to seprate the text by counting number of words and length they have
@@ -344,7 +290,6 @@ def wrap_text(text, font, max_width):
         wrapped_lines.append(current_line)
 
     return wrapped_lines
-
 
 
 #NARRATOR ATTRIBUTES
@@ -367,7 +312,6 @@ def text0():
 	for i, line in enumerate(wrapped_lines):
 		screen.blit(text_font.render(line, True, 'black', None), (bubbleX + 10, bubbleY + 10 + i * 10))
 
-
 def text1():
 	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 35
 	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 60))
@@ -380,9 +324,8 @@ def text1():
 		screen.blit(text_font.render(line, True, 'black', None), (bubbleX + 10, bubbleY + 10 + i * 10))
 
 
-
-
 #EXIT ATTRIBUTES
+
 #Levels
 level = -1
 
@@ -434,7 +377,9 @@ lava = Death_Items(600, 486, 350, 70)
 lava_group = pygame.sprite.Group()
 lava_contact = 0
 
+
 #GAME OVER 
+
 over_game = pygame.Rect(0, 0, screen_width, screen_height)
 over_game_text = pygame.font.Font("Retro_Gaming.ttf", 45).render("GAME OVER", False, (255, 255, 255))
 over_game_text_rect = over_game_text.get_rect(center = (screen_width / 2, screen_height / 2))
@@ -448,14 +393,12 @@ def game_over():
 
 #COINS ATTRIBUTES
 
-coin1 = Coins(600, 430, 19, 22, coin_image)
-coin_sprite = pygame.sprite.Group()
+coin1 = Coins(200, 430, 19, 22)
+coin_group = pygame.sprite.Group()
 
-#Multiply the number of coins and add in the group
-#for i in range(0, 8):
-#	coin_sprite.add(Coins(300 + i * 100, 430, 19, 22, coin_image))
-
-
+for coin in coin_group:
+	coin.rect.x = coin.x
+	coin.rect.y = coin.y
 
 
 ########################################################## GAME LOOP ##################################################################
@@ -599,10 +542,10 @@ while game_running:
 
 
 	#Coin collisions
-	coin_collision = pygame.sprite.spritecollideany(player, coin_sprite) is not (None)
-
+	coin_collision = pygame.sprite.spritecollideany(player, coin_group) is not (None)
 	if coin_collision:
-		if pygame.sprite.spritecollide(player, coin_sprite, True):
+		if pygame.sprite.spritecollide(player, coin_group, True):
+			coin1.collected = True
 			coin_score += 1
 
 
@@ -663,22 +606,22 @@ while game_running:
 	#Level 1
 	elif level == 1:
 		#Setting the screen
-		screen.fill(bg_color)
+		#screen.fill(bg_color)
 		screen.blit(dungeon_screen, (0, 0))
 
 		#Updating manually the sprite groups
 		pygame.sprite.Sprite.add(door1, exit_sprite)
 		blocks_sprite.add(block4, block6)
-		pygame.sprite.Sprite.add(coin1, coin_sprite)
 
+		if not coin1.collected:
+			coin_group.add(coin1)
+		coin1.appear(screen)
 
 		for sprite in player_sprite:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
 			sprite.appear(screen)
 		for sprite in exit_sprite:
-			sprite.appear(screen)
-		for sprite in coin_sprite:
 			sprite.appear(screen)
 
 		#Transitioning the narrator and its text
@@ -693,10 +636,10 @@ while game_running:
 		print(level)
 		screen.blit(level_text, (750, 20))
 
-		score_text = other_text.render("Score : "f"{coin_score}", False, (255, 255, 255))
-		print(coin_score)
+		score_text = other_text.render("Score: "f"{coin_score}", False, (255, 255, 255))
 		screen.blit(score_text, (200, 20))
 
+		print(coin_score)
 		print(lives)
 
 
@@ -706,7 +649,7 @@ while game_running:
 	#Level 2
 	elif level == 2:
 		#Setting the screen
-		screen.fill(bg_color)
+		#screen.fill(bg_color)
 		screen.blit(dungeon_screen, (0, 0))
 
 		#Updating manually the sprite groups
@@ -754,7 +697,7 @@ while game_running:
 
 
 	elif level > 2: 								#Or we can manually say: if level != 0 and level != 1 and level != 2
-		screen.fill(bg_color)
+		#screen.fill(bg_color)
 		screen.blit(dungeon_screen, (0, 0))						
 		player.x, player.y = 500, 200
 		for sprite in player_sprite:
