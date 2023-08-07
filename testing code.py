@@ -186,14 +186,15 @@ class Narrator():
 
 #Coins
 class Coins(pygame.sprite.Sprite):
-	def __init__(self, x, y, length, height):
+	def __init__(self, x, y, length, height, image):
 		super().__init__()
 		self.x = x
 		self.y = y
 		self.length = length
 		self.height = height
 		self.rect = pygame.Rect(x, y, length, height)
-		self.collected = False
+		self.image = image
+		self.collected = False #the collision of the player and the coin is false
 
 	def appear(self, screen):
 		if not self.collected:
@@ -393,10 +394,12 @@ def game_over():
 
 #COINS ATTRIBUTES
 
-coin1 = Coins(200, 430, 19, 22)
+coin1 = Coins(200, 430, 19, 22, coin_image)
+coin2 = Coins(300, 430, 19, 22, coin_image)
 coin_group = pygame.sprite.Group()
+coin_list = [coin1, coin2]
 
-for coin in coin_group:
+for coin in coin_list:
 	coin.rect.x = coin.x
 	coin.rect.y = coin.y
 
@@ -545,8 +548,14 @@ while game_running:
 	coin_collision = pygame.sprite.spritecollideany(player, coin_group) is not (None)
 	if coin_collision:
 		if pygame.sprite.spritecollide(player, coin_group, True):
-			coin1.collected = True
-			coin_score += 1
+			#next() goes throught the coin list and finds the first coin from the list of coins where the coin's rectangle overlaps with the player's rectangle
+			collided_coin = next(coin for coin in coin_list if coin.rect.colliderect(player.rect)) #coin are still in the coin_list
+
+			if not collided_coin.collected: # now the coins that have collided are to be removed from the sprite group
+				collided_coin.collected = True
+				coin_score += 1
+				coin_group.remove(collided_coin)
+
 
 
 
@@ -613,9 +622,10 @@ while game_running:
 		pygame.sprite.Sprite.add(door1, exit_sprite)
 		blocks_sprite.add(block4, block6)
 
-		if not coin1.collected:
-			coin_group.add(coin1)
-		coin1.appear(screen)
+		for coin in coin_list:
+			if not coin.collected: #if no collision is happening the coins should be added to the coin group
+				coin_group.add(coin)
+		coin_group.draw(screen)
 
 		for sprite in player_sprite:
 			sprite.appear(screen)
