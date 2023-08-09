@@ -155,8 +155,26 @@ class Enemy(pygame.sprite.Sprite):
 		self.height = height
 		self.rect = pygame.Rect(x, y, length, height)
 
-	def appear(self):
+	def appear(self, screen):
 		pygame.draw.rect(screen, (92, 64, 51), self.rect)
+
+#Enemy bullets
+class Bullet(pygame.sprite.Sprite):
+	def __init__(self, center, radius, color):
+		super().__init__()
+		self.center = center
+		self.x, self.y = center
+		self.radius = radius
+		self.color = color
+
+
+	def appear(self, screen):
+		pygame.draw.circle(screen, self.color, self.center, self.radius)
+
+	def animate(self):
+		self.x -= bullet_speed
+		self.center = (self.x, self.y)
+
 
 #Death items, like lava, spikes, ...
 class Death_Items(pygame.sprite.Sprite):
@@ -381,8 +399,13 @@ def loading():
 #ENEMIES
 
 enemy1 = Enemy(600, 426, 30, 60)
-
 enemy_group = pygame.sprite.Group()
+
+
+#BULLETS
+
+bullet = Bullet((615, 436), 7.5, 'red')
+bullet_speed = 10
 
 
 #DEATH ITEMS ATTRIBUTES
@@ -679,8 +702,11 @@ while game_running:
 
 		#Updating manually the sprite groups
 
-			#Removing everything from the block group
+			#Removing everything from the sprite groups
 		blocks_sprite.remove(block4, block6)
+		for coin in coin_list:
+			if not coin.collected: #if no collision is happening the coins should be added to the coin group
+				coin_group.remove(coin)
 
 			#Adding the elements for this level
 		pygame.sprite.Sprite.add(door2, exit_sprite)
@@ -728,7 +754,16 @@ while game_running:
 			#Adding the sprites
 		enemy_group.add(enemy1)
 
-		enemy1.appear()
+		#Animations
+		bullet.animate()
+		for bad_guy in enemy_group:
+			if bullet.x <= 0:
+				bullet.x = 615
+
+
+
+		bullet.appear(screen)
+		enemy1.appear(screen)
 		for sprite in player_sprite:
 			sprite.appear(screen)
 
