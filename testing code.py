@@ -146,9 +146,17 @@ class Blocks(pygame.sprite.Sprite):
 
 
 #Enemies
-class Enemy():
-	def __init__(self):
-		pass
+class Enemy(pygame.sprite.Sprite):
+	def __init__(self, x, y, length, height):
+		super().__init__()
+		self.x = x
+		self.y = y
+		self.length = length
+		self.height = height
+		self.rect = pygame.Rect(x, y, length, height)
+
+	def appear(self):
+		pygame.draw.rect(screen, (92, 64, 51), self.rect)
 
 #Death items, like lava, spikes, ...
 class Death_Items(pygame.sprite.Sprite):
@@ -332,7 +340,7 @@ level = -1
 
 #Exit Method
 door0 = Exit(800, 380, exitlength, exitheight, color)
-door1 = Exit(600, 0, exitlength, exitheight, color) #before: 400, 250
+door1 = Exit(800, 250, exitlength, exitheight, color) #before: 400, 250
 door2 = Exit(100, 400, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group(door0)
@@ -370,6 +378,12 @@ def loading():
 	pygame.display.flip() # We forcefully update the screen in order to display the loading screen
 	pygame.time.delay(2500) # 2500 represents 2500 miliseconds --> 2 seconds and a half of displaying the loading screen
 
+#ENEMIES
+
+enemy1 = Enemy(600, 426, 30, 60)
+
+enemy_group = pygame.sprite.Group()
+
 
 #DEATH ITEMS ATTRIBUTES
 
@@ -396,8 +410,9 @@ def game_over():
 
 coin1 = Coins(200, 430, 19, 22, coin_image)
 coin2 = Coins(300, 430, 19, 22, coin_image)
+coin3 = Coins(400, 430, 19, 22, coin_image)
 coin_group = pygame.sprite.Group()
-coin_list = [coin1, coin2]
+coin_list = [coin1, coin2, coin3]
 
 for coin in coin_list:
 	coin.rect.x = coin.x
@@ -439,7 +454,10 @@ while game_running:
 			if event.key == pygame.K_LEFT:
 				player.moving_left = False
 
-	
+	#Small text attributes
+	level_text = other_text.render( "Level "f"{level}", False, (255, 255, 255))
+	lives_text = other_text.render("Lives : "f"{lives}", False, (255, 255, 255))
+	score_text = other_text.render("Score: "f"{coin_score}", False, (255, 255, 255))
 
 
 	player.rect.x = player.x
@@ -597,7 +615,6 @@ while game_running:
 		narrator.appear(screen)
 		text0()
 
-		level_text = other_text.render( "Level "f"{level}", True, (0, 0, 0))
 		print(level)
 		screen.blit(level_text, (750, 20))
 
@@ -642,12 +659,10 @@ while game_running:
 		narrator.appear(screen)
 		text1()
 
-		level_text = other_text.render( "Level "f"{level}", False, (255, 255, 255))
 		print(level)
 		screen.blit(level_text, (750, 20))
 
-		score_text = other_text.render("Score: "f"{coin_score}", False, (255, 255, 255))
-		screen.blit(score_text, (200, 20))
+		screen.blit(score_text, (450, 20))
 
 		print(coin_score)
 		print(lives)
@@ -682,13 +697,11 @@ while game_running:
 		for sprite in exit_sprite:
 			sprite.appear(screen)
 
-		level_text = other_text.render( "Level "f"{level}", False, (255, 255, 255))
 		print(level)
 		screen.blit(level_text, (750, 20))
 
-		lives_text = other_text.render("Lives : "f"{lives}", False, (255, 255, 255))
 		print(lives)
-		screen.blit(lives_text, (200, 20))
+		screen.blit(lives_text, (150, 20))
 
 		#Game over screen displaying if the player lives count turn 0
 		if lives == 0:
@@ -703,10 +716,29 @@ while game_running:
 		print(coin_score)
 
 
+	elif level == 3:
+		screen.blit(dungeon_screen, (0, 0))
+
+		#Updating the sprite groups manually
+
+			#Removing sprites from previous level
+		blocks_sprite.remove(block1, block3)
+		lava_group.remove(lava)
+
+			#Adding the sprites
+		enemy_group.add(enemy1)
+
+		enemy1.appear()
+		for sprite in player_sprite:
+			sprite.appear(screen)
+
+		screen.blit(level_text, (750, 20))
+		screen.blit(score_text, (450, 20))
+		screen.blit(lives_text, (150, 20))
 
 
 
-	elif level > 2: 								#Or we can manually say: if level != 0 and level != 1 and level != 2
+	elif level > 3: 								#Or we can manually say: if level != 0 and level != 1 and level != 2 ...
 		#screen.fill(bg_color)
 		screen.blit(dungeon_screen, (0, 0))						
 		player.x, player.y = 500, 200
