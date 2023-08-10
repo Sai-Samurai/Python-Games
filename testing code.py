@@ -58,6 +58,11 @@ d_image = pygame.image.load("door.png").convert_alpha()
 door_image = pygame.transform.scale(d_image, (d_image.get_width() / 1.5, d_image.get_height() / 1.5))
 door_rect = door_image.get_rect()
 
+#Lava image
+l_image = pygame.image.load("lava.png").convert_alpha()
+lava_image = pygame.transform.scale(l_image, (l_image.get_width(), l_image.get_height() * 4/3))
+lava_rect = lava_image.get_rect()
+
 #Coin image
 c_image = pygame.image.load("coin.png").convert_alpha()
 coin_image = pygame.transform.scale(c_image, (c_image.get_width(), c_image.get_height()))
@@ -158,6 +163,7 @@ class Enemy(pygame.sprite.Sprite):
 	def appear(self, screen):
 		pygame.draw.rect(screen, (92, 64, 51), self.rect)
 
+
 #Enemy bullets
 class Bullet(pygame.sprite.Sprite):
 	def __init__(self, center, radius, color):
@@ -166,7 +172,6 @@ class Bullet(pygame.sprite.Sprite):
 		self.x, self.y = center
 		self.radius = radius
 		self.color = color
-
 
 	def appear(self, screen):
 		pygame.draw.circle(screen, self.color, self.center, self.radius)
@@ -188,9 +193,8 @@ class Death_Items(pygame.sprite.Sprite):
 		self.rect = pygame.Rect(x, y, width, height)
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, (255, 0, 0), self.rect)
-
-
+		pygame.draw.rect(screen, (255, 204, 0), self.rect)
+		screen.blit(lava_image, self.rect)
 
 
 #Narrator / Main evil villain
@@ -358,7 +362,7 @@ level = -1
 
 #Exit Method
 door0 = Exit(800, 380, exitlength, exitheight, color)
-door1 = Exit(800, 250, exitlength, exitheight, color) #before: 400, 250
+door1 = Exit(400, 250, exitlength, exitheight, color) #before: 400, 250
 door2 = Exit(100, 400, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group(door0)
@@ -784,6 +788,15 @@ while game_running:
 		screen.blit(level_text, (750, 20))
 		screen.blit(score_text, (450, 20))
 		screen.blit(lives_text, (150, 20))
+
+		if lives == 0:
+			game_over()
+			player.rect.x = 241
+			player.rect.y = 400
+			player.rect.x = player.x
+			player.rect.y = player.y
+			bullet_group.remove(bullet)
+			player.stop_jumping()
 
 
 
