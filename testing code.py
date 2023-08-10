@@ -398,14 +398,16 @@ def loading():
 
 #ENEMIES
 
-enemy1 = Enemy(600, 426, 30, 60)
+enemy1 = Enemy(900, 426, 30, 60)
 enemy_group = pygame.sprite.Group()
 
 
 #BULLETS
 
-bullet = Bullet((615, 436), 7.5, 'red')
+bullet = Bullet((915, 436), 7.5, 'red')
 bullet_speed = 10
+bullet_group = pygame.sprite.Group(bullet)
+bullet_hit = 0
 
 
 #DEATH ITEMS ATTRIBUTES
@@ -581,7 +583,8 @@ while game_running:
 			#Increase lava_contact for every collision
 			lava_contact += 1
 			#For every 3 contacts, the remainder (%) of the division is == 0
-			if lava_contact % 6 == 0:
+			#The fourth contact then takes one life from the player
+			if lava_contact % 8 == 0:
 				lives -= 1
 
 
@@ -597,6 +600,17 @@ while game_running:
 				coin_score += 1
 				coin_group.remove(collided_coin)
 
+
+	#Bullet collision
+	bullet_center = (bullet.center[0], bullet.center[1])
+	#Creating a smaller hitbox for the bullet --> A square that's hypotenuse is 2* the radius of the circle --> It is in the circle
+	bullet_collision_area = pygame.Rect(bullet_center[0] - bullet.radius, bullet_center[1] - bullet.radius, bullet.radius *2, bullet.radius *2)
+
+	if player.rect.colliderect(bullet_collision_area):
+		bullet.x = 915
+		bullet_hit += 1
+		if bullet_hit % 3 == 0:
+			lives -= 1
 
 
 
@@ -758,7 +772,7 @@ while game_running:
 		bullet.animate()
 		for bad_guy in enemy_group:
 			if bullet.x <= 0:
-				bullet.x = 615
+				bullet.x = 915
 
 
 
