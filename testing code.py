@@ -295,7 +295,7 @@ block2 = Blocks(550, 350, block_size, block_size2, block_rect)
 block3 = Blocks(250, 350, block_size, block_size2, block_rect)
 block5 = Blocks(340, 310, block_size, block_size2, block_rect)
 block6 = Blocks(460, 435, block_size, block_size2, block_rect)
-block4 = Blocks(10, 300, block_size, block_size2, block_rect)
+block4 = Blocks(210, 300, block_size, block_size2, block_rect)
 
 #blocks_sprite.add(block4, block6)#, block2, block3, block1, block5)
 
