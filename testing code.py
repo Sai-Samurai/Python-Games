@@ -264,7 +264,7 @@ offset = 0.5
 
 #Jumping
 y_gravity = 1
-jump_height= 20
+jump_height= 25
 y_velocity = jump_height 
 on_ground = True
 
@@ -362,7 +362,7 @@ level = -1
 
 #Exit Method
 door0 = Exit(800, 380, exitlength, exitheight, color)
-door1 = Exit(400, 250, exitlength, exitheight, color) #before: 400, 250
+door1 = Exit(400, 0, exitlength, exitheight, color) #before: 400, 250
 door2 = Exit(100, 400, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group(door0)
@@ -492,6 +492,9 @@ while game_running:
 	player.rect.x = player.x
 	player.rect.y = player.y
 
+	#Forces the player to have gravity applied to it
+	if player.y < 400:
+		player.y +=  5*y_gravity
 
 	player.x = player.rect.x
 	blocks_hit_list = pygame.sprite.spritecollide(player, blocks_sprite, False)
@@ -512,12 +515,10 @@ while game_running:
 			
 			#Working code tested with Janani
 			if player.rect.bottom >= vlocks.rect.top and player.rect.top <= vlocks.rect.top:
-				if player.rect.centerx > vlocks.rect.left and player.rect.centerx < vlocks.rect.right: #Makes sure that the player doesn't fade through the block in order to activate the bottom collision using the center of the player
+				if player.rect.centerx + 15 > vlocks.rect.left and player.rect.centerx - 15 < vlocks.rect.right: #Makes sure that the player doesn't fade through the block in order to activate the bottom collision using the center of the player
 					player.rect.bottom = vlocks.rect.top + offset
-					player.y_velocity = 0
-					player.y = min(player.rect.y, 400)
-					print("bottom")
-					
+					player.y = player.rect.y
+					print("AAAAAAAAAAAAAAAAAAAAAA")
 
 			elif player.rect.top <= vlocks.rect.bottom and player.rect.bottom >= vlocks.rect.bottom:
 				if player.rect.centerx > vlocks.rect.left and player.rect.centerx < vlocks.rect.right:
