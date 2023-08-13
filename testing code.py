@@ -53,6 +53,11 @@ b_image = pygame.image.load("Brick_texture.png").convert_alpha()
 block_image = pygame.transform.smoothscale(b_image, (b_image.get_width() / 3.3, b_image.get_height() / 3.3))
 block_rect = block_image.get_rect()
 
+#Enemy image
+e_image = pygame.image.load("enemy1.png").convert_alpha()
+enemy_image = pygame.transform.scale(e_image, (e_image.get_width() / 2, e_image.get_height() / 3.36))
+enemy_rect = enemy_image.get_rect()
+
 #Door image
 d_image = pygame.image.load("door.png").convert_alpha()
 door_image = pygame.transform.scale(d_image, (d_image.get_width() / 1.5, d_image.get_height() / 1.5))
@@ -161,7 +166,8 @@ class Enemy(pygame.sprite.Sprite):
 		self.rect = pygame.Rect(x, y, length, height)
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, (92, 64, 51), self.rect)
+		#pygame.draw.rect(screen, (92, 64, 51), self.rect)
+		screen.blit(enemy_image, self.rect)
 
 
 #Enemy bullets
@@ -402,7 +408,7 @@ def loading():
 
 #ENEMIES
 
-enemy1 = Enemy(900, 426, 30, 60)
+enemy1 = Enemy(850, 420, 30, 60)
 enemy_group = pygame.sprite.Group()
 
 
