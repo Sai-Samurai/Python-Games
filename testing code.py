@@ -504,7 +504,7 @@ while game_running:
 	player.rect.y = player.y
 
 	#Forces the player to have gravity applied to it
-	if player.y < 400:
+	if player.y < min_y:
 		player.y +=  5*y_gravity
 
 	player.x = player.rect.x
@@ -627,6 +627,11 @@ while game_running:
 		bullet_hit += 1
 		if bullet_hit % 3 == 0:
 			lives -= 1
+
+	for block in blocks_sprite:
+		vlocks = block
+		if vlocks.rect.colliderect(bullet_collision_area):
+			bullet.x = 915
 
 
 
@@ -763,7 +768,7 @@ while game_running:
 		if lives == 0:
 			game_over()
 			player.rect.x = 241
-			player.rect.y = 400
+			player.rect.y = min_y
 			player.rect.x = player.x
 			player.rect.y = player.y
 			lava_group.remove(lava)
@@ -783,6 +788,7 @@ while game_running:
 
 			#Adding the sprites
 		enemy_group.add(enemy1)
+		blocks_sprite.add(block6)
 
 		#Animations
 		bullet.animate()
@@ -794,6 +800,8 @@ while game_running:
 		enemy1.appear(screen)
 		for sprite in player_sprite:
 			sprite.appear(screen)
+		for sprite in blocks_sprite:
+			sprite.appear(screen)
 
 		screen.blit(level_text, (750, 20))
 		screen.blit(score_text, (450, 20))
@@ -802,7 +810,7 @@ while game_running:
 		if lives == 0:
 			game_over()
 			player.rect.x = 241
-			player.rect.y = 400
+			player.rect.y = min_y
 			player.rect.x = player.x
 			player.rect.y = player.y
 			bullet_group.remove(bullet)
@@ -836,13 +844,10 @@ while game_running:
 	print(player.x , " = PLAYERS X", player.y, " = PLAYERS Y")
 	print(block.x2, " = BLOCKS X", block.y2, " = BLOCKS Y")
 
-	if player.y >= 400:
-		player.y = 400
-	else:
+	if player.y >= min_y:
+		player.y = min_y
 		print("Player going down!!!")
 		print(screen_width, screen_height)
-
-
 
 	#Updating the window
 	pygame.display.flip()
