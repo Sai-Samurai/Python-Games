@@ -89,24 +89,29 @@ class Player(pygame.sprite.Sprite):
 		self.jumping = False
 		self.y_velocity = jump_height
 		self.image = image
+		self.hitbox_length = length + 20
+		self.hitobx_height = height + 20
 		self.rect = pygame.Rect(x, y, length, height)
+		self.hitbox = pygame.Rect(self.x - 10, self.y - 10, self.hitbox_length, self.hitobx_height)
 		self.facing_right = True
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, YELLOW, self)
+		pygame.draw.rect(screen, YELLOW, self.hitbox)
 		if self.facing_right:
-			screen.blit(player_image, player_rect)
+			screen.blit(player_image, (self.x, self.y))
 		else:
-			screen.blit(pygame.transform.flip(player_image, True, False), player_rect) #Flpis the player horizontally when moving left
+			screen.blit(pygame.transform.flip(player_image, True, False), (self.x, self.y)) #Flpis the player horizontally when moving left
 
 	def move_right(self):
 		self.x += speed_x
 		self.rect.x = self.x
+		self.hitbox.x = self.x - 10
 		self.facing_right = True
 
 	def move_left(self):
 		self.x -= speed_x
 		self.rect.x = self.x
+		self.hitbox.x = self.x - 10
 		self.facing_right = False
 
 	def stop_jumping(self):
@@ -125,12 +130,12 @@ class Player(pygame.sprite.Sprite):
 			if self.y_velocity <- jump_height:
 				self.stop_jumping()
 
-		player_rect.x = self.x 
-		player_rect.y = self.y
+		self.rect.y = self.y
+		self.hitbox.y = self.y - 10
 
 	def updateplayer(self, x, y):
-		self.x
-		self.y
+		self.x = x
+		self.y = y
 
 
 #Blocks
@@ -701,7 +706,7 @@ while game_running:
 
 		#Transitioning the narrator and its text
 		if narrator.rect.x < 600:
-			narrator.rect.x += 5
+			narrator.rect.x += 7
 		else:	
 			narrator.rect.x == 600
 		narrator.appear(screen)
@@ -784,8 +789,6 @@ while game_running:
 		for bad_guy in enemy_group:
 			if bullet.x <= 0:
 				bullet.x = 915
-
-
 
 		bullet.appear(screen)
 		enemy1.appear(screen)
