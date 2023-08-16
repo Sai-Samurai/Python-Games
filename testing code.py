@@ -345,9 +345,9 @@ text_font = pygame.font.Font("Retro_Gaming.ttf", 10)
 #Speech and speech bubble
 def text0():
 	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 65
-	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 250, 100))
+	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 250, 110))
 
-	text = "Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here..."
+	text = "Welcome explorer from the wilderness... I see you have stumbled into this world... But rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here... Rest assured, I will show myself when the time is right."
 
 	wrapped_lines = wrap_text(text, text_font, 240)
 
@@ -356,9 +356,31 @@ def text0():
 
 def text1():
 	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 35
-	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 60))
+	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 80))
 
-	text = "Hahahaha... You've been trapped!!! I'll let you die here unless you can escape my dungeon!!!"
+	text = "Hahahaha... Did you really think I was going to let come to my universe!? You've been trapped! I'll let you die here unless you can escape my dungeon!"
+
+	wrapped_lines = wrap_text(text, text_font, 180)
+
+	for i, line in enumerate(wrapped_lines):
+		screen.blit(text_font.render(line, True, 'black', None), (bubbleX + 10, bubbleY + 10 + i * 10))
+
+def text2():
+	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 35
+	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 50))
+
+	text = "Be careful... If you want to escape from me, try not to die in the lava."
+
+	wrapped_lines = wrap_text(text, text_font, 180)
+
+	for i, line in enumerate(wrapped_lines):
+		screen.blit(text_font.render(line, True, 'black', None), (bubbleX + 10, bubbleY + 10 + i * 10))
+
+def text3():
+	bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 35
+	pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 80))
+
+	text = "Ah and before I go get a nap, I almost forgot to inform that in some rooms I may have assigned some of my soldiers. I hope you die in their hands. Hahahaha!"
 
 	wrapped_lines = wrap_text(text, text_font, 180)
 
@@ -372,9 +394,10 @@ def text1():
 level = -1
 
 #Exit Method
-door0 = Exit(800, 380, exitlength, exitheight, color)
+door0 = Exit(800, 380, exitlength, exitheight, color) #y = 380 is placed correctly on the ground
 door1 = Exit(400, 0, exitlength, exitheight, color) #before: 400, 250
-door2 = Exit(100, 400, exitlength, exitheight, color)
+door2 = Exit(10, 400, exitlength, exitheight, color)
+door3 = Exit(400, 200, exitlength, exitheight, color) #before: 1000, 380
 
 exit_sprite = pygame.sprite.Group(door0)
 
@@ -444,6 +467,18 @@ def game_over():
 	screen.blit(over_game_text, over_game_text_rect)
 	pygame.display.flip()
 	pygame.time.delay(3000)
+
+def game_over_screen():
+	#Game over screen displaying if the player lives count turn 0
+	if lives == 0:
+		game_over()
+		player.rect.x = 241
+		player.rect.y = min_y
+		player.rect.x = player.x
+		player.rect.y = player.y
+		lava_group.remove(lava)
+		player.stop_jumping()
+
 	
 
 #COINS ATTRIBUTES
@@ -750,13 +785,14 @@ while game_running:
 
 		
 		lava.appear(screen)
-
 		for sprite in player_sprite:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
 			sprite.appear(screen)
 		for sprite in exit_sprite:
 			sprite.appear(screen)
+		narrator.appear(screen)
+		text2()
 
 		print(level)
 		screen.blit(level_text, (750, 20))
@@ -764,19 +800,12 @@ while game_running:
 		print(lives)
 		screen.blit(lives_text, (150, 20))
 
-		#Game over screen displaying if the player lives count turn 0
-		if lives == 0:
-			game_over()
-			player.rect.x = 241
-			player.rect.y = min_y
-			player.rect.x = player.x
-			player.rect.y = player.y
-			lava_group.remove(lava)
-			player.stop_jumping()
+		game_over_screen()
 
 		print(coin_score)
 
 
+	#Level 3
 	elif level == 3:
 		screen.blit(dungeon_screen, (0, 0))
 
@@ -789,6 +818,7 @@ while game_running:
 			#Adding the sprites
 		enemy_group.add(enemy1)
 		blocks_sprite.add(block6)
+		exit_sprite.add(door3)
 
 		#Animations
 		bullet.animate()
@@ -802,19 +832,15 @@ while game_running:
 			sprite.appear(screen)
 		for sprite in blocks_sprite:
 			sprite.appear(screen)
+		for sprite in exit_sprite:
+			sprite.appear(screen)
+		text3()
 
 		screen.blit(level_text, (750, 20))
 		screen.blit(score_text, (450, 20))
 		screen.blit(lives_text, (150, 20))
 
-		if lives == 0:
-			game_over()
-			player.rect.x = 241
-			player.rect.y = min_y
-			player.rect.x = player.x
-			player.rect.y = player.y
-			bullet_group.remove(bullet)
-			player.stop_jumping()
+		game_over_screen()
 
 
 
