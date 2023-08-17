@@ -89,29 +89,24 @@ class Player(pygame.sprite.Sprite):
 		self.jumping = False
 		self.y_velocity = jump_height
 		self.image = image
-		self.hitbox_length = length + 20
-		self.hitobx_height = height + 20
 		self.rect = pygame.Rect(x, y, length, height)
-		self.hitbox = pygame.Rect(self.x - 10, self.y - 10, self.hitbox_length, self.hitobx_height)
 		self.facing_right = True
 
 	def appear(self, screen):
-		pygame.draw.rect(screen, YELLOW, self.hitbox)
+		pygame.draw.rect(screen, YELLOW, self.rect)
 		if self.facing_right:
-			screen.blit(player_image, (self.x, self.y))
+			screen.blit(player_image, player_rect)
 		else:
-			screen.blit(pygame.transform.flip(player_image, True, False), (self.x, self.y)) #Flpis the player horizontally when moving left
+			screen.blit(pygame.transform.flip(player_image, True, False), player_rect) #Flpis the player horizontally when moving left
 
 	def move_right(self):
 		self.x += speed_x
 		self.rect.x = self.x
-		self.hitbox.x = self.x - 10
 		self.facing_right = True
 
 	def move_left(self):
 		self.x -= speed_x
 		self.rect.x = self.x
-		self.hitbox.x = self.x - 10
 		self.facing_right = False
 
 	def stop_jumping(self):
@@ -130,8 +125,8 @@ class Player(pygame.sprite.Sprite):
 			if self.y_velocity <- jump_height:
 				self.stop_jumping()
 
-		self.rect.y = self.y
-		self.hitbox.y = self.y - 10
+		player_rect.x = self.x
+		player_rect.y = self.y
 
 	def updateplayer(self, x, y):
 		self.x = x
@@ -542,6 +537,8 @@ while game_running:
 	if player.y < min_y:
 		player.y +=  5*y_gravity
 
+
+	#COLLISIONS
 	player.x = player.rect.x
 	blocks_hit_list = pygame.sprite.spritecollide(player, blocks_sprite, False)
 	print("The return value is", pygame.sprite.spritecollide(player, blocks_sprite, False))
@@ -607,7 +604,6 @@ while game_running:
 	#Visuals
 	#screen.blit(background, (0, 0))
 
-	#COLLISIONS
 
 
 	#Exit collisions
@@ -635,7 +631,7 @@ while game_running:
 			lava_contact += 1
 			#For every 3 contacts, the remainder (%) of the division is == 0
 			#The fourth contact then takes one life from the player
-			if lava_contact % 8 == 0:
+			if lava_contact % 16 == 0:
 				lives -= 1
 
 
@@ -870,7 +866,7 @@ while game_running:
 	print(player.x , " = PLAYERS X", player.y, " = PLAYERS Y")
 	print(block.x2, " = BLOCKS X", block.y2, " = BLOCKS Y")
 
-	if player.y >= min_y:
+	if player.y > min_y:
 		player.y = min_y
 		print("Player going down!!!")
 		print(screen_width, screen_height)
