@@ -101,7 +101,8 @@ class Player(pygame.sprite.Sprite):
         if self.facing_right:
             screen.blit(player_image, player_rect)
         else:
-            screen.blit(pygame.transform.flip(player_image, True, False), player_rect)  # Flpis the player horizontally when moving left
+            screen.blit(pygame.transform.flip(player_image, True, False),
+                        player_rect)  # Flpis the player horizontally when moving left
 
     def move_right(self):
         self.x += speed_x
@@ -158,10 +159,12 @@ class Blocks(pygame.sprite.Sprite):
 
     # pygame.draw.rect(screen, (0, 0, 0), (self.x2, self.y2, self.block_size, self.block_size2))
     '''
+    #No need for this because the blocks don't move
     def updateblocks(self, x2, y2):
         self.x2
         self.y2
     '''
+
 
 # Enemies
 class Enemy(pygame.sprite.Sprite):
@@ -212,7 +215,7 @@ class Death_Items(pygame.sprite.Sprite):
 
 
 # Narrator / Main evil villain
-class Narrator():
+class Narrator:
     def __init__(self, narX, narY, narlength, narheight):
         super().__init__()
         self.narX = narX
@@ -279,7 +282,7 @@ offset = 0.5
 
 # Jumping
 y_gravity = 1
-jump_height = 25
+jump_height = 20
 y_velocity = jump_height
 on_ground = True
 
@@ -341,7 +344,7 @@ def wrap_text(text, font, max_width):
 # NARRATOR ATTRIBUTES
 
 # Attributes
-narcolor = ('purple')
+narcolor = 'purple'
 narrator = Narrator(100, 100, 170, 70)
 # bubble = pygame.Rect(bubbleX, bubbleY, 215, 80)
 text_font = pygame.font.Font("Retro_Gaming.ttf", 10)
@@ -541,11 +544,9 @@ while game_running:
     player.rect.x = player.x
     player.rect.y = player.y
 
-    # Forces the player to have gravity applied to it
-    #if player.y < min_y:
+    # Forces the player to have gravity applied to it (MAJOR ERROR)
+    # if player.y < min_y:
     #    player.y += 5 * y_gravity
-
-    
 
     # COLLISIONS
     player.x = player.rect.x
@@ -566,21 +567,21 @@ while game_running:
                 vlocks = block
 
             # Working code tested with Janani
-            if player.rect.bottom >= vlocks.rect.top and player.rect.top <= vlocks.rect.top:
+            if player.rect.bottom >= vlocks.rect.top >= player.rect.top:
                 if player.rect.centerx + 15 > vlocks.rect.left and player.rect.centerx - 15 < vlocks.rect.right:  # Makes sure that the player doesn't fade through the block in order to activate the bottom collision using the center of the player
                     player.rect.bottom = vlocks.rect.top + offset
                     player.y = player.rect.y
                     print("AAAAAAAAAAAAAAAAAAAAAA")
 
-            elif player.rect.top <= vlocks.rect.bottom and player.rect.bottom >= vlocks.rect.bottom:
-                if player.rect.centerx > vlocks.rect.left and player.rect.centerx < vlocks.rect.right:
+            elif player.rect.top <= vlocks.rect.bottom <= player.rect.bottom:
+                if vlocks.rect.left < player.rect.centerx < vlocks.rect.right:
                     player.rect.top = vlocks.rect.bottom - offset
                     player.y = player.rect.y
                     y_velocity = - y_gravity
                     jumping = False
                     print("top")
 
-            if player.rect.right >= vlocks.rect.left and player.rect.left <= vlocks.rect.left:
+            if player.rect.right >= vlocks.rect.left >= player.rect.left:
                 if player.rect.centerx < vlocks.rect.left:
                     player.rect.right = vlocks.rect.left
                     player.x = player.rect.x
@@ -589,7 +590,7 @@ while game_running:
                         jumping = False
                     print("right")
 
-            if player.rect.left <= vlocks.rect.right and player.rect.right >= vlocks.rect.right:
+            if player.rect.left <= vlocks.rect.right <= player.rect.right:
                 if player.rect.centerx > vlocks.rect.right:
                     player.rect.left = vlocks.rect.right
                     player.x = player.rect.x
@@ -597,7 +598,6 @@ while game_running:
                         y_velocity = - y_gravity
                         jumping = False
                     print("left")
-
 
         else:
             print(530)
@@ -635,7 +635,7 @@ while game_running:
                 lives -= 1
 
     # Coin collisions
-    coin_collision = pygame.sprite.spritecollideany(player, coin_group) is not (None)
+    coin_collision = pygame.sprite.spritecollideany(player, coin_group) is not None
     if coin_collision:
         if pygame.sprite.spritecollide(player, coin_group, True):
             # next() goes throught the coin list and finds the first coin from the list of coins where the coin's rectangle overlaps with the player's rectangle
@@ -738,7 +738,6 @@ while game_running:
             sprite.appear(screen)
 
             text1()
-
 
         print(level)
         screen.blit(level_text, (750, 20))
