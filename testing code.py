@@ -14,7 +14,7 @@ block_size = 50
 block_size2 = 50
 min_y = 400  # Value according the game's ground level
 
-# Making anything dissapear
+# Making anything disappear
 transapency = (0, 0, 0, 0)
 
 # Background image
@@ -101,8 +101,7 @@ class Player(pygame.sprite.Sprite):
         if self.facing_right:
             screen.blit(player_image, player_rect)
         else:
-            screen.blit(pygame.transform.flip(player_image, True, False),
-                        player_rect)  # Flpis the player horizontally when moving left
+            screen.blit(pygame.transform.flip(player_image, True, False), player_rect)  # Flpis the player horizontally when moving left
 
     def move_right(self):
         self.x += speed_x
@@ -131,7 +130,10 @@ class Player(pygame.sprite.Sprite):
                 self.stop_jumping()
 
         player_rect.x = self.x
-        player_rect.y = self.y
+        player_rect.midtop = (self.x + self.length / 2, self.y)
+
+        if player_rect.midbottom >= (self.x + self.length / 2, self.y + self.height):
+            player_rect.midtop = (self.x + self.length / 2, self.y)
 
     def updateplayer(self, x, y):
         self.x = x
@@ -155,11 +157,11 @@ class Blocks(pygame.sprite.Sprite):
         screen.blit(block_image, self.rect)
 
     # pygame.draw.rect(screen, (0, 0, 0), (self.x2, self.y2, self.block_size, self.block_size2))
-
+    '''
     def updateblocks(self, x2, y2):
         self.x2
         self.y2
-
+    '''
 
 # Enemies
 class Enemy(pygame.sprite.Sprite):
@@ -288,7 +290,7 @@ move_up = False
 speed_x = 7.5
 
 # Player
-player = Player(playerX, playerY, 60, 95, player_rect)
+player = Player(playerX, playerY, 60, 96, player_rect)
 player_sprite = pygame.sprite.Group(player)
 
 # Lives
@@ -317,7 +319,7 @@ for block in blocks_sprite:
 
 
 # Wrapping text
-# Function being able to seprate the text by counting number of words and length they have
+# Function being able to separate the text by counting number of words and length they have
 def wrap_text(text, font, max_width):
     words = text.split()
     wrapped_lines = []
@@ -371,7 +373,7 @@ def text1():
 
 
 def text2():
-    bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 35
+    bubbleX, bubbleY = 800, narrator.rect.y - 35
     pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 50))
 
     text = "Be careful... If you want to escape from me, try not to die in the lava."
@@ -383,7 +385,7 @@ def text2():
 
 
 def text3():
-    bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 35
+    bubbleX, bubbleY = 800, narrator.rect.y - 35
     pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 80))
 
     text = "Ah and before I go get a nap, I almost forgot to inform that in some rooms I may have assigned some of my soldiers. I hope you die in their hands. Hahahaha!"
@@ -540,8 +542,10 @@ while game_running:
     player.rect.y = player.y
 
     # Forces the player to have gravity applied to it
-    if player.y < min_y:
-        player.y += 5 * y_gravity
+    #if player.y < min_y:
+    #    player.y += 5 * y_gravity
+
+    
 
     # COLLISIONS
     player.x = player.rect.x
@@ -552,7 +556,7 @@ while game_running:
     print("The player is at ", player.x, player.y)
     print("Player rectangle is at ", player.rect.x, player.rect.y)
     print("Block is at ", block4.x2, block4.y2)
-    if pygame.sprite.spritecollideany(player, blocks_sprite) is not (None):
+    if pygame.sprite.spritecollideany(player, blocks_sprite) is not None:
         print(524)
         if pygame.sprite.spritecollide(player, blocks_sprite, False):
             print(525)
@@ -604,7 +608,7 @@ while game_running:
     # screen.blit(background, (0, 0))
 
     # Exit collisions
-    exit_collisions = pygame.sprite.spritecollideany(player, exit_sprite) is not (None)
+    exit_collisions = pygame.sprite.spritecollideany(player, exit_sprite) is not None
 
     if exit_collisions:
         screen.blit(background, (- 80000, 0))
@@ -617,7 +621,7 @@ while game_running:
             level = level + 1
 
     # Lava collision
-    lava_collision = pygame.sprite.spritecollideany(player, lava_group) is not (None)
+    lava_collision = pygame.sprite.spritecollideany(player, lava_group) is not None
 
     if lava_collision:
         if pygame.sprite.spritecollide(player, lava_group, False):
