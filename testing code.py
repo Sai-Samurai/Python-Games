@@ -384,9 +384,9 @@ def text2():
 
 def text3():
     bubbleX, bubbleY = 800, narrator.rect.y - 35
-    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 80))
+    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 110))
 
-    text = "Ah and before I go get a nap, I almost forgot to inform that in some rooms I may have assigned some of my soldiers. I hope you die in their hands. Hahahaha!"
+    text = "Ah and before I go get a nap, I almost forgot to inform that in some rooms I may have assigned some of my soldiers.\n Touching them might not hurt you, but their fireballs will. I hope you die in their hands. Hahahaha!"
 
     wrapped_lines = wrap_text(text, text_font, 180)
 
@@ -449,7 +449,7 @@ enemy_group = pygame.sprite.Group()
 
 # BULLETS
 
-bullet = Bullet((915, 436), 7.5, 'red')
+bullet = Bullet((enemy1.x  + 8 + enemy1.length / 2, enemy1.y - 10 + enemy1.height / 2), 7.5, 'red')
 bullet_speed = 10
 bullet_group = pygame.sprite.Group()
 bullet_hit = 0
@@ -562,7 +562,6 @@ while game_running:
             for block in blocks_hit_list:
                 vlocks = block
 
-            # Working code tested with Janani
             if player.rect.bottom >= vlocks.rect.top >= player.rect.top:
                 if player.rect.centerx + 15 > vlocks.rect.left and player.rect.centerx - 15 < vlocks.rect.right:  # Makes sure that the player doesn't fade through the block in order to activate the bottom collision using the center of the player
                     player.rect.bottom = vlocks.rect.top + offset
@@ -643,23 +642,31 @@ while game_running:
                 coin_score += 1
                 coin_group.remove(collided_coin)
 
-        # Bullet collision
+
+    # Bullet collision
 
     bullet_center = (bullet.center[0], bullet.center[1])
     # Creating a smaller hitbox for the bullet --> A square that's hypotenuse is 2* the radius of the circle --> It is in the circle
     bullet_collision_area = pygame.Rect(bullet_center[0] - bullet.radius, bullet_center[1] - bullet.radius,
                                         bullet.radius * 2, bullet.radius * 2)
 
-    if player.rect.colliderect(bullet_collision_area): #If player stys at collision point near 920, he will lose health
-        bullet.x = 915
-        bullet_hit += 1
-        if bullet_hit % 3 == 0:
-            lives -= 1
+    if player.rect.colliderect(bullet_collision_area):
+        if level == 3: #adding level number condition for the collision to be true
+            bullet.x = enemy1.x  + 8 + enemy1.length / 2
+            bullet_hit += 1
+            if bullet_hit % 3 == 0:
+                lives -= 1
 
     for block in blocks_sprite:
         vlocks = block
         if vlocks.rect.colliderect(bullet_collision_area):
-            bullet.x = 915
+            bullet.x = enemy1.x  + 8 + enemy1.length / 2
+
+    for bad_guy in enemy_group:
+        if bullet.x <= 0:
+            bullet.x = enemy1.x + 8 + enemy1.length / 2
+
+
 
     # Main menu (Level -1)
     if level == -1:
@@ -700,7 +707,6 @@ while game_running:
 
         print(level)
         screen.blit(level_text, (750, 20))
-        screen.blit(lives_text, (150, 20))
 
         # Switch level back
         if event.type == pygame.KEYDOWN:
@@ -809,9 +815,6 @@ while game_running:
 
         # Animations
         bullet.animate()
-        for bad_guy in enemy_group:
-            if bullet.x <= 0:
-                bullet.x = 915
 
         bullet.appear(screen)
         enemy1.appear(screen)
@@ -829,7 +832,23 @@ while game_running:
 
         game_over_screen()
 
+    elif level == 4: #Draft for further levels
+        screen.blit(dungeon_screen, (0, 0))
 
+        #Removing sprites from groups
+        enemy_group.remove(enemy1)
+        bullet_group.remove(bullet)
+        blocks_sprite.remove(block6)
+        exit_sprite.remove(door3)
+
+        for sprite in player_sprite:
+            sprite.appear(screen)
+
+        screen.blit(level_text, (750, 20))
+        screen.blit(score_text, (450, 20))
+        screen.blit(lives_text, (150, 20))
+
+        game_over_screen()
 
     elif level > 3:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
         # screen.fill(bg_color)
@@ -842,11 +861,6 @@ while game_running:
         print(level)
         screen.blit(level_text, (750, 20))
 
-    # Debugging the player's y coordinate
-    '''
-	The player only realizes that he is under the ground (y level above 400)
-	only after 20 pixels before coming back to the ground.
-	'''
     print(player.x, " = PLAYERS X", player.y, " = PLAYERS Y")
     print(block.x2, " = BLOCKS X", block.y2, " = BLOCKS Y")
 
