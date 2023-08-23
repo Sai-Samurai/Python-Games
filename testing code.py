@@ -1,8 +1,4 @@
 import pygame, sys
-from pygame import Rect
-
-# print(pygame.__version__)
-# input()
 
 # General setup
 pygame.init()
@@ -15,7 +11,7 @@ block_size2 = 50
 min_y = 400  # Value according the game's ground level
 
 # Making anything disappear
-transapency = (0, 0, 0, 0)
+transparency = (0, 0, 0, 0)
 
 # Background image
 background = pygame.image.load("Final_background.png")
@@ -75,7 +71,6 @@ lava_rect = lava_image.get_rect()
 c_image = pygame.image.load("coin.png").convert_alpha()
 coin_image = pygame.transform.scale(c_image, (c_image.get_width(), c_image.get_height()))
 coin_rect = coin_image.get_rect()
-
 
 ###################################################################################################################################
 
@@ -404,11 +399,12 @@ def text3():
 # Levels
 level = -1
 
-# Exit Method
+# Exit
+
 door0 = Exit(800, 380, exitlength, exitheight, color)  # y = 380 is placed correctly on the ground
-door1 = Exit(400, 0, exitlength, exitheight, color)  # before: 400, 250
+door1 = Exit(920, 250, exitlength, exitheight, color)  # before: 400, 0
 door2 = Exit(10, 400, exitlength, exitheight, color)
-door3 = Exit(400, 200, exitlength, exitheight, color)  # before: 1000, 380
+door3 = Exit(1000, 380, exitlength, exitheight, color)  # before: 400, 200
 
 exit_sprite = pygame.sprite.Group(door0)
 
@@ -455,13 +451,13 @@ enemy_group = pygame.sprite.Group()
 
 bullet = Bullet((915, 436), 7.5, 'red')
 bullet_speed = 10
-bullet_group = pygame.sprite.Group(bullet)
+bullet_group = pygame.sprite.Group()
 bullet_hit = 0
 
 # DEATH ITEMS ATTRIBUTES
 
 # Lava
-lava = Death_Items(600, 486, 350, 70)
+lava = Death_Items(600, 486, 350, 70) #Best to try is x = 200
 lava_group = pygame.sprite.Group()
 lava_contact = 0
 
@@ -631,7 +627,7 @@ while game_running:
             lava_contact += 1
             # For every 3 contacts, the remainder (%) of the division is == 0
             # The fourth contact then takes one life from the player
-            if lava_contact % 16 == 0:
+            if lava_contact % 4 == 0:
                 lives -= 1
 
     # Coin collisions
@@ -647,13 +643,14 @@ while game_running:
                 coin_score += 1
                 coin_group.remove(collided_coin)
 
-    # Bullet collision
+        # Bullet collision
+
     bullet_center = (bullet.center[0], bullet.center[1])
     # Creating a smaller hitbox for the bullet --> A square that's hypotenuse is 2* the radius of the circle --> It is in the circle
     bullet_collision_area = pygame.Rect(bullet_center[0] - bullet.radius, bullet_center[1] - bullet.radius,
                                         bullet.radius * 2, bullet.radius * 2)
 
-    if player.rect.colliderect(bullet_collision_area):
+    if player.rect.colliderect(bullet_collision_area): #If player stys at collision point near 920, he will lose health
         bullet.x = 915
         bullet_hit += 1
         if bullet_hit % 3 == 0:
@@ -703,6 +700,7 @@ while game_running:
 
         print(level)
         screen.blit(level_text, (750, 20))
+        screen.blit(lives_text, (150, 20))
 
         # Switch level back
         if event.type == pygame.KEYDOWN:
@@ -743,6 +741,8 @@ while game_running:
         screen.blit(level_text, (750, 20))
 
         screen.blit(score_text, (450, 20))
+
+        screen.blit(lives_text, (150, 20))
 
         print(coin_score)
         print(lives)
@@ -803,6 +803,7 @@ while game_running:
 
         # Adding the sprites
         enemy_group.add(enemy1)
+        bullet_group.add(bullet)
         blocks_sprite.add(block6)
         exit_sprite.add(door3)
 
