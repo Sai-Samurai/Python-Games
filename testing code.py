@@ -170,6 +170,7 @@ class Enemy(pygame.sprite.Sprite):
         self.length = length
         self.height = height
         self.rect = pygame.Rect(x, y, length, height)
+        #enemy_group.add(self)
 
     def appear(self, screen):
         # pygame.draw.rect(screen, (92, 64, 51), self.rect)
@@ -184,6 +185,7 @@ class Bullet(pygame.sprite.Sprite):
         self.x, self.y = center
         self.radius = radius
         self.color = color
+        #bullet_group.add(self)
 
     def appear(self, screen):
         pygame.draw.circle(screen, self.color, self.center, self.radius)
@@ -444,14 +446,16 @@ def loading():
 
 # ENEMIES
 
-enemy1 = Enemy(850, 420, 30, 60)
 enemy_group = pygame.sprite.Group()
+enemy1 = Enemy(850, 420, 30, 60)
+enemy2 = Enemy(850, 300, 30, 60)
 
 # BULLETS
 
-bullet = Bullet((enemy1.x  + 8 + enemy1.length / 2, enemy1.y - 10 + enemy1.height / 2), 7.5, 'red')
-bullet_speed = 10
 bullet_group = pygame.sprite.Group()
+bullet_speed = 10
+bullet = Bullet((enemy1.x + 8 + enemy1.length / 2, enemy1.y - 10 + enemy1.height / 2), 7.5, 'red')
+bullet2 = Bullet((enemy2.x + 8 + enemy2.length / 2, enemy2.y - 10 + enemy2.height / 2), 7.5, 'red')
 bullet_hit = 0
 
 # DEATH ITEMS ATTRIBUTES
@@ -644,27 +648,26 @@ while game_running:
 
 
     # Bullet collision
+    for projectiles in bullet_group:
+        for monsters in enemy_group:
+            bullet_center = (projectiles.center[0], projectiles.center[1])
+            # Creating a smaller hitbox for the bullet --> A square that's hypotenuse is 2* the radius of the circle --> It is in the circle
+            bullet_collision_area = pygame.Rect(bullet_center[0] - projectiles.radius, bullet_center[1] - projectiles.radius, projectiles.radius * 2, projectiles.radius * 2)
 
-    bullet_center = (bullet.center[0], bullet.center[1])
-    # Creating a smaller hitbox for the bullet --> A square that's hypotenuse is 2* the radius of the circle --> It is in the circle
-    bullet_collision_area = pygame.Rect(bullet_center[0] - bullet.radius, bullet_center[1] - bullet.radius,
-                                        bullet.radius * 2, bullet.radius * 2)
+            if player.rect.colliderect(bullet_collision_area):
+                if level == 3: #adding level number condition for the collision to be true
+                    projectiles.x = monsters.x + 8 + monsters.length / 2
+                    bullet_hit += 1
+                    if bullet_hit % 3 == 0:
+                        lives -= 1
 
-    if player.rect.colliderect(bullet_collision_area):
-        if level == 3: #adding level number condition for the collision to be true
-            bullet.x = enemy1.x  + 8 + enemy1.length / 2
-            bullet_hit += 1
-            if bullet_hit % 3 == 0:
-                lives -= 1
+            for block in blocks_sprite:
+                vlocks = block
+                if vlocks.rect.colliderect(bullet_collision_area):
+                    projectiles.x = monsters.x + 8 + monsters.length / 2
 
-    for block in blocks_sprite:
-        vlocks = block
-        if vlocks.rect.colliderect(bullet_collision_area):
-            bullet.x = enemy1.x  + 8 + enemy1.length / 2
-
-    for bad_guy in enemy_group:
-        if bullet.x <= 0:
-            bullet.x = enemy1.x + 8 + enemy1.length / 2
+            if projectiles.x <= 0:
+               projectiles.x = monsters.x + 8 + monsters.length / 2
 
 
 
@@ -808,19 +811,22 @@ while game_running:
         lava_group.remove(lava)
 
         # Adding the sprites
-        enemy_group.add(enemy1)
-        bullet_group.add(bullet)
+        enemy_group.add(enemy1, enemy2)
+        bullet_group.add(bullet, bullet2)
         blocks_sprite.add(block6)
         exit_sprite.add(door3)
 
         # Animations
-        bullet.animate()
+        for bullet in bullet_group:
+            bullet.animate()
 
-        bullet.appear(screen)
-        enemy1.appear(screen)
         for sprite in player_sprite:
             sprite.appear(screen)
         for sprite in blocks_sprite:
+            sprite.appear(screen)
+        for sprite in bullet_group:
+            sprite.appear(screen)
+        for sprite in enemy_group:
             sprite.appear(screen)
         for sprite in exit_sprite:
             sprite.appear(screen)
