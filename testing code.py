@@ -67,10 +67,16 @@ l_image = pygame.image.load("lava.png").convert_alpha()
 lava_image = pygame.transform.scale(l_image, (l_image.get_width(), l_image.get_height() * 4 / 3))
 lava_rect = lava_image.get_rect()
 
+# Narrator image
+n_image = pygame.image.load("narrator.png").convert_alpha()
+narrator_image = pygame.transform.scale(n_image, (n_image.get_width() / (767 / 170), n_image.get_height() / 5.3))
+narrator_rect = narrator_image.get_rect()
+
 # Coin image
 c_image = pygame.image.load("coin.png").convert_alpha()
 coin_image = pygame.transform.scale(c_image, (c_image.get_width(), c_image.get_height()))
 coin_rect = coin_image.get_rect()
+
 
 ###################################################################################################################################
 
@@ -170,7 +176,7 @@ class Enemy(pygame.sprite.Sprite):
         self.length = length
         self.height = height
         self.rect = pygame.Rect(x, y, length, height)
-        #enemy_group.add(self)
+        # enemy_group.add(self)
 
     def appear(self, screen):
         # pygame.draw.rect(screen, (92, 64, 51), self.rect)
@@ -185,7 +191,7 @@ class Bullet(pygame.sprite.Sprite):
         self.x, self.y = center
         self.radius = radius
         self.color = color
-        #bullet_group.add(self)
+        # bullet_group.add(self)
 
     def appear(self, screen):
         pygame.draw.circle(screen, self.color, self.center, self.radius)
@@ -225,7 +231,8 @@ class Narrator:
         self.current_dialogue = ""
 
     def appear(self, screen):
-        pygame.draw.rect(screen, narcolor, self.rect)
+        #pygame.draw.rect(screen, narcolor, self.rect)
+        screen.blit(narrator_image, self.rect)
 
 
 # Coins
@@ -349,7 +356,7 @@ text_font = pygame.font.Font("Retro_Gaming.ttf", 10)
 
 # Speech and speech bubble
 def text0():
-    bubbleX, bubbleY = narrator.rect.x + 150, narrator.rect.y - 65
+    bubbleX, bubbleY = narrator.rect.x + 140, narrator.rect.y - 90
     pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 250, 110))
 
     text = "Welcome explorer from the wilderness... I see you have stumbled into this world...\n Rest assured, I am of no harm... I am a friend to you, not a foe... Let me help you and get you back to your world by getting you through this door I have here...\n I will show myself when the time is right."
@@ -461,7 +468,7 @@ bullet_hit = 0
 # DEATH ITEMS ATTRIBUTES
 
 # Lava
-lava = Death_Items(600, 486, 350, 70) #Best to try is x = 200
+lava = Death_Items(600, 486, 350, 70)  # Best to try is x = 200
 lava_group = pygame.sprite.Group()
 lava_contact = 0
 
@@ -646,16 +653,17 @@ while game_running:
                 coin_score += 1
                 coin_group.remove(collided_coin)
 
-
     # Bullet collision
     for projectiles in bullet_group:
         for monsters in enemy_group:
             bullet_center = (projectiles.center[0], projectiles.center[1])
             # Creating a smaller hitbox for the bullet --> A square that's hypotenuse is 2* the radius of the circle --> It is in the circle
-            bullet_collision_area = pygame.Rect(bullet_center[0] - projectiles.radius, bullet_center[1] - projectiles.radius, projectiles.radius * 2, projectiles.radius * 2)
+            bullet_collision_area = pygame.Rect(bullet_center[0] - projectiles.radius,
+                                                bullet_center[1] - projectiles.radius, projectiles.radius * 2,
+                                                projectiles.radius * 2)
 
             if player.rect.colliderect(bullet_collision_area):
-                if level == 3: #adding level number condition for the collision to be true
+                if level == 3:  # adding level number condition for the collision to be true
                     projectiles.x = monsters.x + 8 + monsters.length / 2
                     bullet_hit += 1
                     if bullet_hit % 3 == 0:
@@ -667,9 +675,7 @@ while game_running:
                     projectiles.x = monsters.x + 8 + monsters.length / 2
 
             if projectiles.x <= 0:
-               projectiles.x = monsters.x + 8 + monsters.length / 2
-
-
+                projectiles.x = monsters.x + 8 + monsters.length / 2
 
     # Main menu (Level -1)
     if level == -1:
@@ -786,7 +792,7 @@ while game_running:
             sprite.appear(screen)
         for sprite in exit_sprite:
             sprite.appear(screen)
-        narrator.appear(screen)
+
         text2()
 
         print(level)
@@ -816,7 +822,7 @@ while game_running:
         blocks_sprite.add(block6)
         exit_sprite.add(door3)
 
-        # Animations
+        # Animations for all bullet sprites
         for bullet in bullet_group:
             bullet.animate()
 
@@ -838,10 +844,11 @@ while game_running:
 
         game_over_screen()
 
-    elif level == 4: #Draft for further levels
+
+    elif level == 4:  # Draft for further levels
         screen.blit(dungeon_screen, (0, 0))
 
-        #Removing sprites from groups
+        # Removing sprites from groups
         enemy_group.remove(enemy1)
         bullet_group.remove(bullet)
         blocks_sprite.remove(block6)
@@ -856,7 +863,8 @@ while game_running:
 
         game_over_screen()
 
-    elif level > 3:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
+
+    elif level > 4:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
         # screen.fill(bg_color)
         screen.blit(dungeon_screen, (0, 0))
         player.x, player.y = 500, 200
