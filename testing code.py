@@ -9,6 +9,7 @@ playerX, playerY = (241, 400)
 block_size = 50
 block_size2 = 50
 min_y = 400  # Value according the game's ground level
+flag = False
 
 # Making anything disappear
 transparency = (0, 0, 0, 0)
@@ -574,6 +575,7 @@ while game_running:
                 vlocks = block
 
             if player.rect.bottom >= vlocks.rect.top >= player.rect.top:
+                flag = True
                 if player.rect.centerx + 15 > vlocks.rect.left and player.rect.centerx - 15 < vlocks.rect.right:  # Makes sure that the player doesn't fade through the block in order to activate the bottom collision using the center of the player
                     player.rect.bottom = vlocks.rect.top + offset
                     player.y = player.rect.y
@@ -605,8 +607,12 @@ while game_running:
                         jumping = False
                     print("left")
 
-        else:
-            print(530)
+    else:
+        print("Player not interacting")
+        if flag:
+            player.y = 400
+            player.rect.y = 400
+            flag = False
 
     player.animate()
 
