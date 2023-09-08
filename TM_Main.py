@@ -124,8 +124,14 @@ for coin in coin_list:
     coin.rect.y = coin.y
 
 ######################################################################################################################
-
-########################################################## GAME LOOP ################################################
+'''
+The reason why the game_over_screen() isn't working is that actually the "lives" is never updated into the 
+game_over_screen(), because the variable "lives" is not taken for every time it is being updated in the "TM_Main"
+file, instead it is just taken from the source, which is the "TM_Classes" file, where the variable is defined as 3 and 
+never being changes. SO when the player's life count drops to 0, it is only true in the "TM_Main", but in the 
+game_over_screen(), the lives is still equals to 3.
+'''
+###################################################### GAME LOOP ####################################################
 
 game_running = True
 # Game loop
