@@ -166,6 +166,8 @@ while game_running:
     player.rect.x = player.x
     player.rect.y = player.y
 
+    game_over_screen()
+
     # Forces the player to have gravity applied to it (MAJOR ERROR)
     # if player.y < min_y:
     #    player.y += 5 * y_gravity
@@ -228,8 +230,11 @@ while game_running:
     else:
         print("Player not interacting")
         if flag:
-            player.y = 400
-            player.rect.y = 400
+            #y_velocity = y_gravity
+            #if player.y > min_y:
+            #    player.y = min_y
+            #if player.rect.y > min_y:
+            #    player.rect.y = min_y
             flag = False
 
     player.animate()
@@ -268,7 +273,11 @@ while game_running:
     coin_collision = pygame.sprite.spritecollideany(player, coin_group) is not None
     if coin_collision:
         if pygame.sprite.spritecollide(player, coin_group, True):
-            # next() goes throught the coin list and finds the first coin from the list of coins where the coin's rectangle overlaps with the player's rectangle
+            '''
+            next() goes throught the coin list and finds the first coin from the list of coins where the coin's 
+            rectangle overlaps with the player's rectangle
+            '''
+
             collided_coin = next(
                 coin for coin in coin_list if coin.rect.colliderect(player.rect))  # coin are still in the coin_list
 
@@ -429,7 +438,7 @@ while game_running:
         print(lives)
         screen.blit(lives_text, (150, 20))
 
-        game_over_screen()
+        #game_over_screen()
 
         print(coin_score)
 
@@ -471,8 +480,7 @@ while game_running:
         screen.blit(lives_text, (150, 20))
 
         #game_over_screen()
-        if lives == 0:
-            game_over_screen()
+
 
 
     elif level == 4:  # Draft for further levels
@@ -491,7 +499,7 @@ while game_running:
         screen.blit(score_text, (450, 20))
         screen.blit(lives_text, (150, 20))
 
-        game_over_screen()
+        #game_over_screen()
 
 
     elif level > 4:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
