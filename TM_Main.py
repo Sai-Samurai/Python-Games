@@ -3,7 +3,7 @@ import pygame, sys
 from TM_Images import player_rect, block_rect, screen_width, screen_height, coin_image, screen, blur_background, \
     background
 from TM_Images import dungeon, dungeon_screen
-from TM_Classes import Player, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit
+from TM_Classes import Player, Boundary, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit
 from Texts import text0, text1, text2, text3, other_text
 from Loading import loading
 from Game_Over import game_over_screen
@@ -26,7 +26,7 @@ y_gravity = 1
 jump_height = 20
 y_velocity = jump_height
 on_ground = True
-min_y = 400  # Value according the game's ground level
+#min_y = 400  # Value according the game's ground level
 
 # Moving
 move_right = False
@@ -64,6 +64,11 @@ block4 = Blocks(210, 300, block_size, block_size2, block_rect)
 for block in blocks_sprite:
     block.rect.x = block.x2
     block.rect.y = block.y2
+
+#Boundaries
+boundaries = pygame.sprite.Group([
+    Boundary(0, 500, 1090, 40)
+])
 
 # NARRATOR ATTRIBUTES
 
@@ -155,7 +160,7 @@ while game_running:
                 player.moving_left = True
 
             if event.key == pygame.K_SPACE:
-                player.jumping = True
+                player.start_jumping()
                 print("SPACE")
 
         elif event.type == pygame.KEYUP:
@@ -174,10 +179,6 @@ while game_running:
 
     game_over_screen()
 
-    # Forces the player to have gravity applied to it (MAJOR ERROR)
-    # if player.y < min_y:
-    #    player.y += 5 * y_gravity
-
     # COLLISIONS
     player.x = player.rect.x
     blocks_hit_list = pygame.sprite.spritecollide(player, blocks_sprite, False)
@@ -187,6 +188,8 @@ while game_running:
     print("The player is at ", player.x, player.y)
     print("Player rectangle is at ", player.rect.x, player.rect.y)
     print("Block is at ", block4.x2, block4.y2)
+
+    '''    
     if pygame.sprite.spritecollideany(player, blocks_sprite) is not None:
         print(524)
         if pygame.sprite.spritecollide(player, blocks_sprite, False):
@@ -242,8 +245,10 @@ while game_running:
             #if player.rect.y > min_y:
             #    player.rect.y = min_y
             flag = False
+    '''
 
     player.animate()
+    player.update(blocks_sprite, boundaries)
 
     # Visuals
     # screen.blit(background, (0, 0))
@@ -266,7 +271,7 @@ while game_running:
 
     if lava_collision:
         if pygame.sprite.spritecollide(player, lava_group, False):
-            player.jumping = True
+            player.start_jumping()
 
             # Increase lava_contact for every collision
             lava_contact += 1
@@ -319,6 +324,7 @@ while game_running:
 
             if projectiles.x <= 0:
                 projectiles.x = monsters.x + 8 + monsters.length / 2
+
 
     # Main menu (Level -1)
     if level == -1:
@@ -524,10 +530,14 @@ while game_running:
 
     game_over_screen()
 
-    if player.y > min_y:
-        player.y = min_y
-        print("Player going down!!!")
-        print(screen_width, screen_height)
+    #if player.y > min_y:
+    #    player.y = min_y
+    #    print("Player going down!!!")
+    #    print(screen_width, screen_height)
+
+
+    for sprite in boundaries:
+        sprite.appear(screen)
 
     # Updating the window
     pygame.display.flip()
