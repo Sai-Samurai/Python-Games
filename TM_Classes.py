@@ -12,7 +12,7 @@ YELLOW = (255, 255, 0)  # Horrific yellow for debugging rectangles
 speed_x = 7.5
 bullet_speed = 10
 lives = 3
-min_y = 400
+#min_y = 400
 
 
 # Player
@@ -26,11 +26,27 @@ class Player(pygame.sprite.Sprite):
         self.height = height
         self.moving_right = False
         self.moving_left = False
-        self.jumping = False
-        self.y_velocity = jump_height
+        self.jumping = True
+        self.y_velocity = 0
+
+        # Flags for collisions
+        # Flags to track block collision on each side
+        self.collide_bottom = False
+        self.collide_top = False
+        self.collide_right = False
+        self.collide_left = False
+
+        self.boundary_collide_bottom = False
+        self.boundary_collidetop = False
+
         self.image = image
         self.rect = pygame.Rect(x, y, length, height)
         self.facing_right = True
+
+    def update(self, blocks_sprite, boundaries):
+        #self.animate()
+        self.block_collisions(blocks_sprite)
+        self.boundary_collisions(boundaries)
 
     def appear(self, screen):
         pygame.draw.rect(screen, YELLOW, self.rect)
@@ -42,17 +58,36 @@ class Player(pygame.sprite.Sprite):
 
     def move_right(self):
         self.x += speed_x
+        if not self.jumping:
+            self.y = self.y + 1
+            self.jumping = True
         self.rect.x = self.x
         self.facing_right = True
 
     def move_left(self):
         self.x -= speed_x
+        if not self.jumping:
+            self.y = self.y + 1
+            self.jumping = True
         self.rect.x = self.x
         self.facing_right = False
 
-    def stop_jumping(self):
+    #This a method that Dr.Jane has come up with to make working collisions
+    def start_jumping(self):
+        if not self.jumping:
+            self.jumping = True
+            self.y_velocity = jump_height
+            self.y -= self.y_velocity
+
+    def stop_jumping(self, blocks_sprite):
         self.jumping = False
-        self.y_velocity = jump_height
+        self.y_velocity = 0
+        self.y = blocks_sprite.rect.top - self.height
+
+    def boundary_stop_jumping(self, boundary):
+        self.jumping = False
+        self.y_velocity = 0
+        self.y = boundary.rect.top - self.height
 
     def animate(self):
         if self.moving_left:
@@ -61,10 +96,11 @@ class Player(pygame.sprite.Sprite):
             self.move_right()
 
         if self.jumping:
-            self.y -= self.y_velocity
             self.y_velocity -= y_gravity
-            if self.y_velocity < - jump_height:
-                self.stop_jumping()
+            self.y -= self.y_velocity
+
+        self.rect.x = int(self.x)
+        self.rect.y = int(self.y)
 
         TM_Images.player_rect.x = self.x
         TM_Images.player_rect.midtop = (self.x + self.length / 2, self.y)
@@ -72,9 +108,105 @@ class Player(pygame.sprite.Sprite):
         if TM_Images.player_rect.midbottom >= (self.x + self.length / 2, self.y + self.height):
             TM_Images.player_rect.midtop = (self.x + self.length / 2, self.y)
 
-    def updateplayer(self, x, y):
+    def block_collisions(self, blocks_sprite):
+        block = pygame.sprite.spritecollideany(self, blocks_sprite)
+
+        if block:
+
+            bottom_collision = self.rect.bottom > block.rect.top and self.y_velocity <= 0
+            top_collision = self.rect.top < block.rect.bottom and self.y_velocity > 0
+            right_collision = self.rect.right >= block.rect.left >= self.rect.left
+            left_collision = self.rect.left <= block.rect.right <= self.rect.right
+
+            self.collide_bottom = bottom_collision
+            self.collide_top = top_collision
+            self.collide_right = right_collision
+            self.collide_left = left_collision
+
+            if self.rect.centery < block.rect.top:
+                if bottom_collision:
+                    self.stop_jumping(block)
+
+                    self.collide_right = False
+                    self.collide_left = False
+
+                    print("bottom")
+
+            if self.rect.centery > block.rect.bottom:
+                if top_collision:
+                    self.y = block.rect.bottom
+                    self.y_velocity = 0
+
+                    self.collide_right = False
+                    self.collide_left = False
+
+                    print("top")
+
+            if right_collision:
+                self.x = block.rect.left - self.length
+                self.y_velocity -= y_gravity
+                self.jumping = False
+                self.y_velocity = 0
+
+                self.collide_bottom = False
+                self.collide_top = False
+
+                print("right")
+
+            if left_collision:
+                self.x = block.rect.right
+                self.y_velocity -= y_gravity
+                self.jumping = False
+                self.y_velocity = 0
+
+                self.collide_bottom = False
+                self.collide_top = False
+
+                print("left")
+
+    def boundary_collisions(self, boundaries):
+        boundary = pygame.sprite.spritecollideany(self, boundaries)
+
+        if boundary:
+
+            bottom_boundary_collision = self.rect.bottom > boundary.rect.top and self.y_velocity <= 0
+            top_boundary_collision = self.rect.top < boundary.rect.bottom and self.y_velocity > 0
+
+            self.boundary_collide_bottom = bottom_boundary_collision
+            self.boundary_collidetop = top_boundary_collision
+
+            if bottom_boundary_collision:
+                self.boundary_stop_jumping(boundary)
+            elif top_boundary_collision:
+                self.y = boundary.rect.bottom
+                self.y_velocity = 0
+
+    '''
+    Instead of making multiple collision detections of the same block and platform at the same time, what we can do 
+    is to just make the "floor" a new class and and leave the collision of itself with player as one and then make new
+    collisions that would then be considered by the player and not cause the issue we have.
+
+    Issue info:
+    The player can not handle multiple collisons at the same time coming from sprites of the "same class".
+    '''
+
+
+class Boundary(pygame.sprite.Sprite):
+    def __init__(self, x, y, length, height):
+        super().__init__()
         self.x = x
         self.y = y
+        self.length = length
+        self.height = height
+        self.rect = pygame.Rect(x, y, length, height)
+
+    def appear(self, screen):
+        pygame.draw.rect(screen, (0, 150, 255), self.rect)
+
+
+'''
+Using Dr.Jane's code to make the boundaries and collisions
+'''
 
 
 # Blocks
