@@ -12,7 +12,6 @@ YELLOW = (255, 255, 0)  # Horrific yellow for debugging rectangles
 speed_x = 7.5
 bullet_speed = 10
 lives = 3
-#min_y = 400
 
 
 # Player
@@ -130,6 +129,10 @@ class Player(pygame.sprite.Sprite):
                     self.collide_right = False
                     self.collide_left = False
 
+                    if right_collision or left_collision:
+                        right_collision = False
+                        left_collision = False
+
                     print("bottom")
 
             if self.rect.centery > block.rect.bottom:
@@ -137,8 +140,9 @@ class Player(pygame.sprite.Sprite):
                     self.y = block.rect.bottom
                     self.y_velocity = 0
 
-                    self.collide_right = False
-                    self.collide_left = False
+                    if right_collision or left_collision:
+                        right_collision = False
+                        left_collision = False
 
                     print("top")
 
@@ -148,9 +152,6 @@ class Player(pygame.sprite.Sprite):
                 self.jumping = False
                 self.y_velocity = 0
 
-                self.collide_bottom = False
-                self.collide_top = False
-
                 print("right")
 
             if left_collision:
@@ -158,9 +159,6 @@ class Player(pygame.sprite.Sprite):
                 self.y_velocity -= y_gravity
                 self.jumping = False
                 self.y_velocity = 0
-
-                self.collide_bottom = False
-                self.collide_top = False
 
                 print("left")
 
