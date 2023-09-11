@@ -36,7 +36,7 @@ speed_x = 7.5
 
 # Player
 playerX, playerY = (241, 400)
-player = Player(playerX, playerY, 60, 96, player_rect)
+player = Player(playerX, playerY, 40, 96, player_rect)
 player_sprite = pygame.sprite.Group(player)
 
 # Lives
@@ -54,10 +54,11 @@ blocks_sprite = pygame.sprite.Group()
 
 block1 = Blocks(400, 350, block_size, block_size2, block_rect)
 block2 = Blocks(550, 350, block_size, block_size2, block_rect)
-block3 = Blocks(250, 350, block_size, block_size2, block_rect)
-block5 = Blocks(340, 310, block_size, block_size2, block_rect)
-block6 = Blocks(460, 435, block_size, block_size2, block_rect)
-block4 = Blocks(210, 300, block_size, block_size2, block_rect)
+
+block3 = Blocks(490, 260, block_size, block_size2, block_rect)
+block4 = Blocks(260, 310, block_size, block_size2, block_rect)
+block5 = Blocks(310, 310, block_size, block_size2, block_rect)
+block6 = Blocks(100, 446, block_size, block_size2, block_rect)
 
 # blocks_sprite.add(block4, block6)#, block2, block3, block1, block5)
 
@@ -67,7 +68,7 @@ for block in blocks_sprite:
 
 #Boundaries
 boundaries = pygame.sprite.Group([
-    Boundary(0, 500, 1090, 40)
+    Boundary(0, 496, 1090, 40)
 ])
 
 # NARRATOR ATTRIBUTES
@@ -85,13 +86,13 @@ level = -1
 # Exit
 
 color = (100, 150, 200)
-exitlength = 80
+exitlength = 50
 exitheight = 113
 
-door0 = Exit(800, 380, exitlength, exitheight, color)  # y = 380 is placed correctly on the ground
-door1 = Exit(920, 250, exitlength, exitheight, color)  # before: 400, 0
-door2 = Exit(10, 400, exitlength, exitheight, color)
-door3 = Exit(1000, 380, exitlength, exitheight, color)  # before: 400, 200
+door0 = Exit(820, 380, exitlength, exitheight, color)  # y = 380 is placed correctly on the ground
+door1 = Exit(770, 150, exitlength, exitheight, color)  # before: 400, 0
+door2 = Exit(30, 400, exitlength, exitheight, color)
+door3 = Exit(1020, 380, exitlength, exitheight, color)  # before: 400, 200
 
 exit_sprite = pygame.sprite.Group(door0)
 
@@ -118,9 +119,9 @@ lava_contact = 0
 
 # COINS ATTRIBUTES
 
-coin1 = Coins(200, 430, 19, 22, coin_image)
-coin2 = Coins(300, 430, 19, 22, coin_image)
-coin3 = Coins(400, 430, 19, 22, coin_image)
+coin1 = Coins(200, 440, 19, 22, coin_image)
+coin2 = Coins(300, 440, 19, 22, coin_image)
+coin3 = Coins(400, 440, 19, 22, coin_image)
 coin_group = pygame.sprite.Group()
 coin_list = [coin1, coin2, coin3]
 
@@ -174,6 +175,9 @@ while game_running:
     lives_text = other_text.render("Lives : "f"{lives}", False, (255, 255, 255))
     score_text = other_text.render("Score: "f"{coin_score}", False, (255, 255, 255))
 
+    player.animate()
+    player.update(blocks_sprite, boundaries)
+
     player.rect.x = player.x
     player.rect.y = player.y
 
@@ -188,67 +192,6 @@ while game_running:
     print("The player is at ", player.x, player.y)
     print("Player rectangle is at ", player.rect.x, player.rect.y)
     print("Block is at ", block4.x2, block4.y2)
-
-    '''    
-    if pygame.sprite.spritecollideany(player, blocks_sprite) is not None:
-        print(524)
-        if pygame.sprite.spritecollide(player, blocks_sprite, False):
-            print(525)
-
-            # Applies to all blocks
-            for block in blocks_hit_list:
-                vlocks = block
-
-            if player.rect.bottom >= vlocks.rect.top >= player.rect.top:
-                flag = True
-                if player.rect.centerx + 15 > vlocks.rect.left and player.rect.centerx - 15 < vlocks.rect.right:
-                    """
-                    Makes sure that the player doesn't fade through the block in order to activate the bottom 
-                    collision using the center of the player
-                    """
-                    player.rect.bottom = vlocks.rect.top + offset
-                    player.y = player.rect.y
-                    print("AAAAAAAAAAAAAAAAAAAAAA")
-
-            elif player.rect.top <= vlocks.rect.bottom <= player.rect.bottom:
-                if vlocks.rect.left < player.rect.centerx < vlocks.rect.right:
-                    player.rect.top = vlocks.rect.bottom - offset
-                    player.y = player.rect.y
-                    y_velocity = - y_gravity
-                    jumping = False
-                    print("top")
-
-            if player.rect.right >= vlocks.rect.left >= player.rect.left:
-                if player.rect.centerx < vlocks.rect.left:
-                    player.rect.right = vlocks.rect.left
-                    player.x = player.rect.x
-                    if player.rect.y != min_y:
-                        y_velocity = - y_gravity
-                        jumping = False
-                    print("right")
-
-            if player.rect.left <= vlocks.rect.right <= player.rect.right:
-                if player.rect.centerx > vlocks.rect.right:
-                    player.rect.left = vlocks.rect.right
-                    player.x = player.rect.x
-                    if player.rect.y != min_y:
-                        y_velocity = - y_gravity
-                        jumping = False
-                    print("left")
-
-    else:
-        print("Player not interacting")
-        if flag:
-            #y_velocity = y_gravity
-            #if player.y > min_y:
-            #    player.y = min_y
-            #if player.rect.y > min_y:
-            #    player.rect.y = min_y
-            flag = False
-    '''
-
-    player.animate()
-    player.update(blocks_sprite, boundaries)
 
     # Visuals
     # screen.blit(background, (0, 0))
@@ -353,11 +296,11 @@ while game_running:
     elif level == 0:
         blocks_sprite = pygame.sprite.Group()
         screen.blit(background, (0, 0))
-        for sprite in player_sprite:
-            sprite.appear(screen)
         for sprite in blocks_sprite:
             sprite.appear(screen)
         for sprite in exit_sprite:
+            sprite.appear(screen)
+        for sprite in player_sprite:
             sprite.appear(screen)
 
         narrator.appear(screen)
@@ -385,18 +328,18 @@ while game_running:
 
         # Updating manually the sprite groups
         pygame.sprite.Sprite.add(door1, exit_sprite)
-        blocks_sprite.add(block4, block6)
+        blocks_sprite.add(block3, block4, block6, block5)
 
         for coin in coin_list:
             if not coin.collected:  # if no collision is happening the coins should be added to the coin group
                 coin_group.add(coin)
         coin_group.draw(screen)
 
-        for sprite in player_sprite:
-            sprite.appear(screen)
         for sprite in blocks_sprite:
             sprite.appear(screen)
         for sprite in exit_sprite:
+            sprite.appear(screen)
+        for sprite in player_sprite:
             sprite.appear(screen)
 
             text1()
@@ -424,22 +367,22 @@ while game_running:
         # Updating manually the sprite groups
 
         # Removing everything from the sprite groups
-        blocks_sprite.remove(block4, block6)
+        blocks_sprite.remove(block4, block6, block5)
         for coin in coin_list:
             if not coin.collected:  # if no collision is happening the coins should be added to the coin group
                 coin_group.remove(coin)
 
         # Adding the elements for this level
         pygame.sprite.Sprite.add(door2, exit_sprite)
-        blocks_sprite.add(block1, block3)
+        blocks_sprite.add(block1)
         lava_group.add(lava)
 
         lava.appear(screen)
-        for sprite in player_sprite:
-            sprite.appear(screen)
         for sprite in blocks_sprite:
             sprite.appear(screen)
         for sprite in exit_sprite:
+            sprite.appear(screen)
+        for sprite in player_sprite:
             sprite.appear(screen)
 
         text2()
@@ -475,15 +418,15 @@ while game_running:
         for bullet in bullet_group:
             bullet.animate()
 
-        for sprite in player_sprite:
-            sprite.appear(screen)
         for sprite in blocks_sprite:
-            sprite.appear(screen)
-        for sprite in bullet_group:
             sprite.appear(screen)
         for sprite in enemy_group:
             sprite.appear(screen)
         for sprite in exit_sprite:
+            sprite.appear(screen)
+        for sprite in bullet_group:
+            sprite.appear(screen)
+        for sprite in player_sprite:
             sprite.appear(screen)
         text3()
 
@@ -528,16 +471,13 @@ while game_running:
     print(player.x, " = PLAYERS X", player.y, " = PLAYERS Y")
     # print(block.x2, " = BLOCKS X", block.y2, " = BLOCKS Y")
 
+
     game_over_screen()
 
-    #if player.y > min_y:
-    #    player.y = min_y
-    #    print("Player going down!!!")
-    #    print(screen_width, screen_height)
+    #for sprite in boundaries:
+    #    sprite.appear(screen)
 
 
-    for sprite in boundaries:
-        sprite.appear(screen)
 
     # Updating the window
     pygame.display.flip()
