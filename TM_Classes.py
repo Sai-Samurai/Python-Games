@@ -4,12 +4,12 @@ import TM_Images
 
 pygame.font.init()
 
-y_gravity = 1
-jump_height = 20
+y_gravity = 0.25
+jump_height = 8
 blocks_sprite = pygame.sprite.Group()
 narcolor = 'purple'
 YELLOW = (255, 255, 0)  # Horrific yellow for debugging rectangles
-speed_x = 7.5
+speed_x = 4.5
 bullet_speed = 10
 lives = 3
 
