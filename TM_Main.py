@@ -4,9 +4,9 @@ from TM_Images import player_rect, block_rect, screen_width, screen_height, coin
     background
 from TM_Images import dungeon, dungeon_screen
 from TM_Classes import Player, Boundary, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit
-from Texts import text0, text1, text2, text3, other_text
+from Texts import text0, text1, text2, text3, other_text, over_game_text
 from Loading import loading
-from Game_Over import game_over_screen
+# from Game_Over import game_over_screen
 from Button import start_outer, start_inner, start_text, starting_text, start_text2, starting_text2
 
 # General setup
@@ -26,7 +26,7 @@ y_gravity = 1
 jump_height = 20
 y_velocity = jump_height
 on_ground = True
-#min_y = 400  # Value according the game's ground level
+# min_y = 400  # Value according the game's ground level
 
 # Moving
 move_right = False
@@ -36,7 +36,7 @@ speed_x = 7.5
 
 # Player
 playerX, playerY = (241, 400)
-player = Player(playerX, playerY, 40, 96, player_rect)
+player = Player(playerX, playerY, 50, 96, player_rect)
 player_sprite = pygame.sprite.Group(player)
 
 # Lives
@@ -66,7 +66,7 @@ for block in blocks_sprite:
     block.rect.x = block.x2
     block.rect.y = block.y2
 
-#Boundaries
+# Boundaries
 boundaries = pygame.sprite.Group([
     Boundary(0, 496, 1090, 40)
 ])
@@ -129,13 +129,39 @@ for coin in coin_list:
     coin.rect.x = coin.x
     coin.rect.y = coin.y
 
+# Nested Groups
+
+all_groups = pygame.sprite.Group(player_sprite, blocks_sprite, exit_sprite, enemy_group, bullet_group,
+                                 lava_group, coin_group)
+
+# GAME OVER
+
+over_game = pygame.Rect(0, 0, screen_width, screen_height)
+over_game_text_rect = over_game_text.get_rect(center=(screen_width / 2, screen_height / 2))
+
+
+def empty_all_groups():
+    for sprite in all_groups:
+        all_groups.remove(sprite)
+
+
+def game_over():
+    pygame.draw.rect(screen, (0, 0, 0), over_game)
+    screen.blit(over_game_text, over_game_text_rect)
+    pygame.display.flip()
+    pygame.time.delay(3000)
+
+
+def game_over_screen():
+    # Game over screen displaying if the player lives count turn 0
+    if lives == 3:
+        game_over()
+        empty_all_groups()
+
+
 ######################################################################################################################
 '''
-The reason why the game_over_screen() isn't working is that actually the "lives" is never updated into the 
-game_over_screen(), because the variable "lives" is not taken for every time it is being updated in the "TM_Main"
-file, instead it is just taken from the source, which is the "TM_Classes" file, where the variable is defined as 3 and 
-never being changes. SO when the player's life count drops to 0, it is only true in the "TM_Main", but in the 
-game_over_screen(), the lives is still equals to 3.
+Comments in case
 '''
 ###################################################### GAME LOOP ####################################################
 
@@ -268,7 +294,6 @@ while game_running:
             if projectiles.x <= 0:
                 projectiles.x = monsters.x + 8 + monsters.length / 2
 
-
     # Main menu (Level -1)
     if level == -1:
         screen.blit(blur_background, (0, 0))
@@ -393,7 +418,7 @@ while game_running:
         print(lives)
         screen.blit(lives_text, (150, 20))
 
-        #game_over_screen()
+        # game_over_screen()
 
         print(coin_score)
 
@@ -434,7 +459,7 @@ while game_running:
         screen.blit(score_text, (450, 20))
         screen.blit(lives_text, (150, 20))
 
-        #game_over_screen()
+        # game_over_screen()
 
 
 
@@ -454,7 +479,7 @@ while game_running:
         screen.blit(score_text, (450, 20))
         screen.blit(lives_text, (150, 20))
 
-        #game_over_screen()
+        # game_over_screen()
 
 
     elif level > 4:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
@@ -471,13 +496,10 @@ while game_running:
     print(player.x, " = PLAYERS X", player.y, " = PLAYERS Y")
     # print(block.x2, " = BLOCKS X", block.y2, " = BLOCKS Y")
 
-
     game_over_screen()
 
-    #for sprite in boundaries:
+    # for sprite in boundaries:
     #    sprite.appear(screen)
-
-
 
     # Updating the window
     pygame.display.flip()
