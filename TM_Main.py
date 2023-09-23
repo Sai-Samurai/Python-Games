@@ -1,13 +1,11 @@
 import pygame, sys
 
 from TM_Images import player_rect, block_rect, screen_width, screen_height, coin_image, screen, blur_background, \
-    background
-from TM_Images import dungeon, dungeon_screen
+    background, dungeon, dungeon_screen
 from TM_Classes import Player, Boundary, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit
-from Texts import text0, text1, text2, text3, other_text, over_game_text
+from Texts import text0, text1, text2, text3, other_text, over_game_text, restart_game
 from Loading import loading
-# from Game_Over import game_over_screen
-from Button import start_outer, start_inner, start_text, starting_text, start_text2, starting_text2
+from Button import start_outer, start_inner, start_text, starting_text, start_text2, starting_text2, start_button
 
 # General setup
 pygame.init()
@@ -131,13 +129,15 @@ for coin in coin_list:
 
 # Nested Groups
 
-all_groups = pygame.sprite.Group(player_sprite, blocks_sprite, exit_sprite, enemy_group, bullet_group,
+all_groups = pygame.sprite.Group(blocks_sprite, exit_sprite, enemy_group, bullet_group,
                                  lava_group, coin_group)
 
 # GAME OVER
 
 over_game = pygame.Rect(0, 0, screen_width, screen_height)
 over_game_text_rect = over_game_text.get_rect(center=(screen_width / 2, screen_height / 2))
+
+restart_game_rect = restart_game.get_rect(center=(screen_width / 2, screen_height / 2 + 50))
 
 
 def empty_all_groups():
@@ -148,20 +148,20 @@ def empty_all_groups():
 def game_over():
     pygame.draw.rect(screen, (0, 0, 0), over_game)
     screen.blit(over_game_text, over_game_text_rect)
+    screen.blit(restart_game, restart_game_rect)
     pygame.display.flip()
-    pygame.time.delay(3000)
 
 
 def game_over_screen():
     # Game over screen displaying if the player lives count turn 0
-    if lives == 3:
+    if lives == 0:
         game_over()
         empty_all_groups()
 
 
 ######################################################################################################################
 '''
-Comments in case
+Comment section if needed
 '''
 ###################################################### GAME LOOP ####################################################
 
@@ -207,7 +207,6 @@ while game_running:
     player.rect.x = player.x
     player.rect.y = player.y
 
-    game_over_screen()
 
     # COLLISIONS
     player.x = player.rect.x
@@ -294,15 +293,25 @@ while game_running:
             if projectiles.x <= 0:
                 projectiles.x = monsters.x + 8 + monsters.length / 2
 
+
+    # Game over (Level -2)
+    if level == -2:
+        game_over()
+
+        # for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                level = level + 1
+                lives = 3
+
+        player.x, player.y = 241, 400
+
+
     # Main menu (Level -1)
     if level == -1:
         screen.blit(blur_background, (0, 0))
+        start_button()
 
-        # Start button
-        pygame.draw.rect(screen, (200, 150, 120), start_outer, border_radius=10)  # Can decide on color later
-        pygame.draw.rect(screen, 'red', start_inner, border_radius=10)  # Same here for the color
-        screen.blit(start_text, starting_text)
-        screen.blit(start_text2, starting_text2)
 
         # for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -496,7 +505,8 @@ while game_running:
     print(player.x, " = PLAYERS X", player.y, " = PLAYERS Y")
     # print(block.x2, " = BLOCKS X", block.y2, " = BLOCKS Y")
 
-    game_over_screen()
+    if lives == 0:
+        level = -2
 
     # for sprite in boundaries:
     #    sprite.appear(screen)
