@@ -12,6 +12,7 @@ loading_text = pygame.font.Font("Retro_Gaming.ttf", 45).render("Loading...", Fal
                                                                (255, 255, 255))
 over_game_text = pygame.font.Font("Retro_Gaming.ttf", 45).render("GAME OVER", False,
                                                                  (255, 255, 255))
+restart_game = other_text.render("Press Enter to try again", False, (255, 255, 255))
 
 
 # Wrapping text
