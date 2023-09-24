@@ -4,8 +4,8 @@ import TM_Images
 
 pygame.font.init()
 
-y_gravity = 0.25
-jump_height = 8
+y_gravity = 0.4
+jump_height = 10
 blocks_sprite = pygame.sprite.Group()
 narcolor = 'purple'
 YELLOW = (255, 255, 0)  # Horrific yellow for debugging rectangles
@@ -46,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         #self.animate()
         self.block_collisions(blocks_sprite)
         self.boundary_collisions(boundaries)
+        self.side_borders()
 
     def appear(self, screen):
         pygame.draw.rect(screen, YELLOW, self.rect)
@@ -82,6 +83,14 @@ class Player(pygame.sprite.Sprite):
         self.jumping = False
         self.y_velocity = 0
         self.y = blocks_sprite.rect.top - self.height
+
+    def side_borders(self):
+        if self.x + self.length >= 1088:
+            self.x = 1088 - self.length
+        if self.x <= 0:
+            self.x = 0
+        if self.y <= 0:
+            self.y = 0
 
     def boundary_stop_jumping(self, boundary):
         self.jumping = False
@@ -333,4 +342,4 @@ class Exit(pygame.sprite.Sprite):
 
     def appear(self, screen):
         pygame.draw.rect(screen, (135, 206, 235), self.rect)
-        screen.blit(TM_Images.door_image, self.rect)
+        screen.blit(TM_Images.door_image, (self.x3 - 10, self.y3, self.exitlength, self.exitheight))
