@@ -47,7 +47,7 @@ door_rect = door_image.get_rect()
 
 # Lava image
 l_image = pygame.image.load("lava.png").convert_alpha()
-lava_image = pygame.transform.scale(l_image, (l_image.get_width(), l_image.get_height() * 4 / 3))
+lava_image = pygame.transform.scale(l_image, (l_image.get_width(), l_image.get_height() + 10))
 lava_rect = lava_image.get_rect()
 
 # Narrator image
