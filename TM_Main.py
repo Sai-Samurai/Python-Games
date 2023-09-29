@@ -90,6 +90,13 @@ block_3_level_3 = Blocks(500, 376, block_size, block_size2, block_rect)
 block_4_level_3 = Blocks(670, 411, block_size, block_size2, block_rect)
 
 
+# For the fourth level
+block_1_level_4 = Blocks(20, 223, block_size, block_size2, block_rect)
+block_2_level_4 = Blocks(70, 223, block_size, block_size2, block_rect)
+block_3_level_4 = Blocks(120, 223, block_size, block_size2, block_rect)
+
+
+
 for block in blocks_sprite:
     block.rect.x = block.x2
     block.rect.y = block.y2
@@ -109,7 +116,7 @@ narrator = Narrator(100, 100, 170, 70)
 # EXIT ATTRIBUTES
 
 # Levels
-level = -1
+level = 3
 
 # Exit
 
@@ -121,6 +128,7 @@ door0 = Exit(980, 380, exitlength, exitheight, color)  # y = 380 is placed corre
 door1 = Exit(920, 150, exitlength, exitheight, color)  # before: 400, 0
 door2 = Exit(30, 380, exitlength, exitheight, color)
 door3 = Exit(1020, 380, exitlength, exitheight, color)  # before: 400, 200
+door4 = Exit(30, 110, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group()
 
@@ -130,12 +138,17 @@ enemy_group = pygame.sprite.Group()
 enemy1 = Enemy(850, 420, 30, 60)
 enemy2 = Enemy(850, 300, 30, 60)
 
+enemy3 = Enemy(980, 250, 30, 60)
+enemy4 = Enemy(980, 350, 30, 60)
+
 # BULLETS
 
 bullet_group = pygame.sprite.Group()
 bullet_speed = 10
 bullet = Bullet((enemy1.x + 8 + enemy1.length / 2, enemy1.y - 10 + enemy1.height / 2), 7.5, 'red')
 bullet2 = Bullet((enemy2.x + 8 + enemy2.length / 2, enemy2.y - 10 + enemy2.height / 2), 7.5, 'red')
+bullet3 = Bullet((enemy3.x + 8 + enemy3.length / 2, enemy3.y - 10 + enemy3.height / 2), 7.5, 'red')
+bullet4 = Bullet((enemy4.x + 8 + enemy4.length / 2, enemy4.y - 10 + enemy4.height / 2), 7.5, 'red')
 bullet_hit = 0
 
 # DEATH ITEMS ATTRIBUTES
@@ -258,6 +271,7 @@ while game_running:
             # the exit_sprite group is deleted from the group after every collision. By doing so,  we just need to
             # add every diffeent door to every specific level using the method .add().
             screen.blit(dungeon, (0, 0))
+            player.y -= player.y_velocity
             level = level + 1
 
     # Lava collision
@@ -495,15 +509,36 @@ while game_running:
 
 
 
-    elif level == 4:  # Draft for further levels
+    elif level == 4:
         screen.blit(dungeon_screen, (0, 0))
 
         # Removing sprites from groups
-        enemy_group.remove(enemy1)
-        bullet_group.remove(bullet)
-        blocks_sprite.remove(block_1_level_1)
-        exit_sprite.remove(door3)
+        enemy_group.remove(enemy1, enemy2)
+        bullet_group.empty()
+        blocks_sprite.remove(block_1_level_3, block_2_level_3, block_3_level_3, block_4_level_3)
 
+        #Adding sprites in the groups
+        exit_sprite.add(door4)
+        blocks_sprite.add(block_1_level_4, block_2_level_4, block_3_level_4)
+        enemy_group.add(enemy3, enemy4)
+        bullet_group.add(bullet3, bullet4)
+
+
+        '''
+        Enemies adn bullets rendering is correct, but somehow, the bullet collisions do not work...
+        '''
+
+        for bullets in bullet_group:
+            bullets.animate()
+
+        for sprite in blocks_sprite:
+            sprite.appear(screen)
+        for sprite in enemy_group:
+            sprite.appear(screen)
+        for sprite in exit_sprite:
+            sprite.appear(screen)
+        for sprite in bullet_group:
+            sprite.appear(screen)
         for sprite in player_sprite:
             sprite.appear(screen)
 
