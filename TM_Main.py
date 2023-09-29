@@ -53,19 +53,41 @@ blocks_sprite = pygame.sprite.Group()
 # Seperating the blocks and creating far mor entities for each level
 
 # For the first level:
+
+block_1_level_1 = Blocks(100, 446, block_size, block_size2, block_rect)
+block_2_level_1 = Blocks(250, 315, block_size, block_size2, block_rect)
+block_3_level_1 = Blocks(300, 315, block_size, block_size2, block_rect)
+block_4_level_1 = Blocks(350, 315, block_size, block_size2, block_rect)
+block_5_level_1 = Blocks(510, 235, block_size, block_size2, block_rect)
+block_6_level_1 = Blocks(560, 235, block_size, block_size2, block_rect)
+block_7_level_1 = Blocks(835, 263, block_size, block_size2, block_rect)
+block_8_level_1 = Blocks(885, 263, block_size, block_size2, block_rect)
+block_9_level_1 = Blocks(935, 263, block_size, block_size2, block_rect)
+
+'''
 block_1_level_1 = Blocks(790, 446, block_size, block_size2, block_rect)
 block_2_level_1 = Blocks(650, 315, block_size, block_size2, block_rect)
 block_3_level_1 = Blocks(600, 315, block_size, block_size2, block_rect)
 block_4_level_1 = Blocks(550, 315, block_size, block_size2, block_rect)
 block_5_level_1 = Blocks(350, 235, block_size, block_size2, block_rect)
 block_6_level_1 = Blocks(300, 235, block_size, block_size2, block_rect)
-block_7_level_1 = Blocks(35, 263, block_size, block_size2, block_rect)
+block_7_level_1 = Blocks(135, 263, block_size, block_size2, block_rect)
 block_8_level_1 = Blocks(85, 263, block_size, block_size2, block_rect)
+block_9_level_1 = Blocks(35, 263, block_size, block_size2, block_rect)
+
+'''
 
 
 # For the second level:
-block1 = Blocks(400, 327, block_size, block_size2, block_rect)
-block2 = Blocks(550, 350, block_size, block_size2, block_rect)
+block_1_level_2 = Blocks(400, 327, block_size, block_size2, block_rect)
+block_2_level_2 = Blocks(600, 380, block_size, block_size2, block_rect)
+
+
+# For the third level
+block_1_level_3 = Blocks(200, 446, block_size, block_size2, block_rect)
+block_2_level_3 = Blocks(350, 376, block_size, block_size2, block_rect)
+block_3_level_3 = Blocks(500, 376, block_size, block_size2, block_rect)
+block_4_level_3 = Blocks(670, 411, block_size, block_size2, block_rect)
 
 
 for block in blocks_sprite:
@@ -96,8 +118,8 @@ exitlength = 65
 exitheight = 113
 
 door0 = Exit(980, 380, exitlength, exitheight, color)  # y = 380 is placed correctly on the ground
-door1 = Exit(45, 150, exitlength, exitheight, color)  # before: 400, 0
-door2 = Exit(30, 400, exitlength, exitheight, color)
+door1 = Exit(920, 150, exitlength, exitheight, color)  # before: 400, 0
+door2 = Exit(30, 380, exitlength, exitheight, color)
 door3 = Exit(1020, 380, exitlength, exitheight, color)  # before: 400, 200
 
 exit_sprite = pygame.sprite.Group()
@@ -119,17 +141,18 @@ bullet_hit = 0
 # DEATH ITEMS ATTRIBUTES
 
 # Lava
-lava = Death_Items(600, 495, 350, 80.5)  # Best to try is x = 200
+lava = Death_Items(350, 495, 350, 80.5)  # Best to try is x = 200
 lava_group = pygame.sprite.Group()
 lava_contact = 0
 
 # COINS ATTRIBUTES
 
-coin1 = Coins(200, 440, 19, 22, coin_image)
-coin2 = Coins(300, 440, 19, 22, coin_image)
-coin3 = Coins(400, 440, 19, 22, coin_image)
+coin1 = Coins(block_1_level_1.x2 + 16.5, block_1_level_1.y2 - 27, 19, 22, coin_image)
+coin2 = Coins(block_3_level_1.x2 + 16.5, block_3_level_1.y2 - 27, 19, 22, coin_image)
+coin3 = Coins(block_6_level_1.x2 + 16.5, block_6_level_1.y2 - 27, 19, 22, coin_image)
+coin4 = Coins(530, 450, 19, 22, coin_image)
 coin_group = pygame.sprite.Group()
-coin_list = [coin1, coin2, coin3]
+coin_list = [coin1, coin2, coin3, coin4]
 
 for coin in coin_list:
     coin.rect.x = coin.x
@@ -296,6 +319,8 @@ while game_running:
             if projectiles.x <= 0:
                 projectiles.x = monsters.x + 8 + monsters.length / 2
 
+
+
     # Game over (Level -2)
     if level == -2:
         game_over()
@@ -312,6 +337,7 @@ while game_running:
 
         player.x, player.y = 241, 400
 
+
     # Main menu (Level -1)
     if level == -1:
         screen.blit(blur_background, (0, 0))
@@ -326,8 +352,6 @@ while game_running:
         player.x, player.y = 241, 400
 
         print(coin_score)
-
-
 
 
     # Level 0
@@ -357,8 +381,6 @@ while game_running:
         print(coin_score)
 
 
-
-
     # Level 1
     elif level == 1:
         # Setting the screen
@@ -368,7 +390,7 @@ while game_running:
         # Updating manually the sprite groups
         pygame.sprite.Sprite.add(door1, exit_sprite)
         blocks_sprite.add(block_1_level_1, block_2_level_1, block_3_level_1, block_4_level_1, block_5_level_1,
-                          block_6_level_1, block_7_level_1, block_8_level_1)
+                          block_6_level_1, block_7_level_1, block_8_level_1, block_9_level_1)
 
         for coin in coin_list:
             if not coin.collected:  # if no collision is happening the coins should be added to the coin group
@@ -407,14 +429,14 @@ while game_running:
 
         # Removing everything from the sprite groups
         blocks_sprite.remove(block_1_level_1, block_2_level_1, block_3_level_1, block_4_level_1,
-                             block_5_level_1, block_6_level_1, block_7_level_1, block_8_level_1)
+                             block_5_level_1, block_6_level_1, block_7_level_1, block_8_level_1, block_9_level_1)
         for coin in coin_list:
             if not coin.collected:  # if no collision is happening the coins should be added to the coin group
                 coin_group.remove(coin)
 
         # Adding the elements for this level
         pygame.sprite.Sprite.add(door2, exit_sprite)
-        blocks_sprite.add(block1)
+        blocks_sprite.add(block_1_level_2, block_2_level_2)
         lava_group.add(lava)
 
         lava.appear(screen)
@@ -442,13 +464,13 @@ while game_running:
         # Updating the sprite groups manually
 
         # Removing sprites from previous level
-        blocks_sprite.remove(block1, block_4_level_1)
+        blocks_sprite.remove(block_1_level_2, block_2_level_2)
         lava_group.remove(lava)
 
         # Adding the sprites
         enemy_group.add(enemy1, enemy2)
         bullet_group.add(bullet, bullet2)
-        blocks_sprite.add(block_1_level_1)
+        blocks_sprite.add(block_1_level_3, block_2_level_3, block_3_level_3, block_4_level_3)
         exit_sprite.add(door3)
 
         # Animations for all bullet sprites
@@ -488,8 +510,6 @@ while game_running:
         screen.blit(level_text, (750, 20))
         screen.blit(score_text, (450, 20))
         screen.blit(lives_text, (150, 20))
-
-        #
 
 
     elif level > 4:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
