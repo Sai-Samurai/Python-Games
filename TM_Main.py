@@ -52,30 +52,27 @@ blocks_sprite = pygame.sprite.Group()
 
 # Seperating the blocks and creating far mor entities for each level
 
+'''
+How to read and comapre the blocks variables to what you find on the screen?
+It is simple... Well..
+You have first the name that starts by "block" to designate the variable's composition.
+Then you have the number of the block designated by an easy method... The blocks with the smallest y value go first.If 
+by any chance some blocks have the same y coordinate, the order will be determined by the smallest x value to the 
+biggest. And then the same thing happens the the next bigger y coordinate.
+And finally, the "level_number" tells which level does the block belong to.
+Simple... Right?
+'''
+
 # For the first level:
-
-block_1_level_1 = Blocks(100, 446, block_size, block_size2, block_rect)
-block_2_level_1 = Blocks(250, 315, block_size, block_size2, block_rect)
-block_3_level_1 = Blocks(300, 315, block_size, block_size2, block_rect)
-block_4_level_1 = Blocks(350, 315, block_size, block_size2, block_rect)
-block_5_level_1 = Blocks(510, 235, block_size, block_size2, block_rect)
-block_6_level_1 = Blocks(560, 235, block_size, block_size2, block_rect)
-block_7_level_1 = Blocks(835, 263, block_size, block_size2, block_rect)
-block_8_level_1 = Blocks(885, 263, block_size, block_size2, block_rect)
-block_9_level_1 = Blocks(935, 263, block_size, block_size2, block_rect)
-
-'''
-block_1_level_1 = Blocks(790, 446, block_size, block_size2, block_rect)
-block_2_level_1 = Blocks(650, 315, block_size, block_size2, block_rect)
-block_3_level_1 = Blocks(600, 315, block_size, block_size2, block_rect)
-block_4_level_1 = Blocks(550, 315, block_size, block_size2, block_rect)
-block_5_level_1 = Blocks(350, 235, block_size, block_size2, block_rect)
-block_6_level_1 = Blocks(300, 235, block_size, block_size2, block_rect)
-block_7_level_1 = Blocks(135, 263, block_size, block_size2, block_rect)
-block_8_level_1 = Blocks(85, 263, block_size, block_size2, block_rect)
-block_9_level_1 = Blocks(35, 263, block_size, block_size2, block_rect)
-
-'''
+block_1_level_1 = Blocks(510, 235, block_size, block_size2, block_rect)
+block_2_level_1 = Blocks(560, 235, block_size, block_size2, block_rect)
+block_3_level_1 = Blocks(835, 263, block_size, block_size2, block_rect)
+block_4_level_1 = Blocks(885, 263, block_size, block_size2, block_rect)
+block_5_level_1 = Blocks(935, 263, block_size, block_size2, block_rect)
+block_6_level_1 = Blocks(250, 315, block_size, block_size2, block_rect)
+block_7_level_1 = Blocks(300, 315, block_size, block_size2, block_rect)
+block_8_level_1 = Blocks(350, 315, block_size, block_size2, block_rect)
+block_9_level_1 = Blocks(100, 446, block_size, block_size2, block_rect)
 
 
 # For the second level:
@@ -84,17 +81,26 @@ block_2_level_2 = Blocks(600, 380, block_size, block_size2, block_rect)
 
 
 # For the third level
-block_1_level_3 = Blocks(200, 446, block_size, block_size2, block_rect)
-block_2_level_3 = Blocks(350, 376, block_size, block_size2, block_rect)
-block_3_level_3 = Blocks(500, 376, block_size, block_size2, block_rect)
-block_4_level_3 = Blocks(670, 411, block_size, block_size2, block_rect)
+block_1_level_3 = Blocks(350, 376, block_size, block_size2, block_rect)
+block_2_level_3 = Blocks(500, 376, block_size, block_size2, block_rect)
+block_3_level_3 = Blocks(670, 411, block_size, block_size2, block_rect)
+block_4_level_3 = Blocks(200, 446, block_size, block_size2, block_rect)
 
 
 # For the fourth level
-block_1_level_4 = Blocks(20, 223, block_size, block_size2, block_rect)
-block_2_level_4 = Blocks(70, 223, block_size, block_size2, block_rect)
-block_3_level_4 = Blocks(120, 223, block_size, block_size2, block_rect)
-
+block_1_level_4 = Blocks(200, 158, block_size, block_size2, block_rect)
+block_2_level_4 = Blocks(1015, 199, block_size, block_size2, block_rect)
+block_3_level_4 = Blocks(0, 203, block_size, block_size2, block_rect)
+block_4_level_4 = Blocks(50, 203, block_size, block_size2, block_rect)
+block_5_level_4 = Blocks(100, 203, block_size, block_size2, block_rect)
+block_6_level_4 = Blocks(150, 203, block_size, block_size2, block_rect)
+block_7_level_4 = Blocks(400, 208, block_size, block_size2, block_rect)
+block_8_level_4 = Blocks(50, 253, block_size, block_size2, block_rect)
+block_9_level_4 = Blocks(330, 305, block_size, block_size2, block_rect)
+block_10_level_4 = Blocks(1015, 324, block_size, block_size2, block_rect)
+block_11_level_4 = Blocks(740, 380, block_size, block_size2, block_rect)
+block_12_level_4 = Blocks(540, 380, block_size, block_size2, block_rect)
+block_13_level_4 = Blocks(180, 415, block_size, block_size2, block_rect)
 
 
 for block in blocks_sprite:
@@ -116,7 +122,7 @@ narrator = Narrator(100, 100, 170, 70)
 # EXIT ATTRIBUTES
 
 # Levels
-level = 3
+level = -1
 
 # Exit
 
@@ -125,10 +131,10 @@ exitlength = 65
 exitheight = 113
 
 door0 = Exit(980, 380, exitlength, exitheight, color)  # y = 380 is placed correctly on the ground
-door1 = Exit(920, 150, exitlength, exitheight, color)  # before: 400, 0
+door1 = Exit(920, 150, exitlength, exitheight, color)
 door2 = Exit(30, 380, exitlength, exitheight, color)
-door3 = Exit(1020, 380, exitlength, exitheight, color)  # before: 400, 200
-door4 = Exit(30, 110, exitlength, exitheight, color)
+door3 = Exit(1020, 380, exitlength, exitheight, color)
+door4 = Exit(10, 90, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group()
 
@@ -138,8 +144,8 @@ enemy_group = pygame.sprite.Group()
 enemy1 = Enemy(850, 420, 30, 60)
 enemy2 = Enemy(850, 300, 30, 60)
 
-enemy3 = Enemy(980, 250, 30, 60)
-enemy4 = Enemy(980, 350, 30, 60)
+enemy3 = Enemy(980, 135, 30, 60)
+enemy4 = Enemy(980, 260, 30, 60)
 
 # BULLETS
 
@@ -147,6 +153,7 @@ bullet_group = pygame.sprite.Group()
 bullet_speed = 10
 bullet = Bullet((enemy1.x + 8 + enemy1.length / 2, enemy1.y - 10 + enemy1.height / 2), 7.5, 'red')
 bullet2 = Bullet((enemy2.x + 8 + enemy2.length / 2, enemy2.y - 10 + enemy2.height / 2), 7.5, 'red')
+
 bullet3 = Bullet((enemy3.x + 8 + enemy3.length / 2, enemy3.y - 10 + enemy3.height / 2), 7.5, 'red')
 bullet4 = Bullet((enemy4.x + 8 + enemy4.length / 2, enemy4.y - 10 + enemy4.height / 2), 7.5, 'red')
 bullet_hit = 0
@@ -319,7 +326,7 @@ while game_running:
                                                 projectiles.radius * 2)
 
             if player.rect.colliderect(bullet_collision_area):
-                if level == 3:  # adding level number condition for the collision to be true
+                if level == 3 or level == 4:  # adding level number condition for the collision to be true
                     projectiles.x = monsters.x + 8 + monsters.length / 2
                     bullet_hit += 1
                     if bullet_hit % 3 == 0:
@@ -440,10 +447,9 @@ while game_running:
         screen.blit(dungeon_screen, (0, 0))
 
         # Updating manually the sprite groups
-
         # Removing everything from the sprite groups
-        blocks_sprite.remove(block_1_level_1, block_2_level_1, block_3_level_1, block_4_level_1,
-                             block_5_level_1, block_6_level_1, block_7_level_1, block_8_level_1, block_9_level_1)
+        blocks_sprite.empty()
+
         for coin in coin_list:
             if not coin.collected:  # if no collision is happening the coins should be added to the coin group
                 coin_group.remove(coin)
@@ -478,8 +484,8 @@ while game_running:
         # Updating the sprite groups manually
 
         # Removing sprites from previous level
-        blocks_sprite.remove(block_1_level_2, block_2_level_2)
-        lava_group.remove(lava)
+        blocks_sprite.empty()
+        lava_group.empty()
 
         # Adding the sprites
         enemy_group.add(enemy1, enemy2)
@@ -508,25 +514,22 @@ while game_running:
         screen.blit(lives_text, (150, 20))
 
 
-
+    # Level 4
     elif level == 4:
         screen.blit(dungeon_screen, (0, 0))
 
         # Removing sprites from groups
-        enemy_group.remove(enemy1, enemy2)
+        enemy_group.empty()
         bullet_group.empty()
-        blocks_sprite.remove(block_1_level_3, block_2_level_3, block_3_level_3, block_4_level_3)
+        blocks_sprite.empty()
 
         #Adding sprites in the groups
         exit_sprite.add(door4)
-        blocks_sprite.add(block_1_level_4, block_2_level_4, block_3_level_4)
+        blocks_sprite.add(block_1_level_4, block_2_level_4, block_3_level_4, block_4_level_4, block_5_level_4,
+                          block_6_level_4, block_7_level_4, block_8_level_4, block_9_level_4, block_10_level_4,
+                          block_11_level_4, block_12_level_4, block_13_level_4)
         enemy_group.add(enemy3, enemy4)
         bullet_group.add(bullet3, bullet4)
-
-
-        '''
-        Enemies adn bullets rendering is correct, but somehow, the bullet collisions do not work...
-        '''
 
         for bullets in bullet_group:
             bullets.animate()
