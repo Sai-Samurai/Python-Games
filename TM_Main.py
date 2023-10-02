@@ -74,18 +74,15 @@ block_7_level_1 = Blocks(300, 315, block_size, block_size2, block_rect)
 block_8_level_1 = Blocks(350, 315, block_size, block_size2, block_rect)
 block_9_level_1 = Blocks(100, 446, block_size, block_size2, block_rect)
 
-
 # For the second level:
 block_1_level_2 = Blocks(400, 327, block_size, block_size2, block_rect)
 block_2_level_2 = Blocks(600, 380, block_size, block_size2, block_rect)
-
 
 # For the third level
 block_1_level_3 = Blocks(350, 376, block_size, block_size2, block_rect)
 block_2_level_3 = Blocks(500, 376, block_size, block_size2, block_rect)
 block_3_level_3 = Blocks(670, 411, block_size, block_size2, block_rect)
 block_4_level_3 = Blocks(200, 446, block_size, block_size2, block_rect)
-
 
 # For the fourth level
 block_1_level_4 = Blocks(200, 158, block_size, block_size2, block_rect)
@@ -101,7 +98,6 @@ block_10_level_4 = Blocks(1015, 324, block_size, block_size2, block_rect)
 block_11_level_4 = Blocks(740, 380, block_size, block_size2, block_rect)
 block_12_level_4 = Blocks(540, 380, block_size, block_size2, block_rect)
 block_13_level_4 = Blocks(180, 415, block_size, block_size2, block_rect)
-
 
 for block in blocks_sprite:
     block.rect.x = block.x2
@@ -167,14 +163,37 @@ lava_contact = 0
 
 # COINS ATTRIBUTES
 
+level_coins = {
+    -2: [],
+    -1: [],
+    0: [],
+    1: [(block_1_level_1.x2 + 16.5, block_1_level_1.y2 - 27, 19, 22, coin_image),
+        (block_3_level_1.x2 + 16.5, block_3_level_1.y2 - 27, 19, 22, coin_image),
+        (block_6_level_1.x2 + 16.5, block_6_level_1.y2 - 27, 19, 22, coin_image),
+        (530, 450, 19, 22, coin_image)],
+    2: [(block_1_level_2.x2 + 16.5, block_1_level_2.y2 - 27, 19, 22, coin_image),
+        (block_2_level_2.x2 + 16.5, block_2_level_2.x2 - 27, 19, 22, coin_image)]
+}
+
+
+for coin_data in level_coins[level]:
+    # The * is a shortcut to seperating all sprites for a list
+    coin = Coins(*coin_data)
+    coin_groups[level].add(coin)
+
+# Creating sprite groups for each level
+coin_groups = {level: pygame.sprite.Group() for level in level_coins}
+
+'''
 coin1 = Coins(block_1_level_1.x2 + 16.5, block_1_level_1.y2 - 27, 19, 22, coin_image)
 coin2 = Coins(block_3_level_1.x2 + 16.5, block_3_level_1.y2 - 27, 19, 22, coin_image)
 coin3 = Coins(block_6_level_1.x2 + 16.5, block_6_level_1.y2 - 27, 19, 22, coin_image)
 coin4 = Coins(530, 450, 19, 22, coin_image)
 coin_group = pygame.sprite.Group()
 coin_list = [coin1, coin2, coin3, coin4]
+'''
 
-for coin in coin_list:
+for coin in coin_groups[level]:
     coin.rect.x = coin.x
     coin.rect.y = coin.y
 
@@ -188,7 +207,7 @@ restart_game_rect = restart_game.get_rect(center=(screen_width / 2, screen_heigh
 # Nested Groups
 
 all_groups = pygame.sprite.Group(blocks_sprite, exit_sprite, enemy_group, bullet_group,
-                                 lava_group, coin_group)
+                                 lava_group, coin_groups[level])
 
 
 def empty_all_groups():
@@ -201,10 +220,12 @@ def game_over():
     screen.blit(over_game_text, over_game_text_rect)
     screen.blit(restart_game, restart_game_rect)
     empty_all_groups()
-    for coin in coin_list:
+    for coin in coin_groups[level]:
         coin.collected = False
     pygame.display.flip()
 
+
+#coin_list = [coin for coin in coin_data]
 
 ######################################################################################################################
 '''
@@ -296,21 +317,50 @@ while game_running:
                 lives -= 1
 
     # Coin collisions
-    coin_collision = pygame.sprite.spritecollideany(player, coin_group) is not None
+    coin_collision = pygame.sprite.spritecollideany(player, coin_groups[level]) is not None
     if coin_collision:
-        if pygame.sprite.spritecollide(player, coin_group, True):
-            '''
-            next() goes throught the coin list and finds the first coin from the list of coins where the coin's 
-            rectangle overlaps with the player's rectangle
-            '''
+        collided_coin = pygame.sprite.spritecollide(player, coin_groups[level], True)
+        if collided_coin:
+            coin_list = [coin for coin in coin_groups[level]]
+            for coin in coin_groups[level]:
+                if coin.rect.colliderect(player.rect):
+                    collided_coin = coin
+            #collided_coins = next(
+            #    coin for coin in coin_list if coin.rect.colliderect(player.rect) and not coin.collected
+            #)
 
-            collided_coin = next(
-                coin for coin in coin_list if coin.rect.colliderect(player.rect))  # coin are still in the coin_list
-
-            if not collided_coin.collected:  # now the coins that have collided are to be removed from the sprite group
-                collided_coin.collected = True
+            if collided_coin:
+                coin.collected = True
                 coin_score += 1
-                coin_group.remove(collided_coin)
+                coin_groups[level].remove(coin)
+                #level_coins[level].remove(collided_coin)
+
+
+            #coin_list = [coin for coin in coin_list if not coin.collected]
+
+        '''
+                    # Find the first collided coin of the current level
+        for coin_data in level_coins[level]:
+            coin = Coins(*coin_data)
+            if coin.rect.colliderect(player.rect):
+                collided_coin = coin
+                break
+        
+        
+        
+        next() goes throught the coin list and finds the first coin from the list of coins where the coin's 
+        rectangle overlaps with the player's rectangle
+        
+    
+        collided_coin = next(
+            coin for coin in coin_list if coin.rect.colliderect(player.rect))  # coin are still in the coin_list
+    
+        if not collided_coin.collected:  # now the coins that have collided are to be removed from the sprite group
+            collided_coin.collected = True
+            coin_score += 1
+            coin_group.remove(collided_coin)
+            
+        '''
 
     # Bullet collision
     for projectiles in bullet_group:
@@ -340,7 +390,7 @@ while game_running:
             if projectiles.x <= 0:
                 projectiles.x = monsters.x + 8 + monsters.length / 2
 
-
+    # coin_groups[level].draw(screen)
 
     # Game over (Level -2)
     if level == -2:
@@ -357,7 +407,6 @@ while game_running:
                     exit_sprite.remove(door)
 
         player.x, player.y = 241, 400
-
 
     # Main menu (Level -1)
     if level == -1:
@@ -413,10 +462,20 @@ while game_running:
         blocks_sprite.add(block_1_level_1, block_2_level_1, block_3_level_1, block_4_level_1, block_5_level_1,
                           block_6_level_1, block_7_level_1, block_8_level_1, block_9_level_1)
 
+        coin_list = [coin for coin in coin_groups[level]]
+        for coin_data in level_coins[level]:
+            # Creating a temporary coin object
+            coin = Coins(*coin_data)
+            if not coin.collected:
+                coin_groups[level].add(coin)
+        coin_groups[level].draw(screen)
+
+        '''
         for coin in coin_list:
             if not coin.collected:  # if no collision is happening the coins should be added to the coin group
                 coin_group.add(coin)
         coin_group.draw(screen)
+        '''
 
         for sprite in blocks_sprite:
             sprite.appear(screen)
@@ -450,9 +509,21 @@ while game_running:
         # Removing everything from the sprite groups
         blocks_sprite.empty()
 
+        for coin_data in level_coins[level]:
+            coin = Coins(*coin_data)
+            if not coin.collected:
+                coin_groups[level].add(coin)
+
+        # Remove any previously uncollected coins from the current level's sprite group
+        for coin in coin_groups[level]:
+            if not coin.collected:
+                coin_groups[level].remove(coin)
+
+        '''
         for coin in coin_list:
             if not coin.collected:  # if no collision is happening the coins should be added to the coin group
                 coin_group.remove(coin)
+        '''
 
         # Adding the elements for this level
         pygame.sprite.Sprite.add(door2, exit_sprite)
@@ -470,9 +541,10 @@ while game_running:
         text2()
 
         screen.blit(level_text, (750, 20))
+        screen.blit(score_text, (450, 20))
+        screen.blit(lives_text, (150, 20))
 
         print(lives)
-        screen.blit(lives_text, (150, 20))
 
         print(coin_score)
 
@@ -523,7 +595,7 @@ while game_running:
         bullet_group.empty()
         blocks_sprite.empty()
 
-        #Adding sprites in the groups
+        # Adding sprites in the groups
         exit_sprite.add(door4)
         blocks_sprite.add(block_1_level_4, block_2_level_4, block_3_level_4, block_4_level_4, block_5_level_4,
                           block_6_level_4, block_7_level_4, block_8_level_4, block_9_level_4, block_10_level_4,
