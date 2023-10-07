@@ -12,6 +12,8 @@ loading_text = pygame.font.Font("Retro_Gaming.ttf", 45).render("Loading...", Fal
                                                                (255, 255, 255))
 over_game_text = pygame.font.Font("Retro_Gaming.ttf", 45).render("GAME OVER", False,
                                                                  (255, 255, 255))
+win_game_text = pygame.font.Font("Retro_Gaming.ttf", 45).render("YOU WIN", False,
+                                                                (255, 255, 255))
 restart_game = pygame.font.Font("Retro_Gaming.ttf", 20).render("Press Enter to try again or press "
                                                                "Escape to quit the game", False,
                                                                (255, 255, 255))
@@ -91,6 +93,35 @@ def text3():
             "Hahahaha!")
 
     wrapped_lines = wrap_text(text, text_font, 180)
+
+    for i, line in enumerate(wrapped_lines):
+        screen.blit(text_font.render(line, True, 'black', None),
+                    (bubbleX + 10, bubbleY + 10 + i * 10))
+
+
+def text5():
+    bubbleX, bubbleY = 1088 - 400, 40
+    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 300, 75))
+
+    text = ("Oh! you are one lucky adventurer. Come through this door, it will lead you towards the exit. "
+            "\nIf you trust me... \n(there are 1 in 4 chances I set you back to the start)")
+
+    wrapped_lines = wrap_text(text, text_font, 290)
+
+    for i, line in enumerate(wrapped_lines):
+        screen.blit(text_font.render(line, True, 'black', None),
+                    (bubbleX + 10, bubbleY + 10 + i * 10))
+
+
+def text6():
+    bubbleX, bubbleY = 1088 - 400, 40
+    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 300, 65))
+
+    text = ("I hope I almost got you there. I must say... you are a barve adventurer. "
+            "\nI don't have anything left to keep you from escaping."
+            "\nSee you next time...")
+
+    wrapped_lines = wrap_text(text, text_font, 290)
 
     for i, line in enumerate(wrapped_lines):
         screen.blit(text_font.render(line, True, 'black', None),
