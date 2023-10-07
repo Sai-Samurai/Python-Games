@@ -5,7 +5,7 @@ from Loading import loading
 from TM_Classes import Player, Boundary, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit
 from TM_Images import player_rect, block_rect, screen_width, screen_height, coin_image, screen, blur_background, \
     background, dungeon, dungeon_screen
-from Texts import text0, text1, text2, text3, other_text, over_game_text, restart_game
+from Texts import text0, text1, text2, text3, text5, text6, other_text, over_game_text, win_game_text, restart_game
 
 # General setup
 pygame.init()
@@ -131,6 +131,8 @@ door1 = Exit(920, 150, exitlength, exitheight, color)
 door2 = Exit(30, 380, exitlength, exitheight, color)
 door3 = Exit(1020, 380, exitlength, exitheight, color)
 door4 = Exit(10, 90, exitlength, exitheight, color)
+door5 = Exit(980, 380, exitlength, exitheight, color)
+door6 = Exit(30, 380, exitlength, exitheight, color)
 
 exit_sprite = pygame.sprite.Group()
 
@@ -147,7 +149,7 @@ enemy4 = Enemy(980, 260, 30, 60)
 
 bullet_group = pygame.sprite.Group()
 bullet_speed = 10
-bullet = Bullet((enemy1.x + 8 + enemy1.length / 2, enemy1.y - 10 + enemy1.height / 2), 7.5, 'red')
+bullet1 = Bullet((enemy1.x + 8 + enemy1.length / 2, enemy1.y - 10 + enemy1.height / 2), 7.5, 'red')
 bullet2 = Bullet((enemy2.x + 8 + enemy2.length / 2, enemy2.y - 10 + enemy2.height / 2), 7.5, 'red')
 
 bullet3 = Bullet((enemy3.x + 8 + enemy3.length / 2, enemy3.y - 10 + enemy3.height / 2), 7.5, 'red')
@@ -172,15 +174,18 @@ level_coins = {
         (block_6_level_1.x2 + 16.5, block_6_level_1.y2 - 27, 19, 22, coin_image),
         (530, 450, 19, 22, coin_image)],
     2: [(block_1_level_2.x2 + 16.5, block_1_level_2.y2 - 27, 19, 22, coin_image),
-        (block_2_level_2.x2 + 16.5, block_2_level_2.x2 - 27, 19, 22, coin_image)]
+        (block_2_level_2.x2 + 16.5, block_2_level_2.x2 - 27, 19, 22, coin_image)],
+    3: [],
+    4: [],
+    5: [],
+    6: [],
+    7: []
 }
-
 
 for coin_data in level_coins[level]:
     # The * is a shortcut to seperating all sprites for a list
     coin = Coins(*coin_data)
     coin_groups[level].add(coin)
-
 # Creating sprite groups for each level
 coin_groups = {level: pygame.sprite.Group() for level in level_coins}
 
@@ -201,6 +206,10 @@ for coin in coin_groups[level]:
 
 over_game = pygame.Rect(0, 0, screen_width, screen_height)
 over_game_text_rect = over_game_text.get_rect(center=(screen_width / 2, screen_height / 2))
+
+# WIN
+win_game = pygame.Rect(0, 0, screen_width, screen_height)
+win_game_text_rect = win_game_text.get_rect(center=(screen_width / 2, screen_height / 2))
 
 restart_game_rect = restart_game.get_rect(center=(screen_width / 2, screen_height / 2 + 50))
 
@@ -225,7 +234,17 @@ def game_over():
     pygame.display.flip()
 
 
-#coin_list = [coin for coin in coin_data]
+def game_won():
+    pygame.draw.rect(screen, (0, 0, 0), win_game)
+    screen.blit(win_game_text, win_game_text_rect)
+    screen.blit(restart_game, restart_game_rect)
+    empty_all_groups()
+    for coin in coin_groups[level]:
+        coin.collected = False
+    pygame.display.flip()
+
+
+# coin_list = [coin for coin in coin_data]
 
 ######################################################################################################################
 '''
@@ -325,18 +344,17 @@ while game_running:
             for coin in coin_groups[level]:
                 if coin.rect.colliderect(player.rect):
                     collided_coin = coin
-            #collided_coins = next(
+            # collided_coins = next(
             #    coin for coin in coin_list if coin.rect.colliderect(player.rect) and not coin.collected
-            #)
+            # )
 
             if collided_coin:
                 coin.collected = True
                 coin_score += 1
                 coin_groups[level].remove(coin)
-                #level_coins[level].remove(collided_coin)
+                # level_coins[level].remove(collided_coin)
 
-
-            #coin_list = [coin for coin in coin_list if not coin.collected]
+            # coin_list = [coin for coin in coin_list if not coin.collected]
 
         '''
                     # Find the first collided coin of the current level
@@ -392,6 +410,7 @@ while game_running:
 
     # coin_groups[level].draw(screen)
 
+    #####     ####     #####     #####     #####     #####     #####     #####     #####     #####     #####     #####
     # Game over (Level -2)
     if level == -2:
         game_over()
@@ -436,16 +455,9 @@ while game_running:
             sprite.appear(screen)
         for sprite in player_sprite:
             sprite.appear(screen)
-
         narrator.appear(screen)
+
         text0()
-
-        screen.blit(level_text, (750, 20))
-
-        # Switch level back
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_TAB:
-                level = level - 1
 
         print(lives)
         print(coin_score)
@@ -466,7 +478,7 @@ while game_running:
         for coin_data in level_coins[level]:
             # Creating a temporary coin object
             coin = Coins(*coin_data)
-            if not coin.collected:
+            if coin.collected:
                 coin_groups[level].add(coin)
         coin_groups[level].draw(screen)
 
@@ -561,7 +573,7 @@ while game_running:
 
         # Adding the sprites
         enemy_group.add(enemy1, enemy2)
-        bullet_group.add(bullet, bullet2)
+        bullet_group.add(bullet1, bullet2)
         blocks_sprite.add(block_1_level_3, block_2_level_3, block_3_level_3, block_4_level_3)
         exit_sprite.add(door3)
 
@@ -622,16 +634,66 @@ while game_running:
         screen.blit(lives_text, (150, 20))
 
 
-    elif level > 4:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
+    # Level 5
+    elif level == 5:
+        # Setting the screen
         # screen.fill(bg_color)
         screen.blit(dungeon_screen, (0, 0))
-        player.x, player.y = 500, 200
+
+        blocks_sprite.empty()
+        enemy_group.empty()
+        bullet_group.empty()
+
+        # Updating manually the sprite groups
+        pygame.sprite.Sprite.add(door5, exit_sprite)
+
+        for sprite in exit_sprite:
+            sprite.appear(screen)
         for sprite in player_sprite:
             sprite.appear(screen)
 
-        level_text = other_text.render("Level "f"{level}", True, (250, 250, 250))
+        text5()
 
-        screen.blit(level_text, (750, 20))
+        screen.blit(score_text, (450, 20))
+        screen.blit(lives_text, (150, 20))
+
+
+
+    elif level == 6:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
+        screen.blit(background, (0, 0))
+
+        pygame.sprite.Sprite.add(door6, exit_sprite)
+
+        for sprite in exit_sprite:
+            sprite.appear(screen)
+        for sprite in player_sprite:
+            sprite.appear(screen)
+
+        text6()
+
+
+    # Winning screen
+    elif level == 7:  # Or we can manually say: if level != 0 and level != 1 and level != 2 ...
+        screen.blit(background, (0, 0))
+
+        game_won()
+
+        # for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                level = -1
+                lives = 3
+                coin_score = 0
+
+                for door in exit_sprite:
+                    exit_sprite.remove(door)
+
+        player.x, player.y = 241, 400
+
+
+
+
+
 
     print(player.x, " = PLAYERS X", player.y, " = PLAYERS Y")
     # print(block.x2, " = BLOCKS X", block.y2, " = BLOCKS Y")
@@ -640,6 +702,8 @@ while game_running:
         level = -2
 
     print(level)
+
+    # To view the boundary
     # for sprite in boundaries:
     #    sprite.appear(screen)
 
