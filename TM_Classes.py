@@ -49,12 +49,12 @@ class Player(pygame.sprite.Sprite):
         self.side_borders()
 
     def appear(self, screen):
-        pygame.draw.rect(screen, YELLOW, self.rect)
+        #pygame.draw.rect(screen, YELLOW, self.rect) --> It is the hitbox of the player
         if self.facing_right:
             screen.blit(TM_Images.player_image, TM_Images.player_rect)
         else:
             screen.blit(pygame.transform.flip(TM_Images.player_image, True, False),
-                        TM_Images.player_rect)  # Flpis the player horizontally when moving left
+                        TM_Images.player_rect)  # Flips the player horizontally when moving left
 
     def move_right(self):
         self.x += speed_x
