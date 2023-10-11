@@ -15,7 +15,7 @@ dungeon_width, dungeon_height = dungeon.get_size()
 screen_width = background_width
 screen_height = background_height
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('TM Game')
+pygame.display.set_caption('Pixel Odyssey (TM Game)')
 bg_color = pygame.Color('black')
 
 # New screen appearance
