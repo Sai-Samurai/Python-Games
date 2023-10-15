@@ -79,10 +79,12 @@ block_1_level_2 = Blocks(400, 327, block_size, block_size2, block_rect)
 block_2_level_2 = Blocks(600, 380, block_size, block_size2, block_rect)
 
 # For the third level
-block_1_level_3 = Blocks(350, 376, block_size, block_size2, block_rect)
-block_2_level_3 = Blocks(500, 376, block_size, block_size2, block_rect)
-block_3_level_3 = Blocks(670, 411, block_size, block_size2, block_rect)
-block_4_level_3 = Blocks(200, 446, block_size, block_size2, block_rect)
+block_1_level_3 = Blocks(300, 376, block_size, block_size2, block_rect)
+block_2_level_3 = Blocks(450, 376, block_size, block_size2, block_rect)
+block_3_level_3 = Blocks(620, 411, block_size, block_size2, block_rect)
+block_4_level_3 = Blocks(150, 446, block_size, block_size2, block_rect)
+block_5_level_3 = Blocks(810, 363, block_size, block_size2, block_rect)
+
 
 # For the fourth level
 block_1_level_4 = Blocks(200, 158, block_size, block_size2, block_rect)
@@ -139,8 +141,8 @@ exit_sprite = pygame.sprite.Group()
 # ENEMIES
 
 enemy_group = pygame.sprite.Group()
-enemy1 = Enemy(850, 420, 30, 60)
-enemy2 = Enemy(850, 300, 30, 60)
+enemy1 = Enemy(800, 433, 30, 60)
+enemy2 = Enemy(770, 300, 30, 60)
 
 enemy3 = Enemy(980, 135, 30, 60)
 enemy4 = Enemy(980, 260, 30, 60)
@@ -424,6 +426,8 @@ while game_running:
 
                 for door in exit_sprite:
                     exit_sprite.remove(door)
+                for enemy in enemy_group:
+                    enemy_group.remove(enemy)
 
         player.x, player.y = 241, 400
 
@@ -574,7 +578,7 @@ while game_running:
         # Adding the sprites
         enemy_group.add(enemy1, enemy2)
         bullet_group.add(bullet1, bullet2)
-        blocks_sprite.add(block_1_level_3, block_2_level_3, block_3_level_3, block_4_level_3)
+        blocks_sprite.add(block_1_level_3, block_2_level_3, block_3_level_3, block_4_level_3, block_5_level_3)
         exit_sprite.add(door3)
 
         # Animations for all bullet sprites
