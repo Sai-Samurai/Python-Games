@@ -428,6 +428,10 @@ while game_running:
                     exit_sprite.remove(door)
                 for enemy in enemy_group:
                     enemy_group.remove(enemy)
+                for bullet in bullet_group:
+                    bullet_group.remove(bullet)
+                for lava in lava_group:
+                    lava_group.remove(lava)
 
         player.x, player.y = 241, 400
 
