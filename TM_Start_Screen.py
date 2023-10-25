@@ -1,6 +1,6 @@
 import pygame
 
-from Texts import other_text
+from TM_Texts import other_text
 from TM_Images import screen_width, screen_height, screen
 
 
