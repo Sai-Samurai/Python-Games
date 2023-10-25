@@ -3,8 +3,10 @@ from TM_Images import screen
 from TM_Classes import Narrator
 
 narrator = Narrator(100, 100, 170, 70)
+
 # GAME FONTS
-# Game Text Font For Level
+
+# Game text font for differet situations
 text_font = pygame.font.Font("Retro_Gaming.ttf", 11)
 game_font = pygame.font.Font("freesansbold.ttf", 25)
 other_text = pygame.font.Font("Retro_Gaming.ttf", 35)
@@ -42,6 +44,8 @@ def wrap_text(text, font, max_width):
 
 
 # Speech and speech bubble
+
+# \n is being sued to create a newline
 def text0():
     bubbleX, bubbleY = narrator.rect.x + 140, narrator.rect.y - 65
     pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 400, 85))
@@ -104,7 +108,7 @@ def text5():
     pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 300, 75))
 
     text = ("Oh! you are one lucky adventurer. Come through this door, it will lead you towards the exit. "
-            "\nIf you trust me... \n(there are 1 in 4 chances I set you back to the start)")
+            "\nIf you trust me... \n(there are 1 in 4 chances I set you back to the start).")
 
     wrapped_lines = wrap_text(text, text_font, 290)
 
