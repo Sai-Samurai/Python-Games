@@ -1,11 +1,11 @@
 import pygame
 
-from Button import start_screen
-from Loading import loading
+from TM_Start_Screen import start_screen
+from TM_Loading import loading
 from TM_Classes import Player, Boundary, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit
 from TM_Images import player_rect, block_rect, screen_width, screen_height, coin_image, screen, blur_background, \
     background, dungeon, dungeon_screen
-from Texts import text0, text1, text2, text3, text5, text6, other_text, over_game_text, win_game_text, restart_game
+from TM_Texts import text0, text1, text2, text3, text5, text6, other_text, over_game_text, win_game_text, restart_game
 
 
 # General setup
