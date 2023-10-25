@@ -4,6 +4,7 @@ import TM_Images
 
 pygame.font.init()
 
+# Different variables addded
 y_gravity = 0.4
 jump_height = 10
 blocks_sprite = pygame.sprite.Group()
@@ -28,7 +29,6 @@ class Player(pygame.sprite.Sprite):
         self.jumping = True
         self.y_velocity = 0
 
-        # Flags for collisions
         # Flags to track block collision on each side
         self.collide_bottom = False
         self.collide_top = False
@@ -43,13 +43,13 @@ class Player(pygame.sprite.Sprite):
         self.facing_right = True
 
     def update(self, blocks_sprite, boundaries):
-        #self.animate()
+        # self.animate()
         self.block_collisions(blocks_sprite)
         self.boundary_collisions(boundaries)
         self.side_borders()
 
     def appear(self, screen):
-        #pygame.draw.rect(screen, YELLOW, self.rect) --> It is the hitbox of the player
+        # pygame.draw.rect(screen, YELLOW, self.rect) --> It is the hitbox of the player
         if self.facing_right:
             screen.blit(TM_Images.player_image, TM_Images.player_rect)
         else:
@@ -72,7 +72,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = self.x
         self.facing_right = False
 
-    #This a method that Dr.Jane has come up with to make working collisions
+    # This a method that Dr.Jane has come up with to make working collisions
     def start_jumping(self):
         if not self.jumping:
             self.jumping = True
@@ -142,8 +142,6 @@ class Player(pygame.sprite.Sprite):
                         right_collision = False
                         left_collision = False
 
-                    print("bottom")
-
             if self.rect.centery > block.rect.bottom:
                 if top_collision:
                     self.y = block.rect.bottom
@@ -153,23 +151,17 @@ class Player(pygame.sprite.Sprite):
                         right_collision = False
                         left_collision = False
 
-                    print("top")
-
             if right_collision:
                 self.x = block.rect.left - self.length
                 self.y_velocity -= y_gravity
                 self.jumping = False
                 self.y_velocity = 0
 
-                print("right")
-
             if left_collision:
                 self.x = block.rect.right
                 self.y_velocity -= y_gravity
                 self.jumping = False
                 self.y_velocity = 0
-
-                print("left")
 
     def boundary_collisions(self, boundaries):
         boundary = pygame.sprite.spritecollideany(self, boundaries)
@@ -232,14 +224,6 @@ class Blocks(pygame.sprite.Sprite):
         pygame.draw.rect(screen, YELLOW, self.rect)
         screen.blit(TM_Images.block_image, self.rect)
 
-    # pygame.draw.rect(screen, (0, 0, 0), (self.x2, self.y2, self.block_size, self.block_size2))
-    '''
-    #No need for this because the blocks don't move
-    def updateblocks(self, x2, y2):
-        self.x2
-        self.y2
-    '''
-
 
 # Enemies
 class Enemy(pygame.sprite.Sprite):
@@ -250,10 +234,8 @@ class Enemy(pygame.sprite.Sprite):
         self.length = length
         self.height = height
         self.rect = pygame.Rect(x, y, length, height)
-        # enemy_group.add(self)
 
     def appear(self, screen):
-        # pygame.draw.rect(screen, (92, 64, 51), self.rect)
         screen.blit(TM_Images.enemy_image, self.rect)
 
 
@@ -265,7 +247,6 @@ class Bullet(pygame.sprite.Sprite):
         self.x, self.y = center
         self.radius = radius
         self.color = color
-        # bullet_group.add(self)
 
     def appear(self, screen):
         pygame.draw.circle(screen, self.color, self.center, self.radius)
@@ -275,7 +256,7 @@ class Bullet(pygame.sprite.Sprite):
         self.center = (self.x, self.y)
 
 
-# Death items, like lava, spikes, ...
+# Death items
 class Death_Items(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
@@ -283,7 +264,6 @@ class Death_Items(pygame.sprite.Sprite):
         self.y = y
         self.width = width
         self.height = height
-        # self.d_item = d_item
         self.rect = pygame.Rect(x, y, width, height)
 
     def appear(self, screen):
@@ -305,7 +285,6 @@ class Narrator:
         self.current_dialogue = ""
 
     def appear(self, screen):
-        # pygame.draw.rect(screen, narcolor, self.rect)
         screen.blit(TM_Images.narrator_image, self.rect)
 
 
@@ -319,7 +298,7 @@ class Coins(pygame.sprite.Sprite):
         self.height = height
         self.rect = pygame.Rect(x, y, length, height)
         self.image = image
-        self.collected = False  # the collision of the player and the coin is false
+        self.collected = False  # The collision of the player and the coin is false
 
     def appear(self, screen):
         if not self.collected:
@@ -334,11 +313,8 @@ class Exit(pygame.sprite.Sprite):
         self.y3 = y3
         self.exitlength = exitlength
         self.exitheight = exitheight
-        # self.color = color
         self.exit_image = exit_image
         self.rect = pygame.Rect(x3, y3, exitlength, exitheight)
-
-    # exit_sprite.add(self)
 
     def appear(self, screen):
         pygame.draw.rect(screen, (135, 206, 235), self.rect)
