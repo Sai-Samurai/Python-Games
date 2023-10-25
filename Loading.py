@@ -5,6 +5,7 @@ from Texts import loading_text
 
 pygame.font.init()
 
+
 # MAIN SCREEN ATTRIBUTES (Introduction)
 
 '''
