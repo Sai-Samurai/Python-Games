@@ -1,7 +1,7 @@
 import pygame
 
 from TM_Images import screen, screen_width, screen_height
-from Texts import loading_text
+from TM_Texts import loading_text
 
 pygame.font.init()
 
