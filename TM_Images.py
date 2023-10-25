@@ -1,5 +1,7 @@
 import pygame
 
+# Imports of all different images
+
 # Background image
 background = pygame.image.load("Final_background.png")
 background_width, background_height = background.get_size()
@@ -19,7 +21,6 @@ pygame.display.set_caption('Pixel Odyssey (TM Game)')
 bg_color = pygame.Color('black')
 
 # New screen appearance
-# Note: Need some aesthetic changes, looks... could be worse
 dngn_screen_width = dungeon_width
 dngn_screen_height = dungeon_height
 dungeon_screen = pygame.Surface((dngn_screen_width, dngn_screen_height))
