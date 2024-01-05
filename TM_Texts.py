@@ -44,88 +44,59 @@ def wrap_text(text, font, max_width):
 
 
 # Speech and speech bubble
-
-# \n is being sued to create a newline
-def text0():
-    bubbleX, bubbleY = narrator.rect.x + 140, narrator.rect.y - 65
-    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 400, 85))
-
-    text = ("Welcome explorer from the wilderness... I see you have stumbled into this world...\n Rest assured, "
-            "I am a friend to you, not a foe... Let me help you and get you back to your world by "
-            "getting you through this door I have here...\n I will show myself when the time is right.")
-
-    wrapped_lines = wrap_text(text, text_font, 390)
-
-    for i, line in enumerate(wrapped_lines):
-        screen.blit(text_font.render(line, True, 'black', None),
-                    (bubbleX + 10, bubbleY + 10 + i * 10))
-
-
-def text1():
-    bubbleX, bubbleY = narrator.rect.x - 50, narrator.rect.y - 20
-    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 225, 80))
-
-    text = ("Hahahaha... Did you really think I was going to let come to my universe!?\n You've been trapped! I'll let "
+text_data = [
+    {
+        "position": (narrator.rect.x + 140, narrator.rect.y - 65),
+        "size": (400, 85),
+        "text": ("Welcome explorer from the wilderness... I see you have stumbled into this world...\n Rest assured, "
+                 "I am a friend to you, not a foe... Let me help you and get you back to your world by "
+                 "getting you through this door I have here...\n I will show myself when the time is right.")
+    },
+    {
+        "position": (800, narrator.rect.y - 35),
+        "size": (225, 80),
+        "text": (
+            "Hahahaha... Did you really think I was going to let come to my universe!?\n You've been trapped! I'll let "
             "you die here unless you can escape my dungeon!")
-
-    wrapped_lines = wrap_text(text, text_font, 215)
-
-    for i, line in enumerate(wrapped_lines):
-        screen.blit(text_font.render(line, True, 'black', None),
-                    (bubbleX + 10, bubbleY + 10 + i * 10))
-
-
-def text2():
-    bubbleX, bubbleY = 800, narrator.rect.y - 35
-    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 225, 65))
-
-    text = "I suggest you being careful... If you want to escape from me, try not to die in the lava."
-
-    wrapped_lines = wrap_text(text, text_font, 215)
-
-    for i, line in enumerate(wrapped_lines):
-        screen.blit(text_font.render(line, True, 'black', None),
-                    (bubbleX + 10, bubbleY + 10 + i * 10))
-
-
-def text3():
-    bubbleX, bubbleY = 800, narrator.rect.y - 35
-    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 200, 110))
-
-    text = ("I almost forgot to inform that in some rooms I may have assigned some of my"
-            " soldiers.\n Touching them might not hurt you, but their fireballs will. I hope you die in their hands. "
-            "Hahahaha!")
-
-    wrapped_lines = wrap_text(text, text_font, 180)
-
-    for i, line in enumerate(wrapped_lines):
-        screen.blit(text_font.render(line, True, 'black', None),
-                    (bubbleX + 10, bubbleY + 10 + i * 10))
+    },
+    {
+        "position": (800, narrator.rect.y - 35),
+        "size": (225, 65),
+        "text": "I suggest you being careful... If you want to escape from me, try not to die in the lava."
+    },
+    {
+        "position": (800, narrator.rect.y - 35),
+        "size": (200, 110),
+        "text": ("I almost forgot to inform that in some rooms I may have assigned some of my"
+                 " soldiers.\n Touching them might not hurt you, but their fireballs will. I hope you die in their hands. "
+                 "Hahahaha!")
+    },
+    {},
+    {
+        "position": (1088 - 400, 40),
+        "size": (300, 75),
+        "text": ("Oh! you are one lucky adventurer. Come through this door, it will lead you towards the exit. "
+                 "\nIf you trust me... \n(there are 1 in 4 chances I set you back to the start).")
+    },
+    {
+        "position": (1088 - 400, 40),
+        "size": (300, 65),
+        "text": (("I hope I almost got you there. I must say... you are a barve adventurer. "
+                  "\nI don't have anything left to keep you from escaping."
+                  "\nSee you next time..."))
+    }
+]
 
 
-def text5():
-    bubbleX, bubbleY = 1088 - 400, 40
-    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 300, 75))
+def display_text(text_index):
+    bubble_info = text_data[text_index]
+    bubbleX, bubbleY = bubble_info["position"]
+    bubble_size = bubble_info["size"]
+    text = bubble_info['text']
 
-    text = ("Oh! you are one lucky adventurer. Come through this door, it will lead you towards the exit. "
-            "\nIf you trust me... \n(there are 1 in 4 chances I set you back to the start).")
+    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, *bubble_size))
 
-    wrapped_lines = wrap_text(text, text_font, 290)
-
-    for i, line in enumerate(wrapped_lines):
-        screen.blit(text_font.render(line, True, 'black', None),
-                    (bubbleX + 10, bubbleY + 10 + i * 10))
-
-
-def text6():
-    bubbleX, bubbleY = 1088 - 400, 40
-    pygame.draw.rect(screen, 'white', pygame.Rect(bubbleX, bubbleY, 300, 65))
-
-    text = ("I hope I almost got you there. I must say... you are a barve adventurer. "
-            "\nI don't have anything left to keep you from escaping."
-            "\nSee you next time...")
-
-    wrapped_lines = wrap_text(text, text_font, 290)
+    wrapped_lines = wrap_text(text, text_font, bubble_size[0] - 10)
 
     for i, line in enumerate(wrapped_lines):
         screen.blit(text_font.render(line, True, 'black', None),
