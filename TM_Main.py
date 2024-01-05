@@ -5,7 +5,8 @@ from TM_Loading import loading
 from TM_Classes import Player, Boundary, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit
 from TM_Images import player_rect, block_rect, screen_width, screen_height, coin_image, screen, blur_background, \
     background, dungeon, dungeon_screen
-from TM_Texts import text0, text1, text2, text3, text5, text6, other_text, over_game_text, win_game_text, restart_game
+from TM_Texts import display_text, other_text, over_game_text, win_game_text, restart_game
+import TM_Menu
 
 
 # General setup
@@ -227,6 +228,11 @@ def game_won():
     pygame.display.flip()
 
 
+#Menu
+menu_open = False
+selected_option = 0
+options = ["Volume", "Reset", "Option 3"]
+
 # GAME LOOP
 
 game_running = True
@@ -253,6 +259,9 @@ while game_running:
             if event.key == pygame.K_SPACE:
                 player.start_jumping()
                 print("SPACE")
+
+            if event.key == pygame.K_m:
+                selected_option = TM_Menu.handle_menu(screen, menu_open, selected_option, options)
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT:
@@ -424,7 +433,7 @@ while game_running:
         narrator.appear(screen)
 
         # Texts
-        text0()
+        display_text(0)
 
 
     # Level 1
@@ -452,7 +461,7 @@ while game_running:
         for sprite in player_sprite:
             sprite.appear(screen)
 
-        text1()
+        display_text(1)
 
         screen.blit(level_text, (750, 20))
         screen.blit(score_text, (450, 20))
@@ -485,7 +494,7 @@ while game_running:
         for sprite in player_sprite:
             sprite.appear(screen)
 
-        text2()
+        display_text(2)
 
         screen.blit(level_text, (750, 20))
         screen.blit(score_text, (450, 20))
@@ -522,7 +531,7 @@ while game_running:
         for sprite in player_sprite:
             sprite.appear(screen)
 
-        text3()
+        display_text(3)
 
         screen.blit(level_text, (750, 20))
         screen.blit(score_text, (450, 20))
@@ -584,7 +593,7 @@ while game_running:
         for sprite in player_sprite:
             sprite.appear(screen)
 
-        text5()
+        display_text(5)
 
         screen.blit(score_text, (450, 20))
         screen.blit(lives_text, (150, 20))
@@ -602,7 +611,7 @@ while game_running:
         for sprite in player_sprite:
             sprite.appear(screen)
 
-        text6()
+        display_text(6)
 
 
     # Winning screen
