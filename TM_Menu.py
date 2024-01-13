@@ -26,6 +26,7 @@ def draw_menu(screen, options, selected_option):
 
 def handle_menu(screen, menu_open, selected_option, options):
     menu_open = True
+    additional_text = ""
     while menu_open:
 
         for event in pygame.event.get():
@@ -38,15 +39,25 @@ def handle_menu(screen, menu_open, selected_option, options):
                 elif event.key == pygame.K_DOWN:
                     selected_option = (selected_option + 1) % len(options)
 
-                    '''
-                    elif event.key == pygame.K_RETURN:
-                        if selected == 0:
-                            adjust_volume(True)
-                    '''
+                elif event.key == pygame.K_RETURN:
+                    if selected_option == 0:
+                        additional_text = "Press ENTER to restart the level"
+                    elif selected_option == 1:
+                        pass
+                    elif selected_option == 2:
+                        pass
+                elif event.key == pygame.K_RETURN and selected_option == 0:
+                    additional_text = "Restarting the level..."
+
                 elif event.key == pygame.K_m:
                     menu_open = False
 
         draw_blur(screen)
         draw_menu(screen, options, selected_option)
+
+        additional_surface = pygame.font.Font("Retro_Gaming.ttf", 18).render(additional_text, False,
+                                                                             'white')
+        screen.blit(additional_surface, (540, 200))
+
         pygame.display.flip()
     return selected_option
