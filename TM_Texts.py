@@ -71,7 +71,11 @@ text_data = [
                  " soldiers.\n Touching them might not hurt you, but their fireballs will. I hope you die in their hands. "
                  "Hahahaha!")
     },
-    {},
+    {
+        "position": (0, 0),
+        "size": (0, 0),
+        "text": ""
+    },
     {
         "position": (1088 - 400, 40),
         "size": (300, 75),
