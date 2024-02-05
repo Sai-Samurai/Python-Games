@@ -2,8 +2,8 @@ import pygame
 
 from TM_Start_Screen import start_screen
 from TM_Loading import loading
-from TM_Classes import Player, Boundary, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit
-from TM_Images import player_rect, block_rect, screen_width, screen_height, coin_image, screen, blur_background, \
+from TM_Classes import Player, Boundary, Blocks, Enemy, Bullet, Death_Items, Narrator, Coins, Exit, Portal
+from TM_Images import p_image, player_rect, block_rect, screen_width, screen_height, coin_image, screen, blur_background, \
     background, dungeon, dungeon_screen
 from TM_Texts import display_text, other_text, over_game_text, win_game_text, restart_game
 import TM_Menu
@@ -25,11 +25,12 @@ on_ground = True
 move_right = False
 move_left = False
 move_up = False
-speed_x = 7.5
 
 # Player
 playerX, playerY = (241, 400)
-player = Player(playerX, playerY, 50, 96, player_rect)
+scaled_player_image = pygame.transform.scale(p_image, (p_image.get_width() / 5, p_image.get_height() / 6.5))
+scaled_player_rect = scaled_player_image.get_rect()
+player = Player(playerX, playerY, 50, 96, scaled_player_image, scaled_player_rect)
 player_sprite = pygame.sprite.Group(player)
 
 # Lives
@@ -37,6 +38,10 @@ lives = 3
 
 # Coin score
 coin_score = 0
+
+# Portal
+min_portal = Portal(560, 350, 80, 100)
+portal_group = pygame.sprite.Group()
 
 # BLOCK'S ATTRIBUTES
 
@@ -169,8 +174,9 @@ coin1 = Coins(block_1_level_1.x2 + 16.5, block_1_level_1.y2 - 27, 19, 22, coin_i
 coin2 = Coins(block_3_level_1.x2 + 16.5, block_3_level_1.y2 - 27, 19, 22, coin_image)
 coin3 = Coins(block_6_level_1.x2 + 16.5, block_6_level_1.y2 - 27, 19, 22, coin_image)
 coin4 = Coins(530, 450, 19, 22, coin_image)
+coin5 = Coins(block_2_level_2.x2 + 16.5, block_2_level_2.y2 - 27, 19, 22, coin_image)
 coin_group = pygame.sprite.Group()
-coin_list = [coin1, coin2, coin3, coin4]
+coin_list = [coin1, coin2, coin3, coin4, coin5]
 
 for coin in coin_list:
     coin.rect.x = coin.x
@@ -264,8 +270,8 @@ while game_running:
     lives_text = other_text.render("Lives : "f"{lives}", False, (255, 255, 255))
     score_text = other_text.render("Score: "f"{coin_score}", False, (255, 255, 255))
 
-    player.animate()
-    player.update(blocks_sprite, boundaries)
+    player.animate(boundaries)
+    player.update(blocks_sprite, boundaries, portal_group)
 
     player.rect.x = player.x
     player.rect.y = player.y
@@ -371,6 +377,7 @@ while game_running:
                 level = level + 1
                 lives = 3
                 coin_score = 0
+                player.speed_x = 4.5
 
                 for door in exit_sprite:
                     exit_sprite.remove(door)
@@ -399,7 +406,7 @@ while game_running:
 
     if -1 < level < 7:
         current_level = \
-            TM_Levels.level_list(player, door0, door1, door2, door3, door4, door5, door6, coin_list, dungeon_screen,
+            TM_Levels.level_list(player, door0, door1, door2, door3, door4, door5, door6, dungeon_screen,
                                  background, lava,
                                  block_1_level_1, block_2_level_1, block_3_level_1, block_4_level_1, block_5_level_1,
                                  block_6_level_1, block_7_level_1, block_8_level_1, block_9_level_1,
@@ -408,10 +415,12 @@ while game_running:
                                  block_1_level_4, block_2_level_4, block_3_level_4, block_4_level_4, block_5_level_4,
                                  block_6_level_4, block_7_level_4, block_8_level_4, block_9_level_4, block_10_level_4,
                                  block_11_level_4, block_12_level_4, block_13_level_4,
-                                 enemy1, enemy2, bullet1, bullet2, enemy3, enemy4, bullet3, bullet4)[level]
+                                 enemy1, enemy2, bullet1, bullet2, enemy3, enemy4, bullet3, bullet4,
+                                 coin1, coin2, coin3, coin4, coin5,
+                                 min_portal)[level]
 
-        TM_Levels.game_levels(screen, exit_sprite, blocks_sprite, enemy_group, bullet_group, lava_group, current_level,
-                              level_text, score_text, lives_text)
+        TM_Levels.game_levels(screen, exit_sprite, blocks_sprite, enemy_group, bullet_group, lava_group, coin_group,
+                              portal_group, current_level, level_text, score_text, lives_text)
 
         '''
         # Level 0
@@ -640,6 +649,7 @@ while game_running:
     for sprite in boundaries:
         sprite.appear(screen)
     '''
+    print(player.x, player.y)
 
     # Updating the window
     pygame.display.flip()
