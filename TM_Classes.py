@@ -10,7 +10,6 @@ jump_height = 10
 blocks_sprite = pygame.sprite.Group()
 narcolor = 'purple'
 YELLOW = (255, 255, 0)  # Horrific yellow for debugging rectangles
-speed_x = 4.5
 bullet_speed = 10
 lives = 3
 
@@ -18,16 +17,19 @@ lives = 3
 # Player
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, length, height, image):
+    def __init__(self, x, y, length, height, image, rect):
         super().__init__()
         self.x = x
         self.y = y
         self.length = length
         self.height = height
+        self.original_image = image
         self.moving_right = False
         self.moving_left = False
         self.jumping = True
         self.y_velocity = 0
+        self.speed_x = 4.5
+        self.portal_collision = False
 
         # Flags to track block collision on each side
         self.collide_bottom = False
@@ -35,29 +37,41 @@ class Player(pygame.sprite.Sprite):
         self.collide_right = False
         self.collide_left = False
 
+        #Flags to track portal collision on each side
+        self.collide_bottom_portal = False
+        self.collide_top_portal = False
+        self.collide_right_portal = False
+        self.collide_left_portal = False
+
         self.boundary_collide_bottom = False
         self.boundary_collidetop = False
 
         self.image = image
+        self.rect = rect
         self.rect = pygame.Rect(x, y, length, height)
         self.facing_right = True
 
-    def update(self, blocks_sprite, boundaries):
+    def update(self, blocks_sprite, boundaries, portal_group):
         # self.animate()
         self.block_collisions(blocks_sprite)
         self.boundary_collisions(boundaries)
+        self.portal_collisions(portal_group)
         self.side_borders()
 
+        portal_collisons = pygame.sprite.spritecollide(self, portal_group, False)
+        if portal_collisons:
+            self.shrink()
+
     def appear(self, screen):
-        # pygame.draw.rect(screen, YELLOW, self.rect) --> It is the hitbox of the player
+        pygame.draw.rect(screen, YELLOW, self.rect)  # --> It is the hitbox of the player
         if self.facing_right:
-            screen.blit(TM_Images.player_image, TM_Images.player_rect)
+            screen.blit(self.image, self.rect)
         else:
-            screen.blit(pygame.transform.flip(TM_Images.player_image, True, False),
-                        TM_Images.player_rect)  # Flips the player horizontally when moving left
+            screen.blit(pygame.transform.flip(self.image, True, False),
+                        self.rect)  # Flips the player horizontally when moving left
 
     def move_right(self):
-        self.x += speed_x
+        self.x += self.speed_x
         if not self.jumping:
             self.y = self.y + 1
             self.jumping = True
@@ -65,7 +79,7 @@ class Player(pygame.sprite.Sprite):
         self.facing_right = True
 
     def move_left(self):
-        self.x -= speed_x
+        self.x -= self.speed_x
         if not self.jumping:
             self.y = self.y + 1
             self.jumping = True
@@ -85,8 +99,12 @@ class Player(pygame.sprite.Sprite):
         self.y = blocks_sprite.rect.top - self.height
 
     def side_borders(self):
-        if self.x + self.length >= 1088:
-            self.x = 1088 - self.length
+        if not self.portal_collision:
+            if self.x + self.length >= 1088:
+                self.x = 1088 - self.length
+        if self.portal_collision:
+            if self.x + self.length / 2 >= 1088:
+                self.x = 1088 - self.length / 2
         if self.x <= 0:
             self.x = 0
         if self.y <= 0:
@@ -97,15 +115,16 @@ class Player(pygame.sprite.Sprite):
         self.y_velocity = 0
         self.y = boundary.rect.top - self.height
 
-    def animate(self):
+    def animate(self, boundaries):
         if self.moving_left:
             self.move_left()
         if self.moving_right:
             self.move_right()
 
-        if self.jumping:
-            self.y_velocity -= y_gravity
-            self.y -= self.y_velocity
+        if not self.portal_collision:
+            if self.jumping:
+                self.y_velocity -= y_gravity
+                self.y -= self.y_velocity
 
         self.rect.x = int(self.x)
         self.rect.y = int(self.y)
@@ -115,6 +134,18 @@ class Player(pygame.sprite.Sprite):
 
         if TM_Images.player_rect.midbottom >= (self.x + self.length / 2, self.y + self.height):
             TM_Images.player_rect.midtop = (self.x + self.length / 2, self.y)
+
+        #self.block_collisions(blocks_sprite)
+        self.boundary_collisions(boundaries)
+        #self.side_borders()
+
+        if self.portal_collision:
+            self.jumping = False
+            self.y_velocity = 0
+            #self.rect.bottom = min(496 - self.height, self.rect.bottom)
+            #print(self.rect.bottom)
+            self.y = self.rect.y
+            self.x = self.rect.x
 
     def block_collisions(self, blocks_sprite):
         block = pygame.sprite.spritecollideany(self, blocks_sprite)
@@ -180,14 +211,78 @@ class Player(pygame.sprite.Sprite):
                 self.y = boundary.rect.bottom
                 self.y_velocity = 0
 
-    '''
-    Instead of making multiple collision detections of the same block and platform at the same time, what we can do 
-    is to just make the "floor" a new class and and leave the collision of itself with player as one and then make new
-    collisions that would then be considered by the player and not cause the issue we have.
+        '''
+        Instead of making multiple collision detections of the same block and platform at the same time, what we can do 
+        is to just make the "floor" a new class and and leave the collision of itself with player as one and then make new
+        collisions that would then be considered by the player and not cause the issue we have.
+    
+        Issue info:
+        The player can not handle multiple collisons at the same time coming from sprites of the "same class".
+        '''
 
-    Issue info:
-    The player can not handle multiple collisons at the same time coming from sprites of the "same class".
-    '''
+    def portal_collisions(self, portal_group):
+        portal = pygame.sprite.spritecollideany(self, portal_group)
+
+        if portal:
+
+            self.portal_collision = True
+
+            bottom_portal_collision = self.rect.bottom > portal.rect.top and self.y_velocity <= 0
+            top_portal_collision = self.rect.top < portal.rect.bottom and self.y_velocity > 0
+            right_portal_collision = self.rect.right <= portal.rect.left <= self.rect.left
+            left_portal_collision = self.rect.left >= portal.rect.right >= self.rect.right
+
+            self.collide_bottom_portal = bottom_portal_collision
+            self.collide_top_portal = top_portal_collision
+            self.collide_right_portal = right_portal_collision
+            self.collide_left_portal = left_portal_collision
+
+            if self.rect.centery < portal.rect.top:
+                if bottom_portal_collision:
+                    self.stop_jumping(portal)
+
+                    self.collide_bottom_portal = False
+                    self.collide_left_portal = False
+
+                    if right_portal_collision or left_portal_collision:
+                        right_portal_collision = False
+                        left_portal_collision = False
+
+            if self.rect.centery > portal.rect.bottom:
+                if top_portal_collision:
+                    self.y = portal.rect.bottom
+                    self.y_velocity = 0
+
+                    if right_portal_collision or left_portal_collision:
+                        right_portal_collision = False
+                        left_portal_collision = False
+
+            # Maybe this bit of code is not necessary
+            if right_portal_collision:
+                self.x = portal.rect.left - self.length
+                self.y_velocity -= y_gravity
+                self.jumping = False
+                self.y_velocity = 0
+
+            if left_portal_collision:
+                self.x = portal.rect.right
+                self.y_velocity -= y_gravity
+                self.jumping = False
+                self.y_velocity = 0
+
+            self.speed_x = 3
+            self.shrink()
+            # self.rect = pygame.Rect(self.x, self.y, self.length / 2, self.height / 2)
+
+    def shrink(self):
+        new_length = int(self.length / 2)
+        new_height = int(self.height / 2)
+
+        self.image = pygame.transform.scale(self.original_image, (new_length, new_height))
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.y = 420
+        self.rect.y = self.y
 
 
 class Boundary(pygame.sprite.Sprite):
@@ -319,3 +414,17 @@ class Exit(pygame.sprite.Sprite):
     def appear(self, screen):
         pygame.draw.rect(screen, (135, 206, 235), self.rect)
         screen.blit(TM_Images.door_image, (self.x3 - 10, self.y3, self.exitlength, self.exitheight))
+
+
+class Portal(pygame.sprite.Sprite):
+    def __init__(self, x, y, length, height):
+        super().__init__()
+        self.x = x
+        self.y = y
+        self.length = length
+        self.height = height
+        self.color = ['darkgreen', 'darkblue']
+        self.rect = pygame.Rect(x, y, length, height)
+
+    def appear(self, screen):
+        pygame.draw.rect(screen, self.color[0], self.rect)
